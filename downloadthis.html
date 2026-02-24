@@ -1,0 +1,2483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartVillage — IoT Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f5f5f7;
+            --card: #ffffff;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --text-tertiary: #aeaeb2;
+            --accent-blue: #007aff;
+            --accent-green: #34c759;
+            --accent-orange: #ff9500;
+            --accent-red: #ff3b30;
+            --accent-purple: #af52de;
+            --accent-teal: #5ac8fa;
+            --accent-indigo: #5856d6;
+            --accent-yellow: #ffcc00;
+            --border: rgba(0,0,0,0.06);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 14px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+            --shadow-xl: 0 20px 60px rgba(0,0,0,0.1), 0 8px 20px rgba(0,0,0,0.06);
+            --radius: 16px;
+            --radius-sm: 12px;
+            --radius-xs: 8px;
+            --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --spring: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Animated Background Blobs */
+        .bg-blobs {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.35;
+            animation: blobFloat 20s ease-in-out infinite;
+        }
+
+        .blob-1 {
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, #007aff33, #5ac8fa33);
+            top: -10%;
+            right: -5%;
+            animation-delay: 0s;
+        }
+
+        .blob-2 {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, #34c75933, #ffcc0033);
+            bottom: -10%;
+            left: -5%;
+            animation-delay: -7s;
+        }
+
+        .blob-3 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, #af52de33, #ff950033);
+            top: 40%;
+            left: 30%;
+            animation-delay: -14s;
+        }
+
+        @keyframes blobFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(50px, -30px) scale(1.1); }
+            50% { transform: translate(-20px, 40px) scale(0.95); }
+            75% { transform: translate(30px, 20px) scale(1.05); }
+        }
+
+        /* Layout */
+        .app {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: rgba(255,255,255,0.72);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border-right: 1px solid var(--border);
+            padding: 28px 16px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+            transition: transform var(--transition);
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 4px 12px 24px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .brand-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .brand-text h1 {
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .brand-text span {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 0 12px;
+            margin-bottom: 6px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: var(--radius-xs);
+            cursor: pointer;
+            transition: all var(--transition);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            position: relative;
+            user-select: none;
+        }
+
+        .nav-item:hover {
+            background: rgba(0,0,0,0.04);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--accent-blue);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,122,255,0.3);
+        }
+
+        .nav-item.active svg { fill: white; }
+
+        .nav-item svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+            flex-shrink: 0;
+            transition: fill var(--transition);
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--accent-red);
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 10px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .nav-item.active .nav-badge {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .user-details h4 {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .user-details span {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            margin-left: 260px;
+            padding: 28px 32px;
+            max-width: calc(100vw - 260px);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .header-left h2 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header-left p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition);
+            position: relative;
+        }
+
+        .header-btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .header-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-secondary);
+        }
+
+        .notif-dot {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-red);
+            border-radius: 50%;
+            border: 2px solid var(--card);
+        }
+
+        .menu-toggle {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--card);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .menu-toggle svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-primary);
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+            border-radius: var(--radius-sm);
+            margin-bottom: 24px;
+            border: 1px solid rgba(52,199,89,0.15);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        .status-bar span {
+            font-size: 13px;
+            font-weight: 500;
+            color: #2d6a2e;
+        }
+
+        .status-bar .status-time {
+            margin-left: auto;
+            font-size: 12px;
+            color: #4a8c4b;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--border);
+            transition: all var(--transition);
+            cursor: default;
+            animation: cardAppear 0.6s ease-out both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: 3px 3px 0 0;
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .stat-card:hover::before { opacity: 1; }
+
+        .stat-card:nth-child(1)::before { background: var(--accent-red); }
+        .stat-card:nth-child(2)::before { background: var(--accent-green); }
+        .stat-card:nth-child(3)::before { background: var(--accent-blue); }
+        .stat-card:nth-child(4)::before { background: var(--accent-orange); }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes cardAppear {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.05s; }
+        .stat-card:nth-child(2) { animation-delay: 0.1s; }
+        .stat-card:nth-child(3) { animation-delay: 0.15s; }
+        .stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-xs);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        .stat-icon.red { background: linear-gradient(135deg, #ff3b30, #ff6259); }
+        .stat-icon.green { background: linear-gradient(135deg, #34c759, #5dd97c); }
+        .stat-icon.blue { background: linear-gradient(135deg, #007aff, #409cff); }
+        .stat-icon.orange { background: linear-gradient(135deg, #ff9500, #ffb340); }
+
+        .stat-trend {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+
+        .stat-trend.up {
+            color: var(--accent-red);
+            background: rgba(255,59,48,0.1);
+        }
+
+        .stat-trend.down {
+            color: var(--accent-green);
+            background: rgba(52,199,89,0.1);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            animation: cardAppear 0.6s ease-out both;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px 14px;
+        }
+
+        .card-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+        }
+
+        .card-header-action {
+            font-size: 13px;
+            color: var(--accent-blue);
+            cursor: pointer;
+            font-weight: 600;
+            transition: opacity var(--transition);
+        }
+
+        .card-header-action:hover { opacity: 0.7; }
+
+        .card-body {
+            padding: 0 20px 20px;
+        }
+
+        /* Pothole Map */
+        .map-container {
+            width: 100%;
+            height: 280px;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(145deg, #e8ecf4, #f0f4fa);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .map-road {
+            position: absolute;
+            background: rgba(0,0,0,0.08);
+            border-radius: 4px;
+        }
+
+        .map-road.h1 { top: 35%; left: 5%; right: 10%; height: 24px; }
+        .map-road.h2 { top: 65%; left: 15%; right: 5%; height: 20px; }
+        .map-road.v1 { top: 10%; left: 30%; width: 20px; height: 80%; }
+        .map-road.v2 { top: 5%; left: 65%; width: 22px; height: 75%; }
+
+        .map-pin {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--spring);
+            z-index: 2;
+        }
+
+        .map-pin::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 4px;
+            background: rgba(0,0,0,0.15);
+            border-radius: 50%;
+            filter: blur(2px);
+        }
+
+        .map-pin:hover {
+            transform: rotate(-45deg) scale(1.2) translateY(-3px);
+        }
+
+        .map-pin.critical {
+            background: var(--accent-red);
+            box-shadow: 0 3px 12px rgba(255,59,48,0.4);
+            animation: pinPulse 2s ease-in-out infinite;
+        }
+
+        .map-pin.warning {
+            background: var(--accent-orange);
+            box-shadow: 0 3px 12px rgba(255,149,0,0.4);
+        }
+
+        .map-pin.minor {
+            background: var(--accent-yellow);
+            box-shadow: 0 3px 12px rgba(255,204,0,0.4);
+        }
+
+        .map-pin.resolved {
+            background: var(--accent-green);
+            box-shadow: 0 3px 12px rgba(52,199,89,0.4);
+        }
+
+        @keyframes pinPulse {
+            0%, 100% { box-shadow: 0 3px 12px rgba(255,59,48,0.4); }
+            50% { box-shadow: 0 3px 24px rgba(255,59,48,0.6); }
+        }
+
+        .map-pin-inner {
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            transform: rotate(45deg);
+        }
+
+        .map-legend {
+            display: flex;
+            gap: 14px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        /* Pothole List */
+        .pothole-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pothole-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: var(--radius-xs);
+            background: var(--bg);
+            transition: all var(--transition);
+            cursor: pointer;
+        }
+
+        .pothole-item:hover {
+            background: rgba(0,0,0,0.04);
+            transform: translateX(4px);
+        }
+
+        .pothole-severity {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .pothole-severity.critical { background: var(--accent-red); }
+        .pothole-severity.warning { background: var(--accent-orange); }
+        .pothole-severity.minor { background: var(--accent-yellow); }
+
+        .pothole-info { flex: 1; }
+
+        .pothole-info h4 {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .pothole-info span {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .pothole-status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .pothole-status.pending {
+            color: var(--accent-orange);
+            background: rgba(255,149,0,0.1);
+        }
+
+        .pothole-status.progress {
+            color: var(--accent-blue);
+            background: rgba(0,122,255,0.1);
+        }
+
+        .pothole-status.resolved {
+            color: var(--accent-green);
+            background: rgba(52,199,89,0.1);
+        }
+
+        /* IoT Devices / Controls */
+        .devices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .device-card {
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            background: var(--bg);
+            transition: all var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .device-card:hover {
+            background: rgba(0,0,0,0.04);
+            transform: translateY(-1px);
+        }
+
+        .device-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .device-icon-wrap {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-xs);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+        }
+
+        .device-icon-wrap svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .device-icon-wrap.light { background: linear-gradient(135deg, #ffcc00, #ff9500); }
+        .device-icon-wrap.water { background: linear-gradient(135deg, #5ac8fa, #007aff); }
+        .device-icon-wrap.waste { background: linear-gradient(135deg, #34c759, #30b050); }
+        .device-icon-wrap.power { background: linear-gradient(135deg, #af52de, #5856d6); }
+
+        .device-card.off .device-icon-wrap {
+            background: #d1d1d6 !important;
+            opacity: 0.6;
+        }
+
+        /* Toggle Switch */
+        .toggle {
+            width: 48px;
+            height: 28px;
+            border-radius: 14px;
+            background: #d1d1d6;
+            cursor: pointer;
+            transition: background var(--transition);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .toggle.on { background: var(--accent-green); }
+
+        .toggle-knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            transition: transform var(--spring);
+        }
+
+        .toggle.on .toggle-knob {
+            transform: translateX(20px);
+        }
+
+        .device-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .device-status {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .device-value {
+            margin-top: 10px;
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .device-value strong {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -0.5px;
+        }
+
+        .device-value span {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        /* Progress Bar */
+        .progress-wrap {
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1s ease-out;
+        }
+
+        .progress-fill.blue { background: linear-gradient(90deg, #007aff, #5ac8fa); }
+        .progress-fill.green { background: linear-gradient(90deg, #34c759, #5dd97c); }
+        .progress-fill.orange { background: linear-gradient(90deg, #ff9500, #ffb340); }
+        .progress-fill.red { background: linear-gradient(90deg, #ff3b30, #ff6259); }
+
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        /* Full Width Cards */
+        .full-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        /* Chart Placeholder */
+        .chart-area {
+            width: 100%;
+            height: 200px;
+            position: relative;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .chart-line {
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .chart-area-fill {
+            opacity: 0.1;
+        }
+
+        .chart-dot {
+            fill: white;
+            stroke-width: 2.5;
+            cursor: pointer;
+            transition: r var(--transition);
+        }
+
+        .chart-dot:hover {
+            r: 6;
+        }
+
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 4px;
+            margin-top: 8px;
+        }
+
+        .chart-labels span {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+
+        .chart-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .chart-legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+        }
+
+        /* Alerts */
+        .alerts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px;
+            border-radius: var(--radius-xs);
+            transition: all var(--transition);
+            cursor: pointer;
+        }
+
+        .alert-item:hover {
+            background: var(--bg);
+        }
+
+        .alert-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+
+        .alert-dot.red { background: var(--accent-red); }
+        .alert-dot.orange { background: var(--accent-orange); }
+        .alert-dot.blue { background: var(--accent-blue); }
+        .alert-dot.green { background: var(--accent-green); }
+
+        .alert-content h4 {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .alert-content p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .alert-time {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-left: auto;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* Bottom Controls */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        /* Circular Gauge */
+        .gauge-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 8px;
+        }
+
+        .gauge-svg {
+            width: 140px;
+            height: 140px;
+            transform: rotate(-90deg);
+        }
+
+        .gauge-bg {
+            fill: none;
+            stroke: rgba(0,0,0,0.06);
+            stroke-width: 10;
+        }
+
+        .gauge-fill {
+            fill: none;
+            stroke-width: 10;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1.5s ease-out;
+        }
+
+        .gauge-text {
+            text-anchor: middle;
+            font-family: 'Inter', sans-serif;
+            transform: rotate(90deg);
+            transform-origin: center;
+        }
+
+        .gauge-value {
+            font-size: 24px;
+            font-weight: 800;
+            fill: var(--text-primary);
+        }
+
+        .gauge-unit {
+            font-size: 11px;
+            fill: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .gauge-label {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .gauge-sublabel {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: var(--radius-xs);
+            border: none;
+            background: var(--bg);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all var(--transition);
+            text-align: left;
+        }
+
+        .action-btn:hover {
+            background: rgba(0,0,0,0.06);
+            transform: translateX(4px);
+        }
+
+        .action-btn:active {
+            transform: scale(0.98) translateX(4px);
+        }
+
+        .action-btn svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .action-btn .action-arrow {
+            margin-left: auto;
+            width: 16px;
+            height: 16px;
+            fill: var(--text-tertiary);
+        }
+
+        /* Modal / Report Overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 32px;
+            width: 90%;
+            max-width: 480px;
+            box-shadow: var(--shadow-xl);
+            transform: scale(0.9) translateY(20px);
+            transition: transform var(--spring);
+        }
+
+        .modal-overlay.show .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .modal p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: var(--radius-xs);
+            border: 1px solid var(--border);
+            background: var(--bg);
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: all var(--transition);
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(0,122,255,0.15);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        select.form-input {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%2386868b' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-xs);
+            border: none;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            flex: 1;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0071e3;
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0,0,0,0.06);
+        }
+
+        /* Notification Toast */
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            padding: 14px 20px;
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 2000;
+            transform: translateX(120%);
+            transition: transform var(--spring);
+            max-width: 360px;
+            border: 1px solid var(--border);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .toast-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+
+        .toast-icon.success { background: var(--accent-green); }
+        .toast-icon.error { background: var(--accent-red); }
+        .toast-icon.info { background: var(--accent-blue); }
+
+        .toast-text h4 {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .toast-text p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .controls-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+                box-shadow: var(--shadow-xl);
+            }
+
+            .main {
+                margin-left: 0;
+                max-width: 100vw;
+                padding: 20px 16px;
+            }
+
+            .menu-toggle { display: flex; }
+
+            .content-grid,
+            .full-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-left h2 { font-size: 22px; }
+        }
+
+        @media (max-width: 600px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .devices-grid { grid-template-columns: 1fr; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        /* Sidebar overlay on mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 99;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        /* Page transitions */
+        .page {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Sparkline mini charts in stat cards */
+        .sparkline {
+            margin-top: 10px;
+            height: 30px;
+        }
+
+        .sparkline svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .sparkline-line {
+            fill: none;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.15);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,0,0,0.25);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Blobs -->
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="app">
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18L19.35 7.5 12 10.82 4.65 7.5 12 4.18zM4 8.9l7 3.5v7.7l-7-3.5V8.9zm9 11.2V12.4l7-3.5v7.7l-7 3.5z"/></svg>
+                </div>
+                <div class="brand-text">
+                    <h1>SmartVillage</h1>
+                    <span>IoT Management</span>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-label">Main</div>
+                <div class="nav-item active" data-page="dashboard" onclick="switchPage('dashboard', this)">
+                    <svg viewBox="0 0 24 24"><path d="M4 13h6c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1zm0 8h6c.55 0 1-.45 1-1v-4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1zm10 0h6c.55 0 1-.45 1-1v-8c0-.55-.45-1-1-1h-6c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1zm-1-18v4c0 .55.45 1 1 1h6c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1h-6c-.55 0-1 .45-1 1z"/></svg>
+                    Dashboard
+                </div>
+                <div class="nav-item" data-page="potholes" onclick="switchPage('potholes', this)">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    Potholes
+                    <span class="nav-badge">7</span>
+                </div>
+                <div class="nav-item" data-page="devices" onclick="switchPage('devices', this)">
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                    Devices
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-label">Infrastructure</div>
+                <div class="nav-item" data-page="lighting" onclick="switchPage('lighting', this)">
+                    <svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
+                    Street Lights
+                </div>
+                <div class="nav-item" data-page="water" onclick="switchPage('water', this)">
+                    <svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
+                    Water Supply
+                </div>
+                <div class="nav-item" data-page="waste" onclick="switchPage('waste', this)">
+                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                    Waste Mgmt
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-label">System</div>
+                <div class="nav-item" onclick="showToast('info', 'Settings', 'Settings panel coming soon')">
+                    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                    Settings
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">VP</div>
+                    <div class="user-details">
+                        <h4>Village Panchayat</h4>
+                        <span>Admin Access</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Header -->
+            <div class="header">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <div class="menu-toggle" onclick="toggleSidebar()">
+                        <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </div>
+                    <div class="header-left">
+                        <h2 id="pageTitle">Dashboard</h2>
+                        <p id="pageSubtitle">Overview of village infrastructure</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="header-btn" onclick="openReportModal()">
+                        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="#86868b"/></svg>
+                    </div>
+                    <div class="header-btn" onclick="showToast('info', 'Notifications', '3 new alerts pending review')">
+                        <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                        <div class="notif-dot"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Page -->
+            <div class="page active" id="page-dashboard">
+                <!-- Status Bar -->
+                <div class="status-bar">
+                    <div class="status-dot"></div>
+                    <span>All systems operational — Raspberry Pi connected</span>
+                    <span class="status-time" id="liveTime"></span>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon red">
+                                <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                            </div>
+                            <span class="stat-trend up">↑ 12%</span>
+                        </div>
+                        <div class="stat-value" id="potholeCount">7</div>
+                        <div class="stat-label">Active Potholes</div>
+                        <div class="sparkline">
+                            <svg viewBox="0 0 120 30" preserveAspectRatio="none">
+                                <polyline class="sparkline-line" stroke="#ff3b30" points="0,25 15,20 30,22 45,15 60,18 75,10 90,12 105,8 120,5" opacity="0.6"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon green">
+                                <svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
+                            </div>
+                            <span class="stat-trend down">All on</span>
+                        </div>
+                        <div class="stat-value" id="lightsOn">24</div>
+                        <div class="stat-label">Street Lights Active</div>
+                        <div class="sparkline">
+                            <svg viewBox="0 0 120 30" preserveAspectRatio="none">
+                                <polyline class="sparkline-line" stroke="#34c759" points="0,20 15,18 30,15 45,20 60,12 75,14 90,8 105,10 120,5" opacity="0.6"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon blue">
+                                <svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
+                            </div>
+                            <span class="stat-trend down">Optimal</span>
+                        </div>
+                        <div class="stat-value" id="waterLevel">78%</div>
+                        <div class="stat-label">Water Tank Level</div>
+                        <div class="sparkline">
+                            <svg viewBox="0 0 120 30" preserveAspectRatio="none">
+                                <polyline class="sparkline-line" stroke="#007aff" points="0,5 15,8 30,12 45,10 60,15 75,12 90,18 105,15 120,20" opacity="0.6"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon orange">
+                                <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            </div>
+                            <span class="stat-trend up">2 Full</span>
+                        </div>
+                        <div class="stat-value" id="wasteBins">5/8</div>
+                        <div class="stat-label">Waste Bins Active</div>
+                        <div class="sparkline">
+                            <svg viewBox="0 0 120 30" preserveAspectRatio="none">
+                                <polyline class="sparkline-line" stroke="#ff9500" points="0,15 15,18 30,12 45,20 60,22 75,18 90,25 105,20 120,22" opacity="0.6"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pothole Map + Recent Reports -->
+                <div class="content-grid">
+                    <div class="card" style="animation-delay:0.25s">
+                        <div class="card-header">
+                            <h3>Pothole Map</h3>
+                            <span class="card-header-action" onclick="showToast('info', 'Map', 'Refreshing map data...')">Refresh</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="map-container">
+                                <div class="map-grid"></div>
+                                <div class="map-road h1"></div>
+                                <div class="map-road h2"></div>
+                                <div class="map-road v1"></div>
+                                <div class="map-road v2"></div>
+                                <div class="map-pin critical" style="top:31%;left:18%" title="NH-47 Km 3.2">
+                                    <div class="map-pin-inner"></div>
+                                </div>
+                                <div class="map-pin critical" style="top:32%;left:52%" title="Main Bazaar Road">
+                                    <div class="map-pin-inner"></div>
+                                </div>
+                                <div class="map-pin warning" style="top:28%;left:72%" title="School Road">
+                                    <div class="map-pin-inner"></div>
+                                </div>
+                                <div class="map-pin warning" style="top:62%;left:35%" title="Temple Street">
+                                    <div class="map-pin-inner"></div>
+                                </div>
+                                <div class="map-pin minor" style="top:58%;left:62%" title="Market Lane">
+                                    <div class="map-pin-inner"></div>
+                                </div>
+                                <div class="map-pin resolved" style="top:60%;left:80%" title="Bus Stand Road">
+                                    <div class="map-pin-inner"></div>
+                                </div>
+                                <div class="map-pin minor" style="top:40%;left:28%" title="Pond Road">
+                                    <div class="map-pin-inner"></div>
+                                </div>
+                            </div>
+                            <div class="map-legend">
+                                <div class="legend-item"><div class="legend-dot" style="background:var(--accent-red)"></div> Critical</div>
+                                <div class="legend-item"><div class="legend-dot" style="background:var(--accent-orange)"></div> Warning</div>
+                                <div class="legend-item"><div class="legend-dot" style="background:var(--accent-yellow)"></div> Minor</div>
+                                <div class="legend-item"><div class="legend-dot" style="background:var(--accent-green)"></div> Resolved</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="animation-delay:0.3s">
+                        <div class="card-header">
+                            <h3>Recent Reports</h3>
+                            <span class="card-header-action" onclick="switchPage('potholes', document.querySelector('[data-page=potholes]'))">View All</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="pothole-list">
+                                <div class="pothole-item">
+                                    <div class="pothole-severity critical"></div>
+                                    <div class="pothole-info">
+                                        <h4>NH-47, Km 3.2</h4>
+                                        <span>Detected 2h ago · Sensor #04</span>
+                                    </div>
+                                    <span class="pothole-status pending">Pending</span>
+                                </div>
+                                <div class="pothole-item">
+                                    <div class="pothole-severity critical"></div>
+                                    <div class="pothole-info">
+                                        <h4>Main Bazaar Road</h4>
+                                        <span>Reported 4h ago · Manual</span>
+                                    </div>
+                                    <span class="pothole-status progress">In Progress</span>
+                                </div>
+                                <div class="pothole-item">
+                                    <div class="pothole-severity warning"></div>
+                                    <div class="pothole-info">
+                                        <h4>School Road Junction</h4>
+                                        <span>Detected 6h ago · Sensor #02</span>
+                                    </div>
+                                    <span class="pothole-status pending">Pending</span>
+                                </div>
+                                <div class="pothole-item">
+                                    <div class="pothole-severity warning"></div>
+                                    <div class="pothole-info">
+                                        <h4>Temple Street</h4>
+                                        <span>Reported 1d ago · Manual</span>
+                                    </div>
+                                    <span class="pothole-status progress">In Progress</span>
+                                </div>
+                                <div class="pothole-item">
+                                    <div class="pothole-severity minor"></div>
+                                    <div class="pothole-info">
+                                        <h4>Market Lane</h4>
+                                        <span>Detected 1d ago · Sensor #06</span>
+                                    </div>
+                                    <span class="pothole-status pending">Pending</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart + Alerts -->
+                <div class="full-grid">
+                    <div class="card" style="animation-delay:0.35s">
+                        <div class="card-header">
+                            <h3>Weekly Trends</h3>
+                            <span class="card-header-action">This Week</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-legend">
+                                <div class="chart-legend-item">
+                                    <div class="chart-legend-dot" style="background:var(--accent-red)"></div>
+                                    Potholes Detected
+                                </div>
+                                <div class="chart-legend-item">
+                                    <div class="chart-legend-dot" style="background:var(--accent-green)"></div>
+                                    Potholes Resolved
+                                </div>
+                                <div class="chart-legend-item">
+                                    <div class="chart-legend-dot" style="background:var(--accent-blue)"></div>
+                                    Water Usage (kL)
+                                </div>
+                            </div>
+                            <div class="chart-area">
+                                <svg class="chart-svg" viewBox="0 0 600 200" preserveAspectRatio="none">
+                                    <!-- Grid lines -->
+                                    <line x1="0" y1="50" x2="600" y2="50" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>
+                                    <line x1="0" y1="100" x2="600" y2="100" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>
+                                    <line x1="0" y1="150" x2="600" y2="150" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>
+                                    
+                                    <!-- Red line - Detected -->
+                                    <defs>
+                                        <linearGradient id="redGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                            <stop offset="0%" stop-color="#ff3b30" stop-opacity="0.2"/>
+                                            <stop offset="100%" stop-color="#ff3b30" stop-opacity="0"/>
+                                        </linearGradient>
+                                        <linearGradient id="greenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                            <stop offset="0%" stop-color="#34c759" stop-opacity="0.2"/>
+                                            <stop offset="100%" stop-color="#34c759" stop-opacity="0"/>
+                                        </linearGradient>
+                                        <linearGradient id="blueGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                            <stop offset="0%" stop-color="#007aff" stop-opacity="0.15"/>
+                                            <stop offset="100%" stop-color="#007aff" stop-opacity="0"/>
+                                        </linearGradient>
+                                    </defs>
+
+                                    <path class="chart-area-fill" d="M0,120 C50,100 100,80 150,90 S250,70 300,60 S400,80 450,50 S550,40 600,30 L600,200 L0,200 Z" fill="url(#redGrad)"/>
+                                    <path class="chart-line" d="M0,120 C50,100 100,80 150,90 S250,70 300,60 S400,80 450,50 S550,40 600,30" stroke="#ff3b30" style="stroke-dasharray:900;stroke-dashoffset:900;animation:drawLine 2s ease-out forwards"/>
+
+                                    <path class="chart-area-fill" d="M0,160 C50,140 100,150 150,130 S250,140 300,110 S400,120 450,90 S550,80 600,60 L600,200 L0,200 Z" fill="url(#greenGrad)"/>
+                                    <path class="chart-line" d="M0,160 C50,140 100,150 150,130 S250,140 300,110 S400,120 450,90 S550,80 600,60" stroke="#34c759" style="stroke-dasharray:900;stroke-dashoffset:900;animation:drawLine 2s ease-out 0.3s forwards"/>
+
+                                    <path class="chart-area-fill" d="M0,100 C50,110 100,90 150,105 S250,85 300,95 S400,75 450,85 S550,70 600,80 L600,200 L0,200 Z" fill="url(#blueGrad)"/>
+                                    <path class="chart-line" d="M0,100 C50,110 100,90 150,105 S250,85 300,95 S400,75 450,85 S550,70 600,80" stroke="#007aff" style="stroke-dasharray:900;stroke-dashoffset:900;animation:drawLine 2s ease-out 0.6s forwards"/>
+
+                                    <!-- Dots -->
+                                    <circle class="chart-dot" cx="0" cy="120" r="3.5" stroke="#ff3b30"/>
+                                    <circle class="chart-dot" cx="150" cy="90" r="3.5" stroke="#ff3b30"/>
+                                    <circle class="chart-dot" cx="300" cy="60" r="3.5" stroke="#ff3b30"/>
+                                    <circle class="chart-dot" cx="450" cy="50" r="3.5" stroke="#ff3b30"/>
+                                    <circle class="chart-dot" cx="600" cy="30" r="3.5" stroke="#ff3b30"/>
+                                </svg>
+                            </div>
+                            <div class="chart-labels">
+                                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="animation-delay:0.4s">
+                        <div class="card-header">
+                            <h3>Live Alerts</h3>
+                            <span class="card-header-action">Clear All</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="alerts-list">
+                                <div class="alert-item">
+                                    <div class="alert-dot red"></div>
+                                    <div class="alert-content">
+                                        <h4>Critical Pothole Detected</h4>
+                                        <p>NH-47 Km 3.2 — depth exceeds 15cm</p>
+                                    </div>
+                                    <span class="alert-time">2m ago</span>
+                                </div>
+                                <div class="alert-item">
+                                    <div class="alert-dot orange"></div>
+                                    <div class="alert-content">
+                                        <h4>Waste Bin #3 Full</h4>
+                                        <p>Market area bin at 95% capacity</p>
+                                    </div>
+                                    <span class="alert-time">18m ago</span>
+                                </div>
+                                <div class="alert-item">
+                                    <div class="alert-dot blue"></div>
+                                    <div class="alert-content">
+                                        <h4>Water Pump Activated</h4>
+                                        <p>Auto-fill triggered — tank at 30%</p>
+                                    </div>
+                                    <span class="alert-time">45m ago</span>
+                                </div>
+                                <div class="alert-item">
+                                    <div class="alert-dot orange"></div>
+                                    <div class="alert-content">
+                                        <h4>Street Light #7 Fault</h4>
+                                        <p>Temple Road — intermittent flickering</p>
+                                    </div>
+                                    <span class="alert-time">1h ago</span>
+                                </div>
+                                <div class="alert-item">
+                                    <div class="alert-dot green"></div>
+                                    <div class="alert-content">
+                                        <h4>Pothole Fixed</h4>
+                                        <p>Bus Stand Road — repair completed</p>
+                                    </div>
+                                    <span class="alert-time">2h ago</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Controls -->
+                <div class="controls-grid">
+                    <div class="card" style="animation-delay:0.45s">
+                        <div class="card-header">
+                            <h3>IoT Devices</h3>
+                            <span class="card-header-action" onclick="switchPage('devices', document.querySelector('[data-page=devices]'))">Manage</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="devices-grid">
+                                <div class="device-card" id="dev-light">
+                                    <div class="device-card-header">
+                                        <div class="device-icon-wrap light">
+                                            <svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
+                                        </div>
+                                        <div class="toggle on" onclick="toggleDevice(this, 'dev-light')">
+                                            <div class="toggle-knob"></div>
+                                        </div>
+                                    </div>
+                                    <div class="device-name">Street Lights</div>
+                                    <div class="device-status">24/24 Active</div>
+                                </div>
+
+                                <div class="device-card" id="dev-water">
+                                    <div class="device-card-header">
+                                        <div class="device-icon-wrap water">
+                                            <svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
+                                        </div>
+                                        <div class="toggle on" onclick="toggleDevice(this, 'dev-water')">
+                                            <div class="toggle-knob"></div>
+                                        </div>
+                                    </div>
+                                    <div class="device-name">Water Pump</div>
+                                    <div class="device-status">Auto Mode</div>
+                                </div>
+
+                                <div class="device-card" id="dev-waste">
+                                    <div class="device-card-header">
+                                        <div class="device-icon-wrap waste">
+                                            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                        </div>
+                                        <div class="toggle on" onclick="toggleDevice(this, 'dev-waste')">
+                                            <div class="toggle-knob"></div>
+                                        </div>
+                                    </div>
+                                    <div class="device-name">Waste Sensors</div>
+                                    <div class="device-status">5/8 Monitored</div>
+                                </div>
+
+                                <div class="device-card off" id="dev-power">
+                                    <div class="device-card-header">
+                                        <div class="device-icon-wrap power">
+                                            <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+                                        </div>
+                                        <div class="toggle" onclick="toggleDevice(this, 'dev-power')">
+                                            <div class="toggle-knob"></div>
+                                        </div>
+                                    </div>
+                                    <div class="device-name">Solar Panel</div>
+                                    <div class="device-status">Standby</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="animation-delay:0.5s">
+                        <div class="card-header">
+                            <h3>Water Tank</h3>
+                            <span class="card-header-action">Details</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="gauge-container">
+                                <svg class="gauge-svg" viewBox="0 0 120 120">
+                                    <circle class="gauge-bg" cx="60" cy="60" r="50"/>
+                                    <circle class="gauge-fill" cx="60" cy="60" r="50" 
+                                        stroke="url(#waterGauge)" 
+                                        stroke-dasharray="314" 
+                                        stroke-dashoffset="69"
+                                        id="waterGaugeFill"/>
+                                    <defs>
+                                        <linearGradient id="waterGauge" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="#007aff"/>
+                                            <stop offset="100%" stop-color="#5ac8fa"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <text class="gauge-text" x="60" y="56">
+                                        <tspan class="gauge-value" id="gaugeVal">78</tspan>
+                                    </text>
+                                    <text class="gauge-text" x="60" y="72">
+                                        <tspan class="gauge-unit">percent</tspan>
+                                    </text>
+                                </svg>
+                                <div class="gauge-label">Water Level</div>
+                                <div class="gauge-sublabel">15,600 / 20,000 Liters</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="animation-delay:0.55s">
+                        <div class="card-header">
+                            <h3>Quick Actions</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="quick-actions">
+                                <button class="action-btn" onclick="openReportModal()">
+                                    <svg viewBox="0 0 24 24" fill="#ff3b30"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                                    Report Pothole
+                                    <svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                                </button>
+                                <button class="action-btn" onclick="showToast('success', 'Dispatch', 'Maintenance crew notified successfully')">
+                                    <svg viewBox="0 0 24 24" fill="#007aff"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                                    Dispatch Crew
+                                    <svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                                </button>
+                                <button class="action-btn" onclick="showToast('info', 'Report', 'Generating weekly report...')">
+                                    <svg viewBox="0 0 24 24" fill="#34c759"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                                    Generate Report
+                                    <svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                                </button>
+                                <button class="action-btn" onclick="showToast('info', 'Sensors', 'Running diagnostics on all sensors...')">
+                                    <svg viewBox="0 0 24 24" fill="#af52de"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                                    Sensor Diagnostics
+                                    <svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Potholes Page -->
+            <div class="page" id="page-potholes">
+                <div class="status-bar" style="background:linear-gradient(135deg,#fff3e0,#fce4ec);border-color:rgba(255,59,48,0.15)">
+                    <div class="status-dot" style="background:var(--accent-red)"></div>
+                    <span style="color:#c62828">7 active potholes require attention</span>
+                </div>
+
+                <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon red"><svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div>
+                        </div>
+                        <div class="stat-value">2</div>
+                        <div class="stat-label">Critical</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon orange"><svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div>
+                        </div>
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Moderate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon green"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></div>
+                        </div>
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Resolved This Month</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>All Pothole Reports</h3>
+                        <span class="card-header-action" onclick="openReportModal()">+ New Report</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="pothole-list">
+                            <div class="pothole-item"><div class="pothole-severity critical"></div><div class="pothole-info"><h4>NH-47, Km 3.2 — Large cavity</h4><span>Sensor #04 · Depth: 18cm · Width: 45cm · 2h ago</span></div><span class="pothole-status pending">Pending</span></div>
+                            <div class="pothole-item"><div class="pothole-severity critical"></div><div class="pothole-info"><h4>Main Bazaar Road — Road surface collapse</h4><span>Manual Report · Depth: 22cm · Width: 60cm · 4h ago</span></div><span class="pothole-status progress">In Progress</span></div>
+                            <div class="pothole-item"><div class="pothole-severity warning"></div><div class="pothole-info"><h4>School Road Junction — Moderate depression</h4><span>Sensor #02 · Depth: 10cm · Width: 30cm · 6h ago</span></div><span class="pothole-status pending">Pending</span></div>
+                            <div class="pothole-item"><div class="pothole-severity warning"></div><div class="pothole-info"><h4>Temple Street — Surface crack spreading</h4><span>Manual Report · Depth: 8cm · Width: 25cm · 1d ago</span></div><span class="pothole-status progress">In Progress</span></div>
+                            <div class="pothole-item"><div class="pothole-severity minor"></div><div class="pothole-info"><h4>Market Lane — Small dip forming</h4><span>Sensor #06 · Depth: 5cm · Width: 15cm · 1d ago</span></div><span class="pothole-status pending">Pending</span></div>
+                            <div class="pothole-item"><div class="pothole-severity warning"></div><div class="pothole-info"><h4>Pond Road — Edge erosion</h4><span>Sensor #01 · Depth: 9cm · Width: 35cm · 2d ago</span></div><span class="pothole-status pending">Pending</span></div>
+                            <div class="pothole-item"><div class="pothole-severity minor"></div><div class="pothole-info"><h4>Community Hall Road — Minor crack</h4><span>Manual Report · Depth: 3cm · Width: 10cm · 3d ago</span></div><span class="pothole-status pending">Pending</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Devices Page -->
+            <div class="page" id="page-devices">
+                <div class="status-bar">
+                    <div class="status-dot"></div>
+                    <span>Raspberry Pi 4B connected · 6 sensors online</span>
+                </div>
+
+                <div class="card" style="margin-bottom:16px">
+                    <div class="card-header">
+                        <h3>Sensor Network</h3>
+                        <span class="card-header-action" onclick="showToast('info','Scan','Scanning for new devices...')">Scan</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="devices-grid">
+                            <div class="device-card">
+                                <div class="device-card-header">
+                                    <div class="device-icon-wrap" style="background:linear-gradient(135deg,#ff3b30,#ff6259)">
+                                        <svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
+                                    </div>
+                                    <div class="toggle on" onclick="toggleDevice(this)"><div class="toggle-knob"></div></div>
+                                </div>
+                                <div class="device-name">Vibration Sensor #01</div>
+                                <div class="device-status">Pond Road · Online</div>
+                                <div class="device-value"><strong>Normal</strong></div>
+                            </div>
+                            <div class="device-card">
+                                <div class="device-card-header">
+                                    <div class="device-icon-wrap" style="background:linear-gradient(135deg,#ff3b30,#ff6259)">
+                                        <svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
+                                    </div>
+                                    <div class="toggle on" onclick="toggleDevice(this)"><div class="toggle-knob"></div></div>
+                                </div>
+                                <div class="device-name">Vibration Sensor #02</div>
+                                <div class="device-status">School Road · Online</div>
+                                <div class="device-value"><strong>Alert</strong><span style="color:var(--accent-orange)">⚠</span></div>
+                            </div>
+                            <div class="device-card">
+                                <div class="device-card-header">
+                                    <div class="device-icon-wrap water">
+                                        <svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
+                                    </div>
+                                    <div class="toggle on" onclick="toggleDevice(this)"><div class="toggle-knob"></div></div>
+                                </div>
+                                <div class="device-name">Ultrasonic Level</div>
+                                <div class="device-status">Water Tank · Online</div>
+                                <div class="device-value"><strong>78</strong><span>%</span></div>
+                            </div>
+                            <div class="device-card">
+                                <div class="device-card-header">
+                                    <div class="device-icon-wrap waste">
+                                        <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                    </div>
+                                    <div class="toggle on" onclick="toggleDevice(this)"><div class="toggle-knob"></div></div>
+                                </div>
+                                <div class="device-name">IR Fill Sensor</div>
+                                <div class="device-status">Waste Bin #3 · Online</div>
+                                <div class="device-value"><strong>95</strong><span>% Full</span></div>
+                            </div>
+                            <div class="device-card">
+                                <div class="device-card-header">
+                                    <div class="device-icon-wrap light">
+                                        <svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
+                                    </div>
+                                    <div class="toggle on" onclick="toggleDevice(this)"><div class="toggle-knob"></div></div>
+                                </div>
+                                <div class="device-name">LDR Sensor</div>
+                                <div class="device-status">Light Control · Online</div>
+                                <div class="device-value"><strong>Auto</strong></div>
+                            </div>
+                            <div class="device-card off">
+                                <div class="device-card-header">
+                                    <div class="device-icon-wrap power">
+                                        <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+                                    </div>
+                                    <div class="toggle" onclick="toggleDevice(this)"><div class="toggle-knob"></div></div>
+                                </div>
+                                <div class="device-name">Solar Monitor</div>
+                                <div class="device-status">Panel Array · Standby</div>
+                                <div class="device-value"><strong>Off</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h3>Raspberry Pi Status</h3></div>
+                    <div class="card-body">
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+                            <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
+                                <div style="font-size:24px;font-weight:800;color:var(--accent-green)">47°C</div>
+                                <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">CPU Temperature</div>
+                            </div>
+                            <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
+                                <div style="font-size:24px;font-weight:800;color:var(--accent-blue)">23%</div>
+                                <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">CPU Usage</div>
+                            </div>
+                            <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
+                                <div style="font-size:24px;font-weight:800;color:var(--accent-purple)">1.2 GB</div>
+                                <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Memory Free</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lighting Page -->
+            <div class="page" id="page-lighting">
+                <div class="status-bar">
+                    <div class="status-dot"></div>
+                    <span>24 street lights operational · Auto mode active</span>
+                </div>
+
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card-header"><h3>Zone Control</h3></div>
+                        <div class="card-body">
+                            <div class="pothole-list" id="lightZones">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3>Energy Consumption</h3></div>
+                        <div class="card-body">
+                            <div class="gauge-container">
+                                <svg class="gauge-svg" viewBox="0 0 120 120">
+                                    <circle class="gauge-bg" cx="60" cy="60" r="50"/>
+                                    <circle class="gauge-fill" cx="60" cy="60" r="50" stroke="#ffcc00" stroke-dasharray="314" stroke-dashoffset="126"/>
+                                    <text class="gauge-text" x="60" y="56"><tspan class="gauge-value">4.2</tspan></text>
+                                    <text class="gauge-text" x="60" y="72"><tspan class="gauge-unit">kWh today</tspan></text>
+                                </svg>
+                                <div class="gauge-label">Power Usage</div>
+                                <div class="gauge-sublabel">↓ 18% vs last week</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Water Page -->
+            <div class="page" id="page-water">
+                <div class="status-bar">
+                    <div class="status-dot"></div>
+                    <span>Water supply system normal · Pump auto-mode</span>
+                </div>
+
+                <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+                    <div class="stat-card">
+                        <div class="stat-header"><div class="stat-icon blue"><svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg></div></div>
+                        <div class="stat-value">78%</div>
+                        <div class="stat-label">Main Tank</div>
+                        <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill blue" style="width:78%"></div></div></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header"><div class="stat-icon green"><svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg></div></div>
+                        <div class="stat-value">92%</div>
+                        <div class="stat-label">Overhead Tank</div>
+                        <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill green" style="width:92%"></div></div></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header"><div class="stat-icon orange"><svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg></div></div>
+                        <div class="stat-value">45%</div>
+                        <div class="stat-label">Reserve Tank</div>
+                        <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill orange" style="width:45%"></div></div></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h3>Pump Control</h3></div>
+                    <div class="card-body">
+                        <div class="devices-grid">
+                            <div class="device-card">
+                                <div class="device-card-header">
+                                    <div class="device-icon-wrap water"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/></svg></div>
+                                    <div class="toggle on" onclick="toggleDevice(this)"><div class="toggle-knob"></div></div>
+                                </div>
+                                <div class="device-name">Main Pump</div>
+                                <div class="device-status">Auto Mode · Running</div>
+                                <div class="device-value"><strong>1.5</strong><span>HP</span></div>
+                            </div>
+                            <div class="device-card off">
+                                <div class="device-card-header">
+                                    <div class="device-icon-wrap water"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/></svg></div>
+                                    <div class="toggle" onclick="toggleDevice(this)"><div class="toggle-knob"></div></div>
+                                </div>
+                                <div class="device-name">Backup Pump</div>
+                                <div class="device-status">Standby</div>
+                                <div class="device-value"><strong>Off</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Waste Page -->
+            <div class="page" id="page-waste">
+                <div class="status-bar" style="background:linear-gradient(135deg,#fff3e0,#fef9e7);border-color:rgba(255,149,0,0.15)">
+                    <div class="status-dot" style="background:var(--accent-orange)"></div>
+                    <span style="color:#e65100">2 waste bins need collection</span>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h3>Waste Bin Status</h3></div>
+                    <div class="card-body">
+                        <div class="devices-grid">
+                            <div class="device-card">
+                                <div class="device-card-header">
+                                    <div class="device-icon-wrap" style="background:linear-gradient(135deg,#ff3b30,#ff6259)"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="white"/></svg></div>
+                                </div>
+                                <div class="device-name">Bin #1 — Market</div>
+                                <div class="device-value"><strong>95</strong><span>%</span></div>
+                                <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill red" style="width:95%"></div></div><div class="progress-labels"><span>Empty</span><span>Full</span></div></div>
+                            </div>
+                            <div class="device-card">
+                                <div class="device-card-header">
+                                    <div class="device-icon-wrap" style="background:linear-gradient(135deg,#ff9500,#ffb340)"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="white"/></svg></div>
+                                </div>
+                                <div class="device-name">Bin #2 — School</div>
+                                <div class="device-value"><strong>82</strong><span>%</span></div>
+                                <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill orange" style="width:82%"></div></div><div class="progress-labels"><span>Empty</span><span>Full</span></div></div>
+                            </div>
+                            <div class="device-card">
+                                <div class="device-card-header">
+                                    <div class="device-icon-wrap waste"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="white"/></svg></div>
+                                </div>
+                                <div class="device-name">Bin #3 — Temple</div>
+                                <div class="device-value"><strong>40</strong><span>%</span></div>
+                                <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill green" style="width:40%"></div></div><div class="progress-labels"><span>Empty</span><span>Full</span></div></div>
+                            </div>
+                            <div class="device-card">
+                                <div class="device-card-header">
+                                    <div class="device-icon-wrap waste"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="white"/></svg></div>
+                                </div>
+                                <div class="device-name">Bin #4 — Panchayat</div>
+                                <div class="device-value"><strong>25</strong><span>%</span></div>
+                                <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill green" style="width:25%"></div></div><div class="progress-labels"><span>Empty</span><span>Full</span></div></div>
+                            </div>
+                            <div class="device-card">
+                                <div class="device-card-header">
+                                    <div class="device-icon-wrap waste"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="white"/></svg></div>
+                                </div>
+                                <div class="device-name">Bin #5 — Bus Stop</div>
+                                <div class="device-value"><strong>58</strong><span>%</span></div>
+                                <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill blue" style="width:58%"></div></div><div class="progress-labels"><span>Empty</span><span>Full</span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Report Modal -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal">
+            <h3>Report a Pothole</h3>
+            <p>Submit details for quick action by the maintenance team.</p>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" class="form-input" placeholder="e.g., Main Bazaar Road, near shop #12">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Severity</label>
+                    <select class="form-input">
+                        <option>Minor</option>
+                        <option>Moderate</option>
+                        <option selected>Critical</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Estimated Size</label>
+                    <select class="form-input">
+                        <option>Small (&lt;15cm)</option>
+                        <option selected>Medium (15-30cm)</option>
+                        <option>Large (&gt;30cm)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea class="form-input" placeholder="Additional details about the pothole..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>GPS Coordinates (auto-detected)</label>
+                <input type="text" class="form-input" value="13.0827° N, 80.2707° E" readonly style="color:var(--text-secondary)">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeReportModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitReport()">Submit Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-icon success" id="toastIcon">
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        </div>
+        <div class="toast-text">
+            <h4 id="toastTitle">Success</h4>
+            <p id="toastMsg">Action completed</p>
+        </div>
+    </div>
+
+    <style>
+        @keyframes drawLine {
+            to { stroke-dashoffset: 0; }
+        }
+    </style>
+
+    <script>
+        // Live Time
+        function updateTime() {
+            const now = new Date();
+            const el = document.getElementById('liveTime');
+            if (el) el.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Sidebar Toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('show');
+        }
+
+        // Page Navigation
+        const pageTitles = {
+            dashboard: ['Dashboard', 'Overview of village infrastructure'],
+            potholes: ['Pothole Reports', 'Track and manage road damage'],
+            devices: ['IoT Devices', 'Monitor and control connected sensors'],
+            lighting: ['Street Lighting', 'Manage village street light network'],
+            water: ['Water Supply', 'Monitor water tanks and pumps'],
+            waste: ['Waste Management', 'Track waste bin fill levels']
+        };
+
+        function switchPage(page, navEl) {
+            // Update nav
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if (navEl) navEl.classList.add('active');
+
+            // Update pages
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById('page-' + page);
+            if (target) target.classList.add('active');
+
+            // Update header
+            if (pageTitles[page]) {
+                document.getElementById('pageTitle').textContent = pageTitles[page][0];
+                document.getElementById('pageSubtitle').textContent = pageTitles[page][1];
+            }
+
+            // Close sidebar on mobile
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('show');
+        }
+
+        // Toggle Device
+        function toggleDevice(toggleEl, deviceId) {
+            toggleEl.classList.toggle('on');
+            const isOn = toggleEl.classList.contains('on');
+            
+            if (deviceId) {
+                const card = document.getElementById(deviceId);
+                if (card) {
+                    if (isOn) {
+                        card.classList.remove('off');
+                    } else {
+                        card.classList.add('off');
+                    }
+                }
+            } else {
+                const card = toggleEl.closest('.device-card');
+                if (card) {
+                    if (isOn) card.classList.remove('off');
+                    else card.classList.add('off');
+                }
+            }
+
+            showToast(isOn ? 'success' : 'info', 
+                isOn ? 'Device On' : 'Device Off',
+                isOn ? 'Device activated successfully' : 'Device deactivated');
+        }
+
+        // Modal
+        function openReportModal() {
+            document.getElementById('reportModal').classList.add('show');
+        }
+
+        function closeReportModal() {
+            document.getElementById('reportModal').classList.remove('show');
+        }
+
+        function submitReport() {
+            closeReportModal();
+            showToast('success', 'Report Submitted', 'Pothole report sent to maintenance team');
+            
+            // Update counter
+            const counter = document.getElementById('potholeCount');
+            if (counter) counter.textContent = parseInt(counter.textContent) + 1;
+        }
+
+        // Close modal on overlay click
+        document.getElementById('reportModal').addEventListener('click', function(e) {
+            if (e.target === this) closeReportModal();
+        });
+
+        // Toast
+        let toastTimeout;
+        function showToast(type, title, msg) {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            
+            icon.className = 'toast-icon ' + type;
+            
+            const icons = {
+                success: '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>',
+                error: '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>',
+                info: '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>'
+            };
+            
+            icon.innerHTML = icons[type] || icons.info;
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastMsg').textContent = msg;
+            
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        // Initialize Lighting Page
+        const zones = [
+            { name: 'Zone A — Main Road', lights: '8/8', status: 'on' },
+            { name: 'Zone B — Market Area', lights: '6/6', status: 'on' },
+            { name: 'Zone C — Residential', lights: '5/5', status: 'on' },
+            { name: 'Zone D — School Area', lights: '3/3', status: 'on' },
+            { name: 'Zone E — Temple Road', lights: '2/2', status: 'on' }
+        ];
+
+        const lightZonesEl = document.getElementById('lightZones');
+        zones.forEach(z => {
+            const div = document.createElement('div');
+            div.className = 'pothole-item';
+            div.style.justifyContent = 'space-between';
+            div.innerHTML = `
+                <div style="display:flex;align-items:center;gap:12px;flex:1">
+                    <div style="width:10px;height:10px;border-radius:50%;background:var(--accent-green)"></div>
+                    <div class="pothole-info">
+                        <h4>${z.name}</h4>
+                        <span>${z.lights} lights active</span>
+                    </div>
+                </div>
+                <div class="toggle on" onclick="toggleDevice(this)"><div class="toggle-knob"></div></div>
+            `;
+            lightZonesEl.appendChild(div);
+        });
+
+        // Simulate live data updates
+        function simulateData() {
+            // Randomly update water level
+            const waterEl = document.getElementById('waterLevel');
+            const gaugeEl = document.getElementById('waterGaugeFill');
+            const gaugeValEl = document.getElementById('gaugeVal');
+            
+            if (waterEl && gaugeEl) {
+                const level = 70 + Math.floor(Math.random() * 20);
+                waterEl.textContent = level + '%';
+                if (gaugeValEl) gaugeValEl.textContent = level;
+                const offset = 314 - (314 * level / 100);
+                gaugeEl.setAttribute('stroke-dashoffset', offset);
+            }
+        }
+
+        setInterval(simulateData, 8000);
+
+        // Keyboard shortcut
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeReportModal();
+            }
+        });
+    </script>
+</body>
+</html>
