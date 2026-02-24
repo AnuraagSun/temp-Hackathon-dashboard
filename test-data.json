@@ -1,0 +1,87 @@
+{
+  "esp1": {
+    "pothole": {
+      "detected": false,
+      "depth": 3.5,
+      "totalCount": 4,
+      "currentDistance": 14.2,
+      "baseline": 12.0
+    },
+    "streetLights": {
+      "isOn": true,
+      "brightness": 3,
+      "ldrValue": 2500
+    },
+    "gps": {
+      "lat": 17.385,
+      "lng": 78.4867,
+      "speed": 0,
+      "altitude": 542,
+      "satellites": 7,
+      "fixed": true
+    },
+    "status": {
+      "online": true,
+      "lastUpdate": 1000
+    }
+  },
+  "esp2": {
+    "dustbin": {
+      "fillPercent": 72,
+      "distance": 8.4,
+      "status": "WARNING",
+      "lidOpen": false,
+      "personDetected": false
+    },
+    "gas": {
+      "value": 350,
+      "level": 0,
+      "status": "Normal"
+    },
+    "water": {
+      "floatHigh": false,
+      "alertCount": 2
+    },
+    "status": {
+      "online": true,
+      "lastUpdate": 1000
+    }
+  },
+  "controls": {
+    "led": false,
+    "relay": false,
+    "buzzer": false
+  },
+  "potholes": {
+    "test_pothole_1": {
+      "lat": 17.385,
+      "lng": 78.4867,
+      "depth": 8.5,
+      "severity": "warning",
+      "status": "pending",
+      "source": "sensor",
+      "location": "Main Road Km 3",
+      "timestamp": 1740000000
+    },
+    "test_pothole_2": {
+      "lat": 17.383,
+      "lng": 78.489,
+      "depth": 15.2,
+      "severity": "critical",
+      "status": "pending",
+      "source": "sensor",
+      "location": "School Road Junction",
+      "timestamp": 1740001000
+    },
+    "test_pothole_3": {
+      "lat": 17.387,
+      "lng": 78.485,
+      "depth": 4.1,
+      "severity": "minor",
+      "status": "pending",
+      "source": "manual",
+      "location": "Temple Street",
+      "timestamp": 1740002000
+    }
+  }
+}
