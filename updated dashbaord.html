@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartVillage — IoT Dashboard</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         *{margin:0;padding:0;box-sizing:border-box}
@@ -33,7 +31,6 @@
         @keyframes blobFloat{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(50px,-30px) scale(1.1)}50%{transform:translate(-20px,40px) scale(.95)}75%{transform:translate(30px,20px) scale(1.05)}}
         .app{position:relative;z-index:1;display:flex;min-height:100vh}
 
-        /* Sidebar */
         .sidebar{width:260px;background:rgba(255,255,255,.72);backdrop-filter:blur(40px) saturate(180%);border-right:1px solid var(--border);padding:28px 16px;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform var(--transition)}
         .sidebar-brand{display:flex;align-items:center;gap:12px;padding:4px 12px 24px;border-bottom:1px solid var(--border);margin-bottom:20px}
         .brand-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--accent-blue),var(--accent-indigo));display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -55,7 +52,6 @@
         .user-details h4{font-size:13px;font-weight:600}
         .user-details span{font-size:11px;color:var(--text-secondary)}
 
-        /* Main */
         .main{flex:1;margin-left:260px;padding:28px 32px;max-width:calc(100vw - 260px)}
         .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
         .header-left h2{font-size:28px;font-weight:700;letter-spacing:-.5px}
@@ -75,7 +71,6 @@
         .conn-indicator.offline{background:rgba(255,59,48,.1);color:var(--accent-red)}
         .conn-indicator.partial{background:rgba(255,149,0,.1);color:var(--accent-orange)}
 
-        /* Status Bar */
         .status-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:var(--radius-sm);margin-bottom:24px;border:1px solid rgba(52,199,89,.15);animation:slideDown .6s ease-out;background:linear-gradient(135deg,#e8f5e9,#f1f8e9)}
         @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
         .status-dot{width:8px;height:8px;background:var(--accent-green);border-radius:50%;animation:pulse 2s ease-in-out infinite}
@@ -83,16 +78,11 @@
         .status-bar span{font-size:13px;font-weight:500;color:#2d6a2e}
         .status-bar .status-time{margin-left:auto;font-size:12px;color:#4a8c4b}
 
-        /* GPS Bar */
         .gps-bar{display:none;align-items:center;gap:12px;padding:10px 16px;background:rgba(0,122,255,.06);border-radius:var(--radius-xs);margin-bottom:12px;border:1px solid rgba(0,122,255,.1)}
         .gps-bar.show{display:flex}
         .gps-bar .gps-text{font-size:12px;color:var(--accent-blue);font-weight:500}
         .gps-bar .gps-coords{font-family:'SF Mono','Fira Code',monospace;font-size:12px;color:var(--text-primary);font-weight:600;margin-left:auto}
-        .gps-copy-btn{background:none;border:none;cursor:pointer;padding:4px;border-radius:4px;transition:all var(--transition)}
-        .gps-copy-btn:hover{background:rgba(0,122,255,.1)}
-        .gps-copy-btn svg{width:14px;height:14px;fill:var(--accent-blue)}
 
-        /* Stats Grid */
         .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
         .stat-card{background:var(--card);border-radius:var(--radius);padding:20px;border:1px solid var(--border);transition:all var(--transition);cursor:default;animation:cardAppear .6s ease-out both;position:relative;overflow:hidden}
         .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0;opacity:0;transition:opacity var(--transition)}
@@ -103,10 +93,7 @@
         .stat-card:nth-child(4)::before{background:var(--accent-orange)}
         .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
         @keyframes cardAppear{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-        .stat-card:nth-child(1){animation-delay:.05s}
-        .stat-card:nth-child(2){animation-delay:.1s}
-        .stat-card:nth-child(3){animation-delay:.15s}
-        .stat-card:nth-child(4){animation-delay:.2s}
+        .stat-card:nth-child(1){animation-delay:.05s}.stat-card:nth-child(2){animation-delay:.1s}.stat-card:nth-child(3){animation-delay:.15s}.stat-card:nth-child(4){animation-delay:.2s}
         .stat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
         .stat-icon{width:40px;height:40px;border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center}
         .stat-icon svg{width:20px;height:20px;fill:#fff}
@@ -123,7 +110,6 @@
         .sparkline-container{display:flex;align-items:flex-end;gap:2px;height:30px;margin-top:8px}
         .sparkline-bar{width:4px;border-radius:2px;background:var(--accent-blue);transition:height .3s ease;min-height:2px}
 
-        /* Cards */
         .content-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
         .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;animation:cardAppear .6s ease-out both}
         .card-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px}
@@ -132,19 +118,14 @@
         .card-header-action:hover{opacity:.7}
         .card-body{padding:0 20px 20px}
 
-        /* Map */
         .map-container{width:100%;height:380px;border-radius:var(--radius-sm);overflow:hidden;position:relative}
-        .map-container .leaflet-container{border-radius:var(--radius-sm);font-family:'Inter',sans-serif}
         .map-controls-bar{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
         .map-ctrl-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all var(--transition);display:flex;align-items:center;gap:6px}
         .map-ctrl-btn:hover{background:var(--accent-blue);color:#fff;border-color:var(--accent-blue)}
-        .map-ctrl-btn.active{background:var(--accent-blue);color:#fff;border-color:var(--accent-blue)}
-        .map-ctrl-btn svg{width:14px;height:14px;fill:currentColor}
         .map-legend{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap}
         .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);font-weight:500}
         .legend-dot{width:8px;height:8px;border-radius:50%}
 
-        /* Pothole List */
         .pothole-list{display:flex;flex-direction:column;gap:10px;max-height:460px;overflow-y:auto}
         .pothole-list::-webkit-scrollbar{width:4px}
         .pothole-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
@@ -161,18 +142,12 @@
         .pothole-status.pending{color:var(--accent-orange);background:rgba(255,149,0,.1)}
         .pothole-status.resolved{color:var(--accent-green);background:rgba(52,199,89,.1)}
 
-        /* Devices Grid */
         .devices-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
         .device-card{padding:16px;border-radius:var(--radius-sm);background:var(--bg);transition:all var(--transition);cursor:pointer}
         .device-card:hover{background:rgba(0,0,0,.04);transform:translateY(-1px)}
         .device-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
         .device-icon-wrap{width:44px;height:44px;border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center}
         .device-icon-wrap svg{width:22px;height:22px;fill:#fff}
-        .device-icon-wrap.light{background:linear-gradient(135deg,#ffcc00,#ff9500)}
-        .device-icon-wrap.water{background:linear-gradient(135deg,#5ac8fa,#007aff)}
-        .device-icon-wrap.waste{background:linear-gradient(135deg,#34c759,#30b050)}
-        .device-icon-wrap.alert{background:linear-gradient(135deg,#ff3b30,#ff6259)}
-        .device-icon-wrap.report{background:linear-gradient(135deg,#af52de,#5856d6)}
         .toggle{width:48px;height:28px;border-radius:14px;background:#d1d1d6;cursor:pointer;transition:background var(--transition);position:relative;flex-shrink:0}
         .toggle.on{background:var(--accent-green)}
         .toggle.sending{background:var(--accent-orange);animation:togglePulse 1s infinite}
@@ -182,28 +157,19 @@
         .device-name{font-size:14px;font-weight:600;margin-bottom:2px}
         .device-status{font-size:12px;color:var(--text-secondary)}
 
-        /* Full Grid */
         .full-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px}
-
-        /* Alerts */
         .alerts-list{display:flex;flex-direction:column;gap:8px;max-height:350px;overflow-y:auto}
         .alerts-list::-webkit-scrollbar{width:4px}
         .alerts-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
         .alert-item{display:flex;align-items:flex-start;gap:10px;padding:12px;border-radius:var(--radius-xs);transition:all var(--transition);cursor:pointer}
         .alert-item:hover{background:var(--bg)}
         .alert-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
-        .alert-dot.red{background:var(--accent-red)}
-        .alert-dot.orange{background:var(--accent-orange)}
-        .alert-dot.blue{background:var(--accent-blue)}
-        .alert-dot.green{background:var(--accent-green)}
+        .alert-dot.red{background:var(--accent-red)}.alert-dot.orange{background:var(--accent-orange)}.alert-dot.blue{background:var(--accent-blue)}.alert-dot.green{background:var(--accent-green)}
         .alert-content h4{font-size:13px;font-weight:600;margin-bottom:2px}
         .alert-content p{font-size:12px;color:var(--text-secondary);line-height:1.4}
         .alert-time{font-size:11px;color:var(--text-tertiary);margin-left:auto;white-space:nowrap;flex-shrink:0}
 
-        /* Controls Grid */
         .controls-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
-
-        /* Gauge */
         .gauge-container{display:flex;flex-direction:column;align-items:center;padding-top:8px}
         .gauge-svg{width:140px;height:140px;transform:rotate(-90deg)}
         .gauge-bg{fill:none;stroke:rgba(0,0,0,.06);stroke-width:10}
@@ -214,36 +180,25 @@
         .gauge-label{margin-top:10px;font-size:14px;font-weight:600;text-align:center}
         .gauge-sublabel{font-size:12px;color:var(--text-secondary);margin-top:2px}
 
-        /* Quick Actions */
         .quick-actions{display:flex;flex-direction:column;gap:8px}
         .action-btn{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--radius-xs);border:none;background:var(--bg);cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;color:var(--text-primary);transition:all var(--transition);text-align:left}
         .action-btn:hover{background:rgba(0,0,0,.06);transform:translateX(4px)}
         .action-btn:active{transform:translateX(2px) scale(.98)}
         .action-btn svg{width:18px;height:18px;flex-shrink:0}
         .action-btn .action-arrow{margin-left:auto;width:16px;height:16px;fill:var(--text-tertiary)}
-        .action-btn.sending{opacity:.6;pointer-events:none}
-        .action-btn .spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent-blue);border-radius:50%;animation:spin .6s linear infinite;margin-left:auto}
-        @keyframes spin{to{transform:rotate(360deg)}}
 
-        /* Progress */
         .progress-bar{width:100%;height:6px;border-radius:3px;background:rgba(0,0,0,.08);overflow:hidden}
         .progress-fill{height:100%;border-radius:3px;transition:width 1s ease-out}
         .progress-fill.green{background:linear-gradient(90deg,#34c759,#5dd97c)}
         .progress-fill.orange{background:linear-gradient(90deg,#ff9500,#ffb340)}
         .progress-fill.red{background:linear-gradient(90deg,#ff3b30,#ff6259)}
 
-        /* Command Log */
         .command-log{max-height:200px;overflow-y:auto;font-family:'SF Mono','Fira Code',monospace;font-size:11px;background:#1d1d1f;color:#34c759;padding:12px;border-radius:var(--radius-xs);margin-top:12px}
         .command-log::-webkit-scrollbar{width:4px}
         .command-log::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
-        .cmd-line{padding:2px 0;opacity:.8}
-        .cmd-line:last-child{opacity:1}
-        .cmd-time{color:#86868b}
-        .cmd-success{color:#34c759}
-        .cmd-error{color:#ff3b30}
-        .cmd-info{color:#5ac8fa}
+        .cmd-line{padding:2px 0;opacity:.8}.cmd-line:last-child{opacity:1}
+        .cmd-time{color:#86868b}.cmd-success{color:#34c759}.cmd-error{color:#ff3b30}.cmd-info{color:#5ac8fa}
 
-        /* Modal */
         .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(10px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease}
         .modal-overlay.show{opacity:1;pointer-events:all}
         .modal{background:var(--card);border-radius:20px;padding:32px;width:90%;max-width:520px;box-shadow:var(--shadow-xl);transform:scale(.9) translateY(20px);transition:transform var(--spring);max-height:90vh;overflow-y:auto}
@@ -268,43 +223,78 @@
         .map-pick-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--radius-xs);border:1px dashed var(--accent-blue);background:rgba(0,122,255,.04);color:var(--accent-blue);font-size:12px;font-weight:600;cursor:pointer;transition:all var(--transition);margin-top:6px}
         .map-pick-btn:hover{background:rgba(0,122,255,.1)}
 
-        /* Toast */
         .toast-container{position:fixed;top:24px;right:24px;z-index:2000;display:flex;flex-direction:column;gap:8px}
         .toast{background:var(--card);border-radius:var(--radius-sm);padding:14px 20px;box-shadow:var(--shadow-xl);display:flex;align-items:center;gap:12px;transform:translateX(120%);transition:transform var(--spring);max-width:360px;border:1px solid var(--border)}
         .toast.show{transform:translateX(0)}
         .toast-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
         .toast-icon svg{width:16px;height:16px;fill:#fff}
-        .toast-icon.success{background:var(--accent-green)}
-        .toast-icon.error{background:var(--accent-red)}
-        .toast-icon.info{background:var(--accent-blue)}
-        .toast-icon.warning{background:var(--accent-orange)}
+        .toast-icon.success{background:var(--accent-green)}.toast-icon.error{background:var(--accent-red)}.toast-icon.info{background:var(--accent-blue)}.toast-icon.warning{background:var(--accent-orange)}
         .toast-text h4{font-size:13px;font-weight:600}
         .toast-text p{font-size:12px;color:var(--text-secondary)}
         .toast-close{background:none;border:none;cursor:pointer;padding:4px;margin-left:8px;opacity:.5;transition:opacity var(--transition)}
         .toast-close:hover{opacity:1}
         .toast-close svg{width:14px;height:14px;fill:var(--text-secondary)}
 
-        /* Pages */
         .page{display:none;animation:fadeIn .4s ease-out}
         .page.active{display:block}
         @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
         .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:99}
         .sidebar-overlay.show{display:block}
 
-        /* Water Visual */
         .water-tank{width:100%;height:120px;background:#e3f2fd;border-radius:8px;position:relative;overflow:hidden;border:2px solid #90caf9}
         .water-tank-fill{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,#42a5f5,#1565c0);transition:height 1s ease;border-radius:0 0 6px 6px}
         .water-tank-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#1565c0;z-index:1}
 
-        /* Responsive */
+        /* GPIO Control Cards */
+        .gpio-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+        .gpio-card{padding:16px;border-radius:var(--radius-sm);background:var(--bg);border:1px solid var(--border);transition:all var(--transition)}
+        .gpio-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+        .gpio-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+        .gpio-pin-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;font-family:'SF Mono','Fira Code',monospace}
+        .gpio-pin-badge.esp1{background:rgba(0,122,255,.1);color:var(--accent-blue)}
+        .gpio-pin-badge.esp2{background:rgba(52,199,89,.1);color:var(--accent-green)}
+        .gpio-name{font-size:14px;font-weight:600;margin-bottom:2px}
+        .gpio-desc{font-size:11px;color:var(--text-secondary);margin-bottom:10px}
+        .gpio-status{display:flex;align-items:center;justify-content:space-between}
+        .gpio-state{font-size:12px;font-weight:600;padding:3px 10px;border-radius:12px}
+        .gpio-state.on{background:rgba(52,199,89,.12);color:var(--accent-green)}
+        .gpio-state.off{background:rgba(0,0,0,.04);color:var(--text-tertiary)}
+        .gpio-indicator{width:10px;height:10px;border-radius:50%;transition:all var(--transition)}
+        .gpio-indicator.on{background:var(--accent-green);box-shadow:0 0 8px rgba(52,199,89,.5)}
+        .gpio-indicator.off{background:#d1d1d6}
+        .gpio-indicator.pulse{animation:gpioPulse 1s infinite}
+        @keyframes gpioPulse{0%,100%{box-shadow:0 0 4px rgba(52,199,89,.3)}50%{box-shadow:0 0 16px rgba(52,199,89,.8)}}
+
+        .esp-section{margin-bottom:24px}
+        .esp-section-title{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+        .esp-section-title h4{font-size:15px;font-weight:700}
+        .esp-section-title .esp-tag{padding:3px 10px;border-radius:8px;font-size:11px;font-weight:700}
+        .esp-tag.blue{background:rgba(0,122,255,.1);color:var(--accent-blue)}
+        .esp-tag.green{background:rgba(52,199,89,.1);color:var(--accent-green)}
+
+        .bulk-actions{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+        .bulk-btn{padding:8px 16px;border-radius:20px;border:1px solid var(--border);background:var(--card);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all var(--transition)}
+        .bulk-btn:hover{box-shadow:var(--shadow-sm)}
+        .bulk-btn.on-all{border-color:var(--accent-green);color:var(--accent-green)}
+        .bulk-btn.on-all:hover{background:var(--accent-green);color:#fff}
+        .bulk-btn.off-all{border-color:var(--accent-red);color:var(--accent-red)}
+        .bulk-btn.off-all:hover{background:var(--accent-red);color:#fff}
+        .bulk-btn.reset{border-color:var(--accent-orange);color:var(--accent-orange)}
+        .bulk-btn.reset:hover{background:var(--accent-orange);color:#fff}
+
+        .pwm-slider-wrap{margin-top:10px}
+        .pwm-slider-wrap label{font-size:11px;color:var(--text-secondary);font-weight:500}
+        .pwm-slider{width:100%;height:4px;border-radius:2px;appearance:none;background:rgba(0,0,0,.08);outline:none;margin-top:4px;cursor:pointer}
+        .pwm-slider::-webkit-slider-thumb{appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent-blue);box-shadow:0 1px 4px rgba(0,0,0,.2);cursor:pointer}
+        .pwm-value{font-size:11px;font-weight:700;color:var(--accent-blue);margin-left:8px}
+
         @media(max-width:1200px){.stats-grid{grid-template-columns:repeat(2,1fr)}.controls-grid{grid-template-columns:repeat(2,1fr)}}
         @media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0);box-shadow:var(--shadow-xl)}.main{margin-left:0;max-width:100vw;padding:20px 16px}.menu-toggle{display:flex}.content-grid,.full-grid{grid-template-columns:1fr}}
-        @media(max-width:600px){.stats-grid{grid-template-columns:1fr}.devices-grid{grid-template-columns:1fr}.controls-grid{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}.header-left h2{font-size:22px}}
+        @media(max-width:600px){.stats-grid{grid-template-columns:1fr}.devices-grid{grid-template-columns:1fr}.controls-grid{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}.gpio-grid{grid-template-columns:1fr}.header-left h2{font-size:22px}}
     </style>
 </head>
 <body>
     <div class="bg-blobs"><div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div></div>
-
     <div class="app">
         <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
         <aside class="sidebar" id="sidebar">
@@ -323,6 +313,10 @@
                 <div class="nav-item" data-page="lighting" onclick="switchPage('lighting',this)"><svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>Street Lights</div>
                 <div class="nav-item" data-page="water" onclick="switchPage('water',this)"><svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>Water Supply</div>
                 <div class="nav-item" data-page="waste" onclick="switchPage('waste',this)"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>Waste Mgmt</div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-label">Advanced</div>
+                <div class="nav-item" data-page="misc" onclick="switchPage('misc',this)"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>Misc / GPIO</div>
                 <div class="nav-item" data-page="terminal" onclick="switchPage('terminal',this)"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16v10zm-2-1h-6v-2h6v2zM7.5 17l-1.41-1.41L8.67 13l-2.59-2.59L7.5 9l4 4-4 4z"/></svg>Terminal</div>
             </div>
             <div class="sidebar-footer"><div class="user-info"><div class="user-avatar">VP</div><div class="user-details"><h4>Village Panchayat</h4><span>Admin Access</span></div></div></div>
@@ -344,641 +338,573 @@
 
             <!-- DASHBOARD -->
             <div class="page active" id="page-dashboard">
-                <div class="status-bar" id="systemStatusBar"><div class="status-dot" id="systemStatusDot"></div><span id="systemStatusText">Connecting to Firebase...</span><span class="status-time" id="liveTime"></span></div>
-                <div class="gps-bar" id="gpsBar"><span>📍</span><span class="gps-text" id="gpsStatusText">GPS: Searching...</span><span class="gps-coords" id="gpsCoordsDisplay">---, ---</span><button class="gps-copy-btn" onclick="copyGPS()" title="Copy"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div>
-
+                <div class="status-bar" id="systemStatusBar"><div class="status-dot" id="systemStatusDot"></div><span id="systemStatusText">Connecting...</span><span class="status-time" id="liveTime"></span></div>
+                <div class="gps-bar" id="gpsBar"><span>📍</span><span class="gps-text" id="gpsStatusText">GPS: Searching...</span><span class="gps-coords" id="gpsCoordsDisplay">---, ---</span></div>
                 <div class="stats-grid">
-                    <div class="stat-card"><div class="stat-header"><div class="stat-icon red"><svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div><span class="stat-trend up" id="potholeTrend">--</span></div><div class="stat-value" id="potholeCount">0</div><div class="stat-label">Active Potholes</div><div class="sparkline-container" id="potholeSparkline"></div></div>
+                    <div class="stat-card"><div class="stat-header"><div class="stat-icon red"><svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div><span class="stat-trend up" id="potholeTrend">--</span></div><div class="stat-value" id="potholeCount">0</div><div class="stat-label">Active Potholes</div></div>
                     <div class="stat-card"><div class="stat-header"><div class="stat-icon green"><svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg></div><span class="stat-trend down" id="lightsTrend">--</span></div><div class="stat-value" id="lightsOn">--</div><div class="stat-label">Street Lights</div><div class="stat-sub" id="ldrDisplay">LDR: --</div></div>
                     <div class="stat-card"><div class="stat-header"><div class="stat-icon blue"><svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg></div><span class="stat-trend down" id="waterTrend">--</span></div><div class="stat-value" id="waterLevel">--</div><div class="stat-label">Water Level</div><div class="stat-sub" id="waterAlertDisplay">Alerts: 0</div></div>
                     <div class="stat-card"><div class="stat-header"><div class="stat-icon orange"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></div><span class="stat-trend up" id="wasteTrend">--</span></div><div class="stat-value" id="wasteBins">--</div><div class="stat-label">Dustbin Fill</div><div class="stat-sub" id="gasDisplay">Gas: --</div></div>
                 </div>
-
                 <div class="content-grid">
-                    <div class="card"><div class="card-header"><h3>🗺️ Live Pothole Map</h3><span class="card-header-action" id="mapPinCount">📍 0 potholes</span></div><div class="card-body"><div class="map-container" id="mainMapContainer"></div><div class="map-controls-bar"><button class="map-ctrl-btn" onclick="centerMapOnGPS()">📍 GPS Center</button><button class="map-ctrl-btn" onclick="fitAllMarkers()">🔍 Fit All</button><button class="map-ctrl-btn" onclick="addPotholeAtCenter()">➕ Add Here</button></div><div class="map-legend"><div class="legend-item"><div class="legend-dot" style="background:var(--accent-red)"></div>Critical (&gt;10cm)</div><div class="legend-item"><div class="legend-dot" style="background:var(--accent-orange)"></div>Warning (5-10cm)</div><div class="legend-item"><div class="legend-dot" style="background:var(--accent-yellow)"></div>Minor (&lt;5cm)</div><div class="legend-item"><div class="legend-dot" style="background:var(--accent-blue)"></div>ESP32 GPS</div></div></div></div>
-                    <div class="card"><div class="card-header"><h3>📋 Recent Reports</h3><span class="card-header-action" onclick="switchPage('potholes',document.querySelector('[data-page=potholes]'))">View All →</span></div><div class="card-body"><div class="pothole-list" id="dashboardPotholeList"><div style="text-align:center;padding:20px;color:var(--text-tertiary);font-size:13px">Waiting for sensor data...</div></div></div></div>
+                    <div class="card"><div class="card-header"><h3>🗺️ Live Pothole Map</h3><span class="card-header-action" id="mapPinCount">📍 0</span></div><div class="card-body"><div class="map-container" id="mainMapContainer"></div><div class="map-controls-bar"><button class="map-ctrl-btn" onclick="centerMapOnGPS()">📍 GPS</button><button class="map-ctrl-btn" onclick="fitAllMarkers()">🔍 Fit All</button><button class="map-ctrl-btn" onclick="addPotholeAtCenter()">➕ Add</button></div><div class="map-legend"><div class="legend-item"><div class="legend-dot" style="background:var(--accent-red)"></div>Critical</div><div class="legend-item"><div class="legend-dot" style="background:var(--accent-orange)"></div>Warning</div><div class="legend-item"><div class="legend-dot" style="background:var(--accent-yellow)"></div>Minor</div></div></div></div>
+                    <div class="card"><div class="card-header"><h3>📋 Recent Reports</h3><span class="card-header-action" onclick="switchPage('potholes',document.querySelector('[data-page=potholes]'))">View All →</span></div><div class="card-body"><div class="pothole-list" id="dashboardPotholeList"><div style="text-align:center;padding:20px;color:var(--text-tertiary);font-size:13px">Waiting for data...</div></div></div></div>
                 </div>
-
                 <div class="full-grid">
-                    <div class="card"><div class="card-header"><h3>📊 Live Sensor Readings</h3><span class="card-header-action" id="sensorUpdateTime">--</span></div><div class="card-body"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-                        <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:24px;font-weight:800" id="sensorDistance">--</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Road Distance (cm)</div><div class="sparkline-container" id="distanceSparkline"></div></div>
+                    <div class="card"><div class="card-header"><h3>📊 Live Sensors</h3><span class="card-header-action" id="sensorUpdateTime">--</span></div><div class="card-body"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+                        <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:24px;font-weight:800" id="sensorDistance">--</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Road Dist (cm)</div></div>
                         <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:24px;font-weight:800" id="sensorBaseline">--</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Baseline (cm)</div></div>
-                        <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:24px;font-weight:800" id="sensorGas">--</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Gas Level</div><div class="sparkline-container" id="gasSparkline"></div></div>
-                        <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:24px;font-weight:800" id="sensorDustbin">--</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Dustbin Fill %</div></div>
-                        <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:24px;font-weight:800" id="sensorLDR">--</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">LDR Value</div><div class="sparkline-container" id="ldrSparkline"></div></div>
-                        <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:24px;font-weight:800" id="sensorSats">--</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">GPS Satellites</div></div>
+                        <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:24px;font-weight:800" id="sensorGas">--</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Gas Level</div></div>
+                        <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:24px;font-weight:800" id="sensorDustbin">--</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Dustbin %</div></div>
+                        <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:24px;font-weight:800" id="sensorLDR">--</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">LDR Value</div></div>
+                        <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:24px;font-weight:800" id="sensorSats">--</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">GPS Sats</div></div>
                     </div></div></div>
-                    <div class="card"><div class="card-header"><h3>🔔 Live Alerts</h3><span class="card-header-action" onclick="clearAlerts()">Clear</span></div><div class="card-body"><div class="alerts-list" id="alertsList"><div class="alert-item"><div class="alert-dot blue"></div><div class="alert-content"><h4>System Starting</h4><p>Waiting for ESP32 connections...</p></div><span class="alert-time">Now</span></div></div></div></div>
+                    <div class="card"><div class="card-header"><h3>🔔 Alerts</h3><span class="card-header-action" onclick="clearAlerts()">Clear</span></div><div class="card-body"><div class="alerts-list" id="alertsList"><div class="alert-item"><div class="alert-dot blue"></div><div class="alert-content"><h4>System Starting</h4><p>Waiting for ESP32...</p></div><span class="alert-time">Now</span></div></div></div></div>
                 </div>
-
                 <div class="controls-grid">
-                    <div class="card"><div class="card-header"><h3>🎮 Hardware Controls</h3></div><div class="card-body"><div class="devices-grid">
-                        <div class="device-card"><div class="device-card-header"><div class="device-icon-wrap light"><svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg></div><div class="toggle" id="ledToggle" onclick="toggleControl('led')"><div class="toggle-knob"></div></div></div><div class="device-name">Street Lights</div><div class="device-status" id="ledStatus">Auto mode (LDR)</div></div>
-                        <div class="device-card"><div class="device-card-header"><div class="device-icon-wrap water"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></div><div class="toggle" id="relayToggle" onclick="toggleControl('relay')"><div class="toggle-knob"></div></div></div><div class="device-name">Dustbin Lid</div><div class="device-status" id="relayStatus">Closed</div></div>
-                        <div class="device-card"><div class="device-card-header"><div class="device-icon-wrap alert"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div><div class="toggle" id="buzzerToggle" onclick="toggleControl('buzzer')"><div class="toggle-knob"></div></div></div><div class="device-name">Alert LEDs</div><div class="device-status" id="buzzerStatus">Off</div></div>
-                        <div class="device-card" onclick="openReportModal()"><div class="device-card-header"><div class="device-icon-wrap report"><svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div></div><div class="device-name">Report Pothole</div><div class="device-status" style="color:var(--accent-blue)">📝 Click to report</div></div>
+                    <div class="card"><div class="card-header"><h3>🎮 Controls</h3></div><div class="card-body"><div class="devices-grid">
+                        <div class="device-card"><div class="device-card-header"><div class="device-icon-wrap" style="background:linear-gradient(135deg,#ffcc00,#ff9500)"><svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg></div><div class="toggle" id="ledToggle" onclick="toggleControl('led')"><div class="toggle-knob"></div></div></div><div class="device-name">Street Lights</div><div class="device-status" id="ledStatus">Auto (LDR)</div></div>
+                        <div class="device-card"><div class="device-card-header"><div class="device-icon-wrap" style="background:linear-gradient(135deg,#5ac8fa,#007aff)"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></div><div class="toggle" id="relayToggle" onclick="toggleControl('relay')"><div class="toggle-knob"></div></div></div><div class="device-name">Dustbin Lid</div><div class="device-status" id="relayStatus">Closed</div></div>
+                        <div class="device-card"><div class="device-card-header"><div class="device-icon-wrap" style="background:linear-gradient(135deg,#ff3b30,#ff6259)"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div><div class="toggle" id="buzzerToggle" onclick="toggleControl('buzzer')"><div class="toggle-knob"></div></div></div><div class="device-name">Alert LEDs</div><div class="device-status" id="buzzerStatus">Off</div></div>
+                        <div class="device-card" onclick="switchPage('misc',document.querySelector('[data-page=misc]'))"><div class="device-card-header"><div class="device-icon-wrap" style="background:linear-gradient(135deg,#af52de,#5856d6)"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></div></div><div class="device-name">GPIO Control</div><div class="device-status" style="color:var(--accent-blue)">Individual pin control →</div></div>
                     </div></div></div>
-                    <div class="card"><div class="card-header"><h3>💧 Water Tank</h3></div><div class="card-body"><div class="gauge-container"><svg class="gauge-svg" viewBox="0 0 120 120"><circle class="gauge-bg" cx="60" cy="60" r="50"/><circle class="gauge-fill" cx="60" cy="60" r="50" stroke="url(#wg)" stroke-dasharray="314" stroke-dashoffset="314" id="waterGaugeFill"/><defs><linearGradient id="wg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#007aff"/><stop offset="100%" stop-color="#5ac8fa"/></linearGradient></defs><text class="gauge-text" x="60" y="56"><tspan class="gauge-value" id="gaugeVal">--</tspan></text><text class="gauge-text" x="60" y="72"><tspan class="gauge-unit" id="gaugeUnit">waiting</tspan></text></svg><div class="gauge-label">Water Level</div><div class="gauge-sublabel">Float sensor on ESP32-2</div></div></div></div>
+                    <div class="card"><div class="card-header"><h3>💧 Water Tank</h3></div><div class="card-body"><div class="gauge-container"><svg class="gauge-svg" viewBox="0 0 120 120"><circle class="gauge-bg" cx="60" cy="60" r="50"/><circle class="gauge-fill" cx="60" cy="60" r="50" stroke="url(#wg)" stroke-dasharray="314" stroke-dashoffset="314" id="waterGaugeFill"/><defs><linearGradient id="wg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#007aff"/><stop offset="100%" stop-color="#5ac8fa"/></linearGradient></defs><text class="gauge-text" x="60" y="56"><tspan class="gauge-value" id="gaugeVal">--</tspan></text><text class="gauge-text" x="60" y="72"><tspan class="gauge-unit" id="gaugeUnit">waiting</tspan></text></svg><div class="gauge-label">Water Level</div><div class="gauge-sublabel">Float sensor ESP32-2</div></div></div></div>
                     <div class="card"><div class="card-header"><h3>⚡ Quick Actions</h3></div><div class="card-body"><div class="quick-actions">
                         <button class="action-btn" onclick="openReportModal()"><svg viewBox="0 0 24 24" fill="#ff3b30"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>Report Pothole<svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
-                        <button class="action-btn" onclick="sendControl('buzzer',true,'🔔 Alert sent to ESP32-2!','LEDs will flash for ~1s then ESP32 auto-resets it')"><svg viewBox="0 0 24 24" fill="#ff9500"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>Trigger Alert on ESP32-2<svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
-                        <button class="action-btn" onclick="sendControl('relay',true,'📂 Lid command sent!','ESP32-2 will open relay for 5s then auto-close')"><svg viewBox="0 0 24 24" fill="#007aff"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>Open Dustbin Lid<svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
-                        <button class="action-btn" onclick="sendControl('led',true,'💡 Lights forced ON!','ESP32-1 will override LDR auto-mode')"><svg viewBox="0 0 24 24" fill="#34c759"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>Force Street Lights ON<svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
-                        <button class="action-btn" onclick="resetAllControls()"><svg viewBox="0 0 24 24" fill="#86868b"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>Reset All → Auto Mode<svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                        <button class="action-btn" onclick="sendControl('buzzer',true,'🔔 Alert!','ESP32-2 LEDs flash')"><svg viewBox="0 0 24 24" fill="#ff9500"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>Trigger Alert<svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                        <button class="action-btn" onclick="sendControl('relay',true,'📂 Opening','Relay HIGH')"><svg viewBox="0 0 24 24" fill="#007aff"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg>Open Dustbin<svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                        <button class="action-btn" onclick="switchPage('misc',document.querySelector('[data-page=misc]'))"><svg viewBox="0 0 24 24" fill="#af52de"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/></svg>Individual GPIO Control →<svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                        <button class="action-btn" onclick="resetAllControls()"><svg viewBox="0 0 24 24" fill="#86868b"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>Reset All<svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
                     </div></div></div>
                 </div>
             </div>
 
-            <!-- POTHOLES PAGE -->
-            <div class="page" id="page-potholes">
-                <div class="content-grid"><div class="card"><div class="card-header"><h3>Pothole Map</h3></div><div class="card-body"><div class="map-container" id="potholePageMap"></div></div></div><div class="card"><div class="card-header"><h3>All Reports</h3><span class="card-header-action" onclick="openReportModal()">+ Report</span></div><div class="card-body"><div class="pothole-list" id="allPotholeList"><div style="text-align:center;padding:20px;color:var(--text-tertiary)">Loading...</div></div></div></div></div>
-            </div>
+            <!-- POTHOLES -->
+            <div class="page" id="page-potholes"><div class="content-grid"><div class="card"><div class="card-header"><h3>Map</h3></div><div class="card-body"><div class="map-container" id="potholePageMap"></div></div></div><div class="card"><div class="card-header"><h3>All Reports</h3><span class="card-header-action" onclick="openReportModal()">+ Report</span></div><div class="card-body"><div class="pothole-list" id="allPotholeList"><div style="text-align:center;padding:20px;color:var(--text-tertiary)">Loading...</div></div></div></div></div></div>
 
-            <!-- DEVICES PAGE -->
-            <div class="page" id="page-devices">
-                <div class="content-grid">
-                    <div class="card"><div class="card-header"><h3>ESP32 Status</h3></div><div class="card-body"><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-                        <div style="padding:20px;background:var(--bg);border-radius:var(--radius-sm);border-left:4px solid var(--accent-blue)"><div style="font-size:16px;font-weight:700;margin-bottom:8px">ESP32-1</div><div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px">Pothole + Street Lights + GPS</div><div style="font-size:14px;font-weight:600" id="esp1StatusDisplay">⏳ Waiting...</div><div style="font-size:12px;color:var(--text-tertiary);margin-top:4px" id="esp1Uptime">Uptime: --</div><div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">Reads: /controls/led every 1s</div></div>
-                        <div style="padding:20px;background:var(--bg);border-radius:var(--radius-sm);border-left:4px solid var(--accent-green)"><div style="font-size:16px;font-weight:700;margin-bottom:8px">ESP32-2</div><div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px">Dustbin + Water + Gas</div><div style="font-size:14px;font-weight:600" id="esp2StatusDisplay">⏳ Waiting...</div><div style="font-size:12px;color:var(--text-tertiary);margin-top:4px" id="esp2Uptime">Uptime: --</div><div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">Reads: /controls/relay & /controls/buzzer every 1s</div></div>
-                    </div></div></div>
-                    <div class="card"><div class="card-header"><h3>Firebase Paths</h3></div><div class="card-body"><div class="command-log" style="max-height:300px"><div class="cmd-line"><span class="cmd-info">── ESP32-1 Writes ──</span></div><div class="cmd-line">/esp1/pothole/* → detected, depth, totalCount, currentDistance, baseline</div><div class="cmd-line">/esp1/streetLights/* → isOn, brightness, ldrValue</div><div class="cmd-line">/esp1/gps/* → lat, lng, speed, altitude, satellites, fixed</div><div class="cmd-line">/esp1/status/* → online, lastUpdate</div><div class="cmd-line">/potholes/pothole_N_* → auto-uploaded detections</div><div class="cmd-line"><span class="cmd-info">── ESP32-2 Writes ──</span></div><div class="cmd-line">/esp2/dustbin/* → fillPercent, distance, status, lidOpen, personDetected</div><div class="cmd-line">/esp2/gas/* → value, level, status</div><div class="cmd-line">/esp2/water/* → floatHigh, alertCount</div><div class="cmd-line">/esp2/status/* → online, lastUpdate</div><div class="cmd-line"><span class="cmd-info">── Dashboard → ESP32 Controls ──</span></div><div class="cmd-line"><span class="cmd-success">/controls/led</span> → ESP32-1 reads, overrides LDR auto (false = back to auto)</div><div class="cmd-line"><span class="cmd-success">/controls/relay</span> → ESP32-2 reads, opens/closes dustbin lid</div><div class="cmd-line"><span class="cmd-success">/controls/buzzer</span> → ESP32-2 reads, flashes LEDs then self-resets to false</div></div></div></div>
+            <!-- DEVICES -->
+            <div class="page" id="page-devices"><div class="card"><div class="card-header"><h3>ESP32 Status</h3></div><div class="card-body"><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div style="padding:20px;background:var(--bg);border-radius:var(--radius-sm);border-left:4px solid var(--accent-blue)"><div style="font-size:16px;font-weight:700;margin-bottom:8px">ESP32-1</div><div style="font-size:13px;color:var(--text-secondary)">Pothole + Lights + GPS</div><div style="font-size:14px;font-weight:600;margin-top:8px" id="esp1StatusDisplay">⏳ Waiting...</div><div style="font-size:12px;color:var(--text-tertiary);margin-top:4px" id="esp1Uptime">Uptime: --</div></div>
+                <div style="padding:20px;background:var(--bg);border-radius:var(--radius-sm);border-left:4px solid var(--accent-green)"><div style="font-size:16px;font-weight:700;margin-bottom:8px">ESP32-2</div><div style="font-size:13px;color:var(--text-secondary)">Dustbin + Water + Gas</div><div style="font-size:14px;font-weight:600;margin-top:8px" id="esp2StatusDisplay">⏳ Waiting...</div><div style="font-size:12px;color:var(--text-tertiary);margin-top:4px" id="esp2Uptime">Uptime: --</div></div>
+            </div></div></div></div>
+
+            <!-- LIGHTING -->
+            <div class="page" id="page-lighting"><div class="card"><div class="card-header"><h3>Street Lights</h3></div><div class="card-body"><div style="text-align:center;padding:40px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:48px;font-weight:800" id="lightPageStatus">--</div><div style="font-size:14px;color:var(--text-secondary);margin-top:8px" id="lightPageLDR">LDR: --</div><div style="margin-top:20px"><div class="toggle" id="ledTogglePage" onclick="toggleControl('led')" style="margin:0 auto"><div class="toggle-knob"></div></div><div style="font-size:12px;color:var(--text-secondary);margin-top:8px">Manual Override</div></div></div></div></div></div>
+
+            <!-- WATER -->
+            <div class="page" id="page-water"><div class="card"><div class="card-header"><h3>Water Level</h3></div><div class="card-body"><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px"><div style="text-align:center;padding:40px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:48px;font-weight:800" id="waterPageStatus">--</div><div style="font-size:12px;color:var(--text-tertiary);margin-top:4px" id="waterPageAlerts">Alerts: 0</div></div><div style="padding:30px;background:var(--bg);border-radius:var(--radius-sm)"><h4 style="margin-bottom:16px;font-size:14px">Tank</h4><div class="water-tank"><div class="water-tank-fill" id="waterVisual" style="height:45%"></div><div class="water-tank-text" id="waterVisualText">Normal</div></div></div></div></div></div></div>
+
+            <!-- WASTE -->
+            <div class="page" id="page-waste"><div class="card"><div class="card-header"><h3>Smart Dustbin</h3></div><div class="card-body"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px"><div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:28px;font-weight:800" id="wastePageFill">--</div><div style="font-size:12px;color:var(--text-secondary)">Fill</div></div><div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:28px;font-weight:800" id="wastePageGas">--</div><div style="font-size:12px;color:var(--text-secondary)">Gas</div></div><div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:28px;font-weight:800" id="wastePageLid">--</div><div style="font-size:12px;color:var(--text-secondary)">Lid</div></div></div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:var(--text-secondary)">Fill</span><span style="font-size:12px;font-weight:600" id="wastePercentText">0%</span></div><div class="progress-bar"><div class="progress-fill orange" id="wasteProgressBar" style="width:0%"></div></div></div></div></div>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- ★★★ MISC / GPIO CONTROL PAGE ★★★ -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="page" id="page-misc">
+                <!-- ESP32-1 GPIO Section -->
+                <div class="esp-section">
+                    <div class="esp-section-title">
+                        <h4>ESP32-1 GPIO Control</h4>
+                        <span class="esp-tag blue">GPIO 25, 26, 27, 13</span>
+                        <span style="font-size:11px;color:var(--text-tertiary);margin-left:auto" id="esp1GpioStatus">⏳</span>
+                    </div>
+                    <div class="bulk-actions">
+                        <button class="bulk-btn on-all" onclick="bulkGPIO('esp1',true)">⚡ All ON</button>
+                        <button class="bulk-btn off-all" onclick="bulkGPIO('esp1',false)">💤 All OFF</button>
+                        <button class="bulk-btn reset" onclick="resetGPIO('esp1')">🔄 Reset to Auto</button>
+                    </div>
+                    <div class="gpio-grid">
+                        <div class="gpio-card" id="gpio-esp1-25">
+                            <div class="gpio-card-header">
+                                <span class="gpio-pin-badge esp1">ESP1 · GPIO 25</span>
+                                <div class="gpio-indicator off" id="gpio-ind-esp1-25"></div>
+                            </div>
+                            <div class="gpio-name">💡 Street Light 1</div>
+                            <div class="gpio-desc">LED_STREET_1 — PWM Channel 0</div>
+                            <div class="gpio-status">
+                                <span class="gpio-state off" id="gpio-state-esp1-25">OFF</span>
+                                <div class="toggle" id="gpio-toggle-esp1-25" onclick="toggleGPIO('esp1','gpio25')"><div class="toggle-knob"></div></div>
+                            </div>
+                            <div class="pwm-slider-wrap">
+                                <label>PWM: <span class="pwm-value" id="pwm-val-esp1-25">0</span></label>
+                                <input type="range" class="pwm-slider" min="0" max="255" value="0" id="pwm-esp1-25" oninput="setGPIOPWM('esp1','gpio25',this.value)">
+                            </div>
+                        </div>
+                        <div class="gpio-card" id="gpio-esp1-26">
+                            <div class="gpio-card-header">
+                                <span class="gpio-pin-badge esp1">ESP1 · GPIO 26</span>
+                                <div class="gpio-indicator off" id="gpio-ind-esp1-26"></div>
+                            </div>
+                            <div class="gpio-name">💡 Street Light 2</div>
+                            <div class="gpio-desc">LED_STREET_2 — PWM Channel 1</div>
+                            <div class="gpio-status">
+                                <span class="gpio-state off" id="gpio-state-esp1-26">OFF</span>
+                                <div class="toggle" id="gpio-toggle-esp1-26" onclick="toggleGPIO('esp1','gpio26')"><div class="toggle-knob"></div></div>
+                            </div>
+                            <div class="pwm-slider-wrap">
+                                <label>PWM: <span class="pwm-value" id="pwm-val-esp1-26">0</span></label>
+                                <input type="range" class="pwm-slider" min="0" max="255" value="0" id="pwm-esp1-26" oninput="setGPIOPWM('esp1','gpio26',this.value)">
+                            </div>
+                        </div>
+                        <div class="gpio-card" id="gpio-esp1-27">
+                            <div class="gpio-card-header">
+                                <span class="gpio-pin-badge esp1">ESP1 · GPIO 27</span>
+                                <div class="gpio-indicator off" id="gpio-ind-esp1-27"></div>
+                            </div>
+                            <div class="gpio-name">💡 Street Light 3</div>
+                            <div class="gpio-desc">LED_STREET_3 — PWM Channel 2</div>
+                            <div class="gpio-status">
+                                <span class="gpio-state off" id="gpio-state-esp1-27">OFF</span>
+                                <div class="toggle" id="gpio-toggle-esp1-27" onclick="toggleGPIO('esp1','gpio27')"><div class="toggle-knob"></div></div>
+                            </div>
+                            <div class="pwm-slider-wrap">
+                                <label>PWM: <span class="pwm-value" id="pwm-val-esp1-27">0</span></label>
+                                <input type="range" class="pwm-slider" min="0" max="255" value="0" id="pwm-esp1-27" oninput="setGPIOPWM('esp1','gpio27',this.value)">
+                            </div>
+                        </div>
+                        <div class="gpio-card" id="gpio-esp1-13">
+                            <div class="gpio-card-header">
+                                <span class="gpio-pin-badge esp1">ESP1 · GPIO 13</span>
+                                <div class="gpio-indicator off" id="gpio-ind-esp1-13"></div>
+                            </div>
+                            <div class="gpio-name">🔔 Buzzer</div>
+                            <div class="gpio-desc">BUZZER_PIN — Digital OUT</div>
+                            <div class="gpio-status">
+                                <span class="gpio-state off" id="gpio-state-esp1-13">OFF</span>
+                                <div class="toggle" id="gpio-toggle-esp1-13" onclick="toggleGPIO('esp1','gpio13')"><div class="toggle-knob"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ESP32-2 GPIO Section -->
+                <div class="esp-section">
+                    <div class="esp-section-title">
+                        <h4>ESP32-2 GPIO Control</h4>
+                        <span class="esp-tag green">GPIO 26, 25, 27</span>
+                        <span style="font-size:11px;color:var(--text-tertiary);margin-left:auto" id="esp2GpioStatus">⏳</span>
+                    </div>
+                    <div class="bulk-actions">
+                        <button class="bulk-btn on-all" onclick="bulkGPIO('esp2',true)">⚡ All ON</button>
+                        <button class="bulk-btn off-all" onclick="bulkGPIO('esp2',false)">💤 All OFF</button>
+                        <button class="bulk-btn reset" onclick="resetGPIO('esp2')">🔄 Reset to Auto</button>
+                    </div>
+                    <div class="gpio-grid">
+                        <div class="gpio-card" id="gpio-esp2-26">
+                            <div class="gpio-card-header">
+                                <span class="gpio-pin-badge esp2">ESP2 · GPIO 26</span>
+                                <div class="gpio-indicator off" id="gpio-ind-esp2-26"></div>
+                            </div>
+                            <div class="gpio-name">📂 Relay (Dustbin Lid)</div>
+                            <div class="gpio-desc">RELAY_PIN — Controls lid servo/motor</div>
+                            <div class="gpio-status">
+                                <span class="gpio-state off" id="gpio-state-esp2-26">OFF</span>
+                                <div class="toggle" id="gpio-toggle-esp2-26" onclick="toggleGPIO('esp2','gpio26')"><div class="toggle-knob"></div></div>
+                            </div>
+                        </div>
+                        <div class="gpio-card" id="gpio-esp2-25">
+                            <div class="gpio-card-header">
+                                <span class="gpio-pin-badge esp2">ESP2 · GPIO 25</span>
+                                <div class="gpio-indicator off" id="gpio-ind-esp2-25"></div>
+                            </div>
+                            <div class="gpio-name">🔴 Dustbin Full LED</div>
+                            <div class="gpio-desc">LED_DUSTBIN_FULL — Blinks when full</div>
+                            <div class="gpio-status">
+                                <span class="gpio-state off" id="gpio-state-esp2-25">OFF</span>
+                                <div class="toggle" id="gpio-toggle-esp2-25" onclick="toggleGPIO('esp2','gpio25')"><div class="toggle-knob"></div></div>
+                            </div>
+                        </div>
+                        <div class="gpio-card" id="gpio-esp2-27">
+                            <div class="gpio-card-header">
+                                <span class="gpio-pin-badge esp2">ESP2 · GPIO 27</span>
+                                <div class="gpio-indicator off" id="gpio-ind-esp2-27"></div>
+                            </div>
+                            <div class="gpio-name">🌊 Water Alert LED</div>
+                            <div class="gpio-desc">LED_WATER_ALERT — ON when water HIGH</div>
+                            <div class="gpio-status">
+                                <span class="gpio-state off" id="gpio-state-esp2-27">OFF</span>
+                                <div class="toggle" id="gpio-toggle-esp2-27" onclick="toggleGPIO('esp2','gpio27')"><div class="toggle-knob"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GPIO Command Log -->
+                <div class="card">
+                    <div class="card-header"><h3>📟 GPIO Command Log</h3><span class="card-header-action" onclick="clearGpioLog()">Clear</span></div>
+                    <div class="card-body">
+                        <div class="command-log" id="gpioLog">
+                            <div class="cmd-line"><span class="cmd-time">[info]</span> <span class="cmd-info">GPIO controls write to /gpio/esp1/* and /gpio/esp2/*</span></div>
+                            <div class="cmd-line"><span class="cmd-time">[info]</span> <span class="cmd-info">Add the ESP32 code snippet (shown below) to read these paths</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ESP32 Code Help -->
+                <div class="card" style="margin-top:16px">
+                    <div class="card-header"><h3>📝 ESP32 Code to Add</h3><span class="card-header-action" onclick="copyESPCode()">📋 Copy</span></div>
+                    <div class="card-body">
+                        <div class="command-log" id="espCodeBlock" style="max-height:400px;color:#e0e0e0;white-space:pre-wrap;font-size:10px">// ═══ Add to ESP32-1 readFirebaseControls() ═══
+// Individual GPIO control from dashboard
+if (Firebase.RTDB.getBool(&fbdoRead, "/gpio/esp1/gpio25")) {
+    bool state = fbdoRead.boolData();
+    ledcWrite(0, state ? 255 : 0);  // PWM channel 0
+}
+if (Firebase.RTDB.getBool(&fbdoRead, "/gpio/esp1/gpio26")) {
+    bool state = fbdoRead.boolData();
+    ledcWrite(1, state ? 255 : 0);  // PWM channel 1
+}
+if (Firebase.RTDB.getBool(&fbdoRead, "/gpio/esp1/gpio27")) {
+    bool state = fbdoRead.boolData();
+    ledcWrite(2, state ? 255 : 0);  // PWM channel 2
+}
+if (Firebase.RTDB.getBool(&fbdoRead, "/gpio/esp1/gpio13")) {
+    digitalWrite(BUZZER_PIN, fbdoRead.boolData() ? HIGH : LOW);
+}
+// Optional: PWM slider support
+if (Firebase.RTDB.getInt(&fbdoRead, "/gpio/esp1/pwm25")) {
+    ledcWrite(0, fbdoRead.intData());
+}
+if (Firebase.RTDB.getInt(&fbdoRead, "/gpio/esp1/pwm26")) {
+    ledcWrite(1, fbdoRead.intData());
+}
+if (Firebase.RTDB.getInt(&fbdoRead, "/gpio/esp1/pwm27")) {
+    ledcWrite(2, fbdoRead.intData());
+}
+
+// ═══ Add to ESP32-2 readFirebaseControls() ═══
+if (Firebase.RTDB.getBool(&fbdoRead, "/gpio/esp2/gpio26")) {
+    digitalWrite(RELAY_PIN, fbdoRead.boolData() ? HIGH : LOW);
+}
+if (Firebase.RTDB.getBool(&fbdoRead, "/gpio/esp2/gpio25")) {
+    digitalWrite(LED_DUSTBIN_FULL, fbdoRead.boolData() ? HIGH : LOW);
+}
+if (Firebase.RTDB.getBool(&fbdoRead, "/gpio/esp2/gpio27")) {
+    digitalWrite(LED_WATER_ALERT, fbdoRead.boolData() ? HIGH : LOW);
+}</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- LIGHTING PAGE -->
-            <div class="page" id="page-lighting">
-                <div class="card"><div class="card-header"><h3>Street Light Control</h3></div><div class="card-body"><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-                    <div style="text-align:center;padding:40px 30px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:48px;font-weight:800" id="lightPageStatus">--</div><div style="font-size:14px;color:var(--text-secondary);margin-top:8px">ESP32-1: LDR threshold 2000/1000</div><div style="font-size:12px;color:var(--text-tertiary);margin-top:4px" id="lightPageLDR">LDR: --</div><div style="margin-top:20px"><div class="toggle" id="ledTogglePage" onclick="toggleControl('led')" style="margin:0 auto"><div class="toggle-knob"></div></div><div style="font-size:12px;color:var(--text-secondary);margin-top:8px">Manual Override → /controls/led</div></div></div>
-                    <div style="padding:30px;background:var(--bg);border-radius:var(--radius-sm)"><h4 style="margin-bottom:16px;font-size:14px">How it works</h4><div style="font-size:13px;color:var(--text-secondary);line-height:1.8"><div>🔆 <strong>LDR &gt; 2000</strong> → Full brightness (255)</div><div>🌤 <strong>LDR 1500-2000</strong> → Medium (150)</div><div>🌙 <strong>LDR 1000-1500</strong> → Dim (60)</div><div>☀️ <strong>LDR &lt; 1000</strong> → OFF</div><div style="margin-top:12px">📱 <strong>/controls/led = true</strong> → Forces PWM 255</div><div>📱 <strong>/controls/led = false</strong> → Back to auto LDR</div></div></div>
-                </div></div></div>
-            </div>
-
-            <!-- WATER PAGE -->
-            <div class="page" id="page-water">
-                <div class="card"><div class="card-header"><h3>Water Level</h3></div><div class="card-body"><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-                    <div style="text-align:center;padding:40px 30px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:48px;font-weight:800" id="waterPageStatus">--</div><div style="font-size:14px;color:var(--text-secondary);margin-top:8px">Float sensor on GPIO 33 (INPUT_PULLUP)</div><div style="font-size:12px;color:var(--text-tertiary);margin-top:4px" id="waterPageAlerts">Alerts: 0</div></div>
-                    <div style="padding:30px;background:var(--bg);border-radius:var(--radius-sm)"><h4 style="margin-bottom:16px;font-size:14px">Tank</h4><div class="water-tank"><div class="water-tank-fill" id="waterVisual" style="height:45%"></div><div class="water-tank-text" id="waterVisualText">Normal</div></div></div>
-                </div></div></div>
-            </div>
-
-            <!-- WASTE PAGE -->
-            <div class="page" id="page-waste">
-                <div class="card"><div class="card-header"><h3>Smart Dustbin</h3></div><div class="card-body">
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                        <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:28px;font-weight:800" id="wastePageFill">--</div><div style="font-size:12px;color:var(--text-secondary)">Fill Level</div></div>
-                        <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:28px;font-weight:800" id="wastePageGas">--</div><div style="font-size:12px;color:var(--text-secondary)">Gas Level</div></div>
-                        <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:28px;font-weight:800" id="wastePageLid">--</div><div style="font-size:12px;color:var(--text-secondary)">Lid Status</div></div>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:var(--text-secondary)">Fill Level</span><span style="font-size:12px;font-weight:600" id="wastePercentText">0%</span></div>
-                    <div class="progress-bar"><div class="progress-fill orange" id="wasteProgressBar" style="width:0%"></div></div>
-                    <div style="margin-top:16px;display:flex;gap:8px">
-                        <button class="action-btn" style="flex:1" onclick="sendControl('relay',true,'📂 Opening lid','ESP32-2 activates relay')">📂 Open Lid</button>
-                        <button class="action-btn" style="flex:1" onclick="sendControl('relay',false,'📁 Closing lid','ESP32-2 deactivates relay')">📁 Close Lid</button>
-                    </div>
-                    <div style="margin-top:12px;font-size:12px;color:var(--text-tertiary)">
-                        <div>Height: 30cm | Offset: 2cm | Full: 80% | Warning: 60%</div>
-                        <div>Gas thresholds — Normal: &lt;500 | Warning: 1500 | Danger: 2500</div>
-                    </div>
-                </div></div>
-            </div>
-
-            <!-- TERMINAL PAGE -->
-            <div class="page" id="page-terminal">
-                <div class="card"><div class="card-header"><h3>📟 Command Terminal</h3><span class="card-header-action" onclick="clearCommandLog()">Clear</span></div><div class="card-body">
-                    <div class="command-log" id="commandLog"><div class="cmd-line"><span class="cmd-time">[boot]</span> <span class="cmd-info">SmartVillage Terminal — sends to /controls/*</span></div></div>
-                    <div style="display:flex;gap:8px;margin-top:12px"><input type="text" class="form-input" id="terminalInput" placeholder="led on, relay off, buzzer on, status, help..." style="flex:1" onkeypress="if(event.key==='Enter')executeCommand()"><button class="btn btn-primary" onclick="executeCommand()" style="flex:none;width:80px">Send</button></div>
-                    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
-                        <button class="map-ctrl-btn" onclick="runQuickCmd('led on')">led on</button>
-                        <button class="map-ctrl-btn" onclick="runQuickCmd('led off')">led off</button>
-                        <button class="map-ctrl-btn" onclick="runQuickCmd('relay on')">relay on</button>
-                        <button class="map-ctrl-btn" onclick="runQuickCmd('relay off')">relay off</button>
-                        <button class="map-ctrl-btn" onclick="runQuickCmd('buzzer on')">buzzer on</button>
-                        <button class="map-ctrl-btn" onclick="runQuickCmd('status')">status</button>
-                        <button class="map-ctrl-btn" onclick="runQuickCmd('reset')">reset all</button>
-                    </div>
-                </div></div>
-            </div>
+            <!-- TERMINAL -->
+            <div class="page" id="page-terminal"><div class="card"><div class="card-header"><h3>📟 Terminal</h3><span class="card-header-action" onclick="clearCommandLog()">Clear</span></div><div class="card-body"><div class="command-log" id="commandLog"><div class="cmd-line"><span class="cmd-time">[boot]</span> <span class="cmd-info">SmartVillage Terminal</span></div></div><div style="display:flex;gap:8px;margin-top:12px"><input type="text" class="form-input" id="terminalInput" placeholder="led on, relay off, gpio esp1 25 on, help..." style="flex:1" onkeypress="if(event.key==='Enter')executeCommand()"><button class="btn btn-primary" onclick="executeCommand()" style="flex:none;width:80px">Send</button></div><div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><button class="map-ctrl-btn" onclick="runQuickCmd('led on')">led on</button><button class="map-ctrl-btn" onclick="runQuickCmd('led off')">led off</button><button class="map-ctrl-btn" onclick="runQuickCmd('relay on')">relay on</button><button class="map-ctrl-btn" onclick="runQuickCmd('relay off')">relay off</button><button class="map-ctrl-btn" onclick="runQuickCmd('buzzer on')">buzzer on</button><button class="map-ctrl-btn" onclick="runQuickCmd('gpio esp1 25 on')">gpio25 on</button><button class="map-ctrl-btn" onclick="runQuickCmd('gpio esp1 25 off')">gpio25 off</button><button class="map-ctrl-btn" onclick="runQuickCmd('status')">status</button><button class="map-ctrl-btn" onclick="runQuickCmd('reset')">reset</button></div></div></div></div>
         </main>
     </div>
 
     <!-- REPORT MODAL -->
-    <div class="modal-overlay" id="reportModal">
-        <div class="modal">
-            <h3>📍 Report a Pothole</h3>
-            <p>Click the map or use GPS. Saved to /potholes/* in Firebase.</p>
-            <div class="form-group"><label>Location Name</label><input type="text" class="form-input" id="reportLocation" placeholder="e.g., Main Bazaar Road"></div>
-            <div class="form-row"><div class="form-group"><label>Severity</label><select class="form-input" id="reportSeverity"><option value="minor">Minor</option><option value="warning" selected>Warning</option><option value="critical">Critical</option></select></div><div class="form-group"><label>Size</label><select class="form-input" id="reportSize"><option>Small</option><option selected>Medium</option><option>Large</option></select></div></div>
-            <div class="form-group"><label>Description</label><textarea class="form-input" id="reportDesc" placeholder="Details..."></textarea></div>
-            <div class="form-row"><div class="form-group"><label>Latitude</label><input type="number" step="0.000001" class="form-input" id="reportLat" placeholder="20.5937"></div><div class="form-group"><label>Longitude</label><input type="number" step="0.000001" class="form-input" id="reportLng" placeholder="78.9629"></div></div>
-            <div class="form-group"><label>Pick on Map</label><div class="modal-map-container" id="modalMapContainer"></div><button class="map-pick-btn" onclick="useCurrentLocation()">📍 Use ESP32 GPS / Browser location</button></div>
-            <div class="modal-actions"><button class="btn btn-secondary" onclick="closeReportModal()">Cancel</button><button class="btn btn-primary" id="submitReportBtn" onclick="submitReport()">Submit Report</button></div>
-        </div>
-    </div>
-
+    <div class="modal-overlay" id="reportModal"><div class="modal"><h3>📍 Report Pothole</h3><p>Click map or enter coords.</p><div class="form-group"><label>Location</label><input type="text" class="form-input" id="reportLocation" placeholder="Main Bazaar Road"></div><div class="form-row"><div class="form-group"><label>Severity</label><select class="form-input" id="reportSeverity"><option value="minor">Minor</option><option value="warning" selected>Warning</option><option value="critical">Critical</option></select></div><div class="form-group"><label>Size</label><select class="form-input" id="reportSize"><option>Small</option><option selected>Medium</option><option>Large</option></select></div></div><div class="form-group"><label>Description</label><textarea class="form-input" id="reportDesc" placeholder="Details..."></textarea></div><div class="form-row"><div class="form-group"><label>Lat</label><input type="number" step="0.000001" class="form-input" id="reportLat"></div><div class="form-group"><label>Lng</label><input type="number" step="0.000001" class="form-input" id="reportLng"></div></div><div class="form-group"><label>Pick on Map</label><div class="modal-map-container" id="modalMapContainer"></div><button class="map-pick-btn" onclick="useCurrentLocation()">📍 Use GPS</button></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeReportModal()">Cancel</button><button class="btn btn-primary" id="submitReportBtn" onclick="submitReport()">Submit</button></div></div></div>
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- FIREBASE + LEAFLET -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
-    // ════════════════════════════════════════════════
-    //  FIREBASE — matches your ESP32 config exactly
-    // ════════════════════════════════════════════════
-    firebase.initializeApp({
-        apiKey:"AIzaSyAwEExMpZV7NXQjG--d3LKIk4ZWhdFANCU",
-        authDomain:"pothole-detection-90641.firebaseapp.com",
-        databaseURL:"https://pothole-detection-90641-default-rtdb.firebaseio.com",
-        projectId:"pothole-detection-90641"
-    });
-    const db = firebase.database();
+    // ════════════════════════════════════════
+    //  FIREBASE
+    // ════════════════════════════════════════
+    firebase.initializeApp({apiKey:"AIzaSyAwEExMpZV7NXQjG--d3LKIk4ZWhdFANCU",authDomain:"pothole-detection-90641.firebaseapp.com",databaseURL:"https://pothole-detection-90641-default-rtdb.firebaseio.com",projectId:"pothole-detection-90641"});
+    const db=firebase.database();
 
-    // ════════════════════════════════════════════════
-    //  GLOBAL STATE
-    // ════════════════════════════════════════════════
-    let currentGPS = {lat:20.5937,lng:78.9629,fixed:false};
+    // ════════════════════════════════════════
+    //  STATE
+    // ════════════════════════════════════════
+    let currentGPS={lat:20.5937,lng:78.9629,fixed:false};
     let mainMap,potholePageMap,modalMap,modalMapMarker=null;
     let mapMarkers=[],pMapMarkers=[];
     let esp1Online=false,esp2Online=false;
     let controlState={led:false,relay:false,buzzer:false};
-    let sparkData={distance:[],gas:[],ldr:[]};
-    const MAX_SPARK=20;
+    // GPIO states
+    let gpioState={
+        esp1:{gpio25:false,gpio26:false,gpio27:false,gpio13:false,pwm25:0,pwm26:0,pwm27:0},
+        esp2:{gpio26:false,gpio25:false,gpio27:false}
+    };
 
-    // ════════════════════════════════════════════════
-    //  LEAFLET MAPS
-    // ════════════════════════════════════════════════
-    function makeIcon(color,size=24){
-        const c={red:'#ff3b30',orange:'#ff9500',yellow:'#ffcc00',blue:'#007aff',green:'#34c759',purple:'#af52de'}[color]||color;
-        return L.divIcon({className:'',html:`<div style="width:${size}px;height:${size}px;background:${c};border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center"><div style="width:${size/3}px;height:${size/3}px;background:#fff;border-radius:50%;transform:rotate(45deg)"></div></div>`,iconSize:[size,size],iconAnchor:[size/2,size],popupAnchor:[0,-size]});
-    }
-    function espIcon(){
-        return L.divIcon({className:'',html:`<div style="width:32px;height:32px;background:linear-gradient(135deg,#007aff,#5856d6);border-radius:50%;border:3px solid #fff;box-shadow:0 2px 12px rgba(0,122,255,.4);display:flex;align-items:center;justify-content:center"><div style="width:12px;height:12px;background:#fff;border-radius:50%"></div></div>`,iconSize:[32,32],iconAnchor:[16,16],popupAnchor:[0,-20]});
-    }
-
+    // ════════════════════════════════════════
+    //  LEAFLET
+    // ════════════════════════════════════════
+    function makeIcon(color,size=24){const c={red:'#ff3b30',orange:'#ff9500',yellow:'#ffcc00',blue:'#007aff',green:'#34c759'}[color]||color;return L.divIcon({className:'',html:`<div style="width:${size}px;height:${size}px;background:${c};border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center"><div style="width:${size/3}px;height:${size/3}px;background:#fff;border-radius:50%;transform:rotate(45deg)"></div></div>`,iconSize:[size,size],iconAnchor:[size/2,size],popupAnchor:[0,-size]})}
+    function espIcon(){return L.divIcon({className:'',html:`<div style="width:32px;height:32px;background:linear-gradient(135deg,#007aff,#5856d6);border-radius:50%;border:3px solid #fff;box-shadow:0 2px 12px rgba(0,122,255,.4);display:flex;align-items:center;justify-content:center"><div style="width:12px;height:12px;background:#fff;border-radius:50%"></div></div>`,iconSize:[32,32],iconAnchor:[16,16],popupAnchor:[0,-20]})}
     let espMarker=null;
     function initMaps(){
         mainMap=L.map('mainMapContainer').setView([currentGPS.lat,currentGPS.lng],14);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© <a href="https://openstreetmap.org/copyright">OSM</a>',maxZoom:19}).addTo(mainMap);
         potholePageMap=L.map('potholePageMap').setView([currentGPS.lat,currentGPS.lng],14);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM',maxZoom:19}).addTo(potholePageMap);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(potholePageMap);
         setTimeout(()=>{mainMap.invalidateSize();potholePageMap.invalidateSize()},400);
     }
+    function initModalMap(){if(modalMap)modalMap.remove();setTimeout(()=>{modalMap=L.map('modalMapContainer',{zoomControl:false}).setView([currentGPS.lat,currentGPS.lng],15);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(modalMap);modalMap.on('click',e=>{document.getElementById('reportLat').value=e.latlng.lat.toFixed(6);document.getElementById('reportLng').value=e.latlng.lng.toFixed(6);if(modalMapMarker)modalMap.removeLayer(modalMapMarker);modalMapMarker=L.marker([e.latlng.lat,e.latlng.lng],{icon:makeIcon('purple',28)}).addTo(modalMap)});setTimeout(()=>modalMap.invalidateSize(),200)},300)}
 
-    function initModalMap(){
-        if(modalMap)modalMap.remove();
-        setTimeout(()=>{
-            modalMap=L.map('modalMapContainer',{zoomControl:false}).setView([currentGPS.lat,currentGPS.lng],15);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(modalMap);
-            modalMap.on('click',e=>{
-                document.getElementById('reportLat').value=e.latlng.lat.toFixed(6);
-                document.getElementById('reportLng').value=e.latlng.lng.toFixed(6);
-                if(modalMapMarker)modalMap.removeLayer(modalMapMarker);
-                modalMapMarker=L.marker([e.latlng.lat,e.latlng.lng],{icon:makeIcon('purple',28)}).addTo(modalMap);
-            });
-            setTimeout(()=>modalMap.invalidateSize(),200);
-        },300);
-    }
+    // ════════════════════════════════════════
+    //  FIREBASE LISTENERS
+    // ════════════════════════════════════════
+    db.ref('/esp1/pothole').on('value',s=>{const d=s.val();if(!d)return;document.getElementById('potholeCount').textContent=d.totalCount||0;document.getElementById('navPotholeBadge').textContent=d.totalCount||0;document.getElementById('potholeTrend').textContent=(d.totalCount||0)+' found';document.getElementById('sensorDistance').textContent=(d.currentDistance||0).toFixed(1);document.getElementById('sensorDistance').style.color=d.detected?'var(--accent-red)':'var(--accent-green)';document.getElementById('sensorBaseline').textContent=(d.baseline||0).toFixed(1);if(d.detected){showToast('error','🕳️ POTHOLE!','Depth: '+(d.depth||0).toFixed(1)+'cm');addAlert('red','🕳️ Pothole!','Depth:'+(d.depth||0).toFixed(1)+'cm')}});
+    db.ref('/esp1/streetLights').on('value',s=>{const d=s.val();if(!d)return;document.getElementById('lightsOn').textContent=d.isOn?'ON':'OFF';document.getElementById('lightsOn').style.color=d.isOn?'var(--accent-green)':'var(--text-tertiary)';document.getElementById('lightsTrend').textContent=d.isOn?'Active':'Off';document.getElementById('lightsTrend').className='stat-trend '+(d.isOn?'down':'up');document.getElementById('ldrDisplay').textContent='LDR: '+(d.ldrValue||'--')+' | Brightness: '+(d.brightness||0);document.getElementById('sensorLDR').textContent=d.ldrValue||'--';document.getElementById('lightPageStatus').textContent=d.isOn?'💡 ON':'🌙 OFF';document.getElementById('lightPageLDR').textContent='LDR: '+(d.ldrValue||'--')+' | PWM: '+(d.brightness||0)});
+    db.ref('/esp1/gps').on('value',s=>{const d=s.val();if(!d)return;document.getElementById('gpsBar').classList.add('show');if(d.fixed&&d.lat!==0){currentGPS={lat:d.lat,lng:d.lng,fixed:true};document.getElementById('gpsStatusText').textContent='GPS ✅ | Sats: '+(d.satellites||0);document.getElementById('gpsCoordsDisplay').textContent=d.lat.toFixed(6)+', '+d.lng.toFixed(6);if(espMarker)mainMap.removeLayer(espMarker);espMarker=L.marker([d.lat,d.lng],{icon:espIcon()}).addTo(mainMap).bindPopup('<strong>ESP32-1</strong>')}else{document.getElementById('gpsStatusText').textContent='Searching... Sats: '+(d.satellites||0);document.getElementById('gpsCoordsDisplay').textContent='No fix'}document.getElementById('sensorSats').textContent=d.satellites||0});
+    db.ref('/esp1/status').on('value',s=>{const d=s.val();if(!d)return;esp1Online=d.online||false;document.getElementById('esp1StatusDisplay').textContent=d.online?'🟢 Online':'🔴 Offline';document.getElementById('esp1Uptime').textContent='Uptime: '+(d.lastUpdate||0)+'s';document.getElementById('esp1GpioStatus').textContent=d.online?'🟢 Connected':'🔴 Offline';updateSystemStatus()});
+    db.ref('/esp2/dustbin').on('value',s=>{const d=s.val();if(!d)return;const f=Math.round(d.fillPercent||0);document.getElementById('wasteBins').textContent=f+'%';document.getElementById('wasteBins').style.color=f>80?'var(--accent-red)':f>60?'var(--accent-orange)':'';document.getElementById('wasteTrend').textContent=d.status||'--';document.getElementById('sensorDustbin').textContent=f+'%';document.getElementById('wastePageFill').textContent=f+'%';document.getElementById('wastePageLid').textContent=d.lidOpen?'📂 OPEN':'📁 Closed';document.getElementById('wasteProgressBar').style.width=f+'%';document.getElementById('wastePercentText').textContent=f+'%';document.getElementById('wasteProgressBar').className='progress-fill '+(f>80?'red':f>50?'orange':'green');document.getElementById('relayStatus').textContent=d.lidOpen?'📂 Open':'📁 Closed';if(d.status==='FULL')addAlert('red','🗑️ FULL!',f+'%')});
+    db.ref('/esp2/gas').on('value',s=>{const d=s.val();if(!d)return;document.getElementById('gasDisplay').textContent='Gas: '+(d.value||0)+' ('+(d.status||'--')+')';document.getElementById('sensorGas').textContent=d.value||'--';document.getElementById('sensorGas').style.color=d.level===2?'var(--accent-red)':d.level===1?'var(--accent-orange)':'var(--accent-green)';document.getElementById('wastePageGas').textContent=d.value||'--';if(d.level===2){showToast('error','⚠️ GAS!','Val: '+d.value);addAlert('red','💨 GAS!',d.value)}});
+    db.ref('/esp2/water').on('value',s=>{const d=s.val();if(!d)return;const h=d.floatHigh;document.getElementById('waterLevel').textContent=h?'⚠️ HIGH':'Normal';document.getElementById('waterLevel').style.color=h?'var(--accent-red)':'var(--accent-green)';document.getElementById('gaugeVal').textContent=h?'!':'OK';document.getElementById('gaugeUnit').textContent=h?'OVERFLOW':'Normal';const gf=document.getElementById('waterGaugeFill');gf.setAttribute('stroke-dashoffset',314-(314*(h?95:45)/100));if(h)gf.setAttribute('stroke','#ff3b30');else gf.setAttribute('stroke','url(#wg)');document.getElementById('waterTrend').textContent=h?'⚠️':'✅';document.getElementById('waterTrend').className='stat-trend '+(h?'up':'down');document.getElementById('waterAlertDisplay').textContent='Alerts: '+(d.alertCount||0);document.getElementById('waterPageStatus').textContent=h?'🌊 HIGH':'✅ Normal';document.getElementById('waterPageAlerts').textContent='Alerts: '+(d.alertCount||0);document.getElementById('waterVisual').style.height=h?'95%':'45%';document.getElementById('waterVisual').style.background=h?'linear-gradient(180deg,#ef5350,#c62828)':'linear-gradient(180deg,#42a5f5,#1565c0)';document.getElementById('waterVisualText').textContent=h?'⚠️ OVERFLOW':'Normal';if(h)addAlert('red','🌊 Overflow!','#'+(d.alertCount||0))});
+    db.ref('/esp2/status').on('value',s=>{const d=s.val();if(!d)return;esp2Online=d.online||false;document.getElementById('esp2StatusDisplay').textContent=d.online?'🟢 Online':'🔴 Offline';document.getElementById('sensorUpdateTime').textContent='ESP2: '+(d.lastUpdate||0)+'s';document.getElementById('esp2Uptime').textContent='Uptime: '+(d.lastUpdate||0)+'s';document.getElementById('esp2GpioStatus').textContent=d.online?'🟢 Connected':'🔴 Offline';updateSystemStatus()});
 
-    // ════════════════════════════════════════════════
-    //  SPARKLINE
-    // ════════════════════════════════════════════════
-    function pushSpark(k,v){sparkData[k].push(v);if(sparkData[k].length>MAX_SPARK)sparkData[k].shift()}
-    function drawSpark(id,data,color='#007aff'){
-        const el=document.getElementById(id);if(!el)return;
-        const mx=Math.max(...data,1);
-        el.innerHTML=data.map(v=>`<div class="sparkline-bar" style="height:${Math.max(v/mx*100,5)}%;background:${color}"></div>`).join('');
-    }
+    // Sync /controls/*
+    db.ref('/controls').on('value',s=>{const c=s.val();if(!c)return;controlState={led:!!c.led,relay:!!c.relay,buzzer:!!c.buzzer};syncT('ledToggle',controlState.led);syncT('ledTogglePage',controlState.led);syncT('relayToggle',controlState.relay);syncT('buzzerToggle',controlState.buzzer);document.getElementById('ledStatus').textContent=controlState.led?'📱 Manual ON':'Auto (LDR)';document.getElementById('buzzerStatus').textContent=controlState.buzzer?'🔴 ACTIVE':'Off'});
 
-    // ════════════════════════════════════════════════
-    //  FIREBASE LISTENERS — exact paths from your ESP32 code
-    // ════════════════════════════════════════════════
-
-    // ── ESP32-1: /esp1/pothole ──
-    db.ref('/esp1/pothole').on('value',s=>{
+    // ★★★ Sync /gpio/* states from Firebase ★★★
+    db.ref('/gpio/esp1').on('value',s=>{
         const d=s.val();if(!d)return;
-        const el=document.getElementById;
-        document.getElementById('potholeCount').textContent=d.totalCount||0;
-        document.getElementById('navPotholeBadge').textContent=d.totalCount||0;
-        document.getElementById('potholeTrend').textContent=(d.totalCount||0)+' found';
-        document.getElementById('sensorDistance').textContent=(d.currentDistance||0).toFixed(1);
-        document.getElementById('sensorDistance').style.color=d.detected?'var(--accent-red)':'var(--accent-green)';
-        document.getElementById('sensorBaseline').textContent=(d.baseline||0).toFixed(1);
-        pushSpark('distance',d.currentDistance||0);
-        drawSpark('distanceSparkline',sparkData.distance,d.detected?'#ff3b30':'#007aff');
-        if(d.detected){
-            showToast('error','🕳️ POTHOLE!','Depth: '+(d.depth||0).toFixed(1)+' cm — Baseline: '+(d.baseline||0).toFixed(1)+' cm');
-            addAlert('red','🕳️ Pothole Detected!','Depth: '+(d.depth||0).toFixed(1)+'cm | Dist: '+(d.currentDistance||0).toFixed(1)+'cm');
-            logCmd('ESP32-1','Pothole! depth='+(d.depth||0).toFixed(1)+'cm','error');
-        }
+        ['gpio25','gpio26','gpio27','gpio13'].forEach(pin=>{
+            if(d[pin]!==undefined){
+                const num=pin.replace('gpio','');
+                gpioState.esp1[pin]=!!d[pin];
+                updateGPIOUI('esp1',num,!!d[pin]);
+            }
+        });
+        ['pwm25','pwm26','pwm27'].forEach(pk=>{
+            if(d[pk]!==undefined){
+                const num=pk.replace('pwm','');
+                gpioState.esp1[pk]=d[pk];
+                const slider=document.getElementById('pwm-esp1-'+num);
+                const valEl=document.getElementById('pwm-val-esp1-'+num);
+                if(slider)slider.value=d[pk];
+                if(valEl)valEl.textContent=d[pk];
+            }
+        });
     });
-
-    // ── ESP32-1: /esp1/streetLights ──
-    db.ref('/esp1/streetLights').on('value',s=>{
+    db.ref('/gpio/esp2').on('value',s=>{
         const d=s.val();if(!d)return;
-        const on=d.isOn;
-        document.getElementById('lightsOn').textContent=on?'ON':'OFF';
-        document.getElementById('lightsOn').style.color=on?'var(--accent-green)':'var(--text-tertiary)';
-        document.getElementById('lightsTrend').textContent=on?'Active':'Off';
-        document.getElementById('lightsTrend').className='stat-trend '+(on?'down':'up');
-        document.getElementById('ldrDisplay').textContent='LDR: '+(d.ldrValue||'--')+' | Brightness: '+(d.brightness||0);
-        document.getElementById('sensorLDR').textContent=d.ldrValue||'--';
-        document.getElementById('lightPageStatus').textContent=on?'💡 ON':'🌙 OFF';
-        document.getElementById('lightPageLDR').textContent='LDR: '+(d.ldrValue||'--')+' | PWM Level: '+(d.brightness||0);
-        pushSpark('ldr',d.ldrValue||0);
-        drawSpark('ldrSparkline',sparkData.ldr,'#ffcc00');
-    });
-
-    // ── ESP32-1: /esp1/gps ──
-    db.ref('/esp1/gps').on('value',s=>{
-        const d=s.val();if(!d)return;
-        const gb=document.getElementById('gpsBar');
-        gb.classList.add('show');
-        if(d.fixed&&d.lat!==0){
-            currentGPS={lat:d.lat,lng:d.lng,fixed:true};
-            document.getElementById('gpsStatusText').textContent='GPS Fixed ✅ | Sats: '+(d.satellites||0)+' | Speed: '+(d.speed||0).toFixed(1)+' km/h';
-            document.getElementById('gpsCoordsDisplay').textContent=d.lat.toFixed(6)+', '+d.lng.toFixed(6);
-            if(espMarker)mainMap.removeLayer(espMarker);
-            espMarker=L.marker([d.lat,d.lng],{icon:espIcon()}).addTo(mainMap).bindPopup('<strong>ESP32-1</strong><br>'+d.lat.toFixed(6)+', '+d.lng.toFixed(6));
-        }else{
-            document.getElementById('gpsStatusText').textContent='GPS Searching... | Sats: '+(d.satellites||0);
-            document.getElementById('gpsCoordsDisplay').textContent='No fix';
-        }
-        document.getElementById('sensorSats').textContent=d.satellites||0;
-    });
-
-    // ── ESP32-1: /esp1/status ──
-    db.ref('/esp1/status').on('value',s=>{
-        const d=s.val();if(!d)return;
-        esp1Online=d.online||false;
-        document.getElementById('esp1StatusDisplay').textContent=d.online?'🟢 Online':'🔴 Offline';
-        document.getElementById('esp1Uptime').textContent='Uptime: '+(d.lastUpdate||0)+'s';
-        updateSystemStatus();
-    });
-
-    // ── ESP32-2: /esp2/dustbin ──
-    db.ref('/esp2/dustbin').on('value',s=>{
-        const d=s.val();if(!d)return;
-        const fill=Math.round(d.fillPercent||0);
-        document.getElementById('wasteBins').textContent=fill+'%';
-        document.getElementById('wasteBins').style.color=fill>80?'var(--accent-red)':fill>60?'var(--accent-orange)':'';
-        document.getElementById('wasteTrend').textContent=d.status||'--';
-        document.getElementById('sensorDustbin').textContent=fill+'%';
-        document.getElementById('wastePageFill').textContent=fill+'%';
-        document.getElementById('wastePageLid').textContent=d.lidOpen?'📂 OPEN':'📁 Closed';
-        document.getElementById('wasteProgressBar').style.width=fill+'%';
-        document.getElementById('wastePercentText').textContent=fill+'%';
-        document.getElementById('wasteProgressBar').className='progress-fill '+(fill>80?'red':fill>50?'orange':'green');
-        document.getElementById('relayStatus').textContent=d.lidOpen?'📂 Lid OPEN':'📁 Closed';
-        if(d.status==='FULL'){addAlert('red','🗑️ Dustbin FULL!','Fill: '+fill+'%');logCmd('ESP32-2','DUSTBIN FULL '+fill+'%','error')}
-    });
-
-    // ── ESP32-2: /esp2/gas ──
-    db.ref('/esp2/gas').on('value',s=>{
-        const d=s.val();if(!d)return;
-        document.getElementById('gasDisplay').textContent='Gas: '+(d.value||0)+' ('+( d.status||'--')+')';
-        document.getElementById('sensorGas').textContent=d.value||'--';
-        document.getElementById('sensorGas').style.color=d.level===2?'var(--accent-red)':d.level===1?'var(--accent-orange)':'var(--accent-green)';
-        document.getElementById('wastePageGas').textContent=d.value||'--';
-        pushSpark('gas',d.value||0);
-        drawSpark('gasSparkline',sparkData.gas,d.level===2?'#ff3b30':d.level===1?'#ff9500':'#34c759');
-        if(d.level===2){showToast('error','⚠️ GAS DANGER!','Value: '+d.value+' (threshold: 2500)');addAlert('red','💨 GAS DANGER!','Reading: '+d.value)}
-        else if(d.level===1){addAlert('orange','💨 Gas Warning','Reading: '+d.value+' (threshold: 1500)')}
-    });
-
-    // ── ESP32-2: /esp2/water ──
-    db.ref('/esp2/water').on('value',s=>{
-        const d=s.val();if(!d)return;
-        const high=d.floatHigh;
-        document.getElementById('waterLevel').textContent=high?'⚠️ HIGH':'Normal';
-        document.getElementById('waterLevel').style.color=high?'var(--accent-red)':'var(--accent-green)';
-        document.getElementById('gaugeVal').textContent=high?'!':'OK';
-        document.getElementById('gaugeUnit').textContent=high?'OVERFLOW':'Normal';
-        const gf=document.getElementById('waterGaugeFill');
-        gf.setAttribute('stroke-dashoffset',314-(314*(high?95:45)/100));
-        if(high)gf.setAttribute('stroke','#ff3b30');else gf.setAttribute('stroke','url(#wg)');
-        document.getElementById('waterTrend').textContent=high?'⚠️ HIGH':'✅ Normal';
-        document.getElementById('waterTrend').className='stat-trend '+(high?'up':'down');
-        document.getElementById('waterAlertDisplay').textContent='Alerts: '+(d.alertCount||0);
-        document.getElementById('waterPageStatus').textContent=high?'🌊 HIGH ⚠️':'✅ Normal';
-        document.getElementById('waterPageAlerts').textContent='Alerts: '+(d.alertCount||0);
-        document.getElementById('waterVisual').style.height=high?'95%':'45%';
-        document.getElementById('waterVisual').style.background=high?'linear-gradient(180deg,#ef5350,#c62828)':'linear-gradient(180deg,#42a5f5,#1565c0)';
-        document.getElementById('waterVisualText').textContent=high?'⚠️ OVERFLOW':'Normal';
-        if(high){addAlert('red','🌊 Water Overflow!','Alert #'+(d.alertCount||0))}
-    });
-
-    // ── ESP32-2: /esp2/status ──
-    db.ref('/esp2/status').on('value',s=>{
-        const d=s.val();if(!d)return;
-        esp2Online=d.online||false;
-        document.getElementById('esp2StatusDisplay').textContent=d.online?'🟢 Online':'🔴 Offline';
-        document.getElementById('sensorUpdateTime').textContent='ESP2 uptime: '+(d.lastUpdate||0)+'s';
-        document.getElementById('esp2Uptime').textContent='Uptime: '+(d.lastUpdate||0)+'s';
-        updateSystemStatus();
-    });
-
-    // ── Sync /controls/* from Firebase back to toggles ──
-    // This is key: if ESP32-2 resets buzzer to false, our toggle updates too
-    db.ref('/controls').on('value',s=>{
-        const c=s.val();if(!c)return;
-        controlState={led:!!c.led,relay:!!c.relay,buzzer:!!c.buzzer};
-        syncAllToggles();
-    });
-
-    function syncAllToggles(){
-        ['ledToggle','ledTogglePage'].forEach(id=>syncT(id,controlState.led));
-        ['relayToggle'].forEach(id=>syncT(id,controlState.relay));
-        ['buzzerToggle'].forEach(id=>syncT(id,controlState.buzzer));
-        // Update status labels
-        document.getElementById('ledStatus').textContent=controlState.led?'📱 Manual ON (override)':'Auto mode (LDR)';
-        document.getElementById('buzzerStatus').textContent=controlState.buzzer?'🔴 Alert ACTIVE':'Off';
-    }
-    function syncT(id,on){const el=document.getElementById(id);if(el){on?el.classList.add('on'):el.classList.remove('on');el.classList.remove('sending')}}
-
-    // ════════════════════════════════════════════════
-    //  HARDWARE CONTROL — writes to /controls/*
-    //  ESP32-1 reads /controls/led every 1000ms
-    //  ESP32-2 reads /controls/relay & /controls/buzzer every 1000ms
-    // ════════════════════════════════════════════════
-
-    function sendControl(key,value,successMsg,detailMsg){
-        logCmd('dashboard','SET /controls/'+key+' = '+value,'info');
-        // Visual feedback — show "sending" state
-        const toggleId=key+'Toggle';
-        const tEl=document.getElementById(toggleId);
-        if(tEl)tEl.classList.add('sending');
-
-        db.ref('/controls/'+key).set(value)
-            .then(()=>{
-                showToast('success',successMsg,detailMsg||'Written to /controls/'+key);
-                logCmd('firebase','OK → /controls/'+key+' = '+value,'success');
-            })
-            .catch(err=>{
-                showToast('error','❌ Failed',err.message);
-                logCmd('firebase','FAIL: '+err.message,'error');
-                if(tEl)tEl.classList.remove('sending');
-            });
-    }
-
-    function toggleControl(key){
-        const newVal=!controlState[key];
-        let successMsg,detailMsg;
-        switch(key){
-            case 'led':
-                successMsg=newVal?'💡 Lights forced ON':'💡 Back to Auto mode';
-                detailMsg=newVal?'ESP32-1 overrides LDR, sets PWM=255':'ESP32-1 returns to LDR auto control';
-                break;
-            case 'relay':
-                successMsg=newVal?'📂 Lid OPEN command sent':'📁 Lid CLOSE command sent';
-                detailMsg='ESP32-2 reads /controls/relay → drives GPIO 26';
-                break;
-            case 'buzzer':
-                successMsg=newVal?'🔔 Alert triggered!':'🔕 Alert off';
-                detailMsg=newVal?'ESP32-2 flashes LEDs then auto-resets to false':'Manually cleared';
-                break;
-        }
-        sendControl(key,newVal,successMsg,detailMsg);
-    }
-
-    function resetAllControls(){
-        logCmd('dashboard','RESET ALL /controls/* → false','info');
-        db.ref('/controls').set({led:false,relay:false,buzzer:false})
-            .then(()=>{
-                showToast('success','🔄 All Reset','LED→auto, Relay→closed, Buzzer→off');
-                logCmd('firebase','All controls reset to defaults','success');
-            });
-    }
-
-    // ════════════════════════════════════════════════
-    //  POTHOLE MARKERS ON MAP — from /potholes/*
-    //  ESP32-1 uploads as: /potholes/pothole_N_millis/
-    //  Manual reports as: /potholes/manual_timestamp/
-    // ════════════════════════════════════════════════
-    let pinCount=0;
-    db.ref('/potholes').orderByChild('timestamp').limitToLast(50).on('child_added',s=>{
-        const d=s.val();if(!d)return;
-        const key=s.key;
-        pinCount++;
-        document.getElementById('mapPinCount').textContent='📍 '+pinCount+' potholes';
-
-        const lat=d.lat||(currentGPS.lat+(Math.random()-.5)*.01);
-        const lng=d.lng||(currentGPS.lng+(Math.random()-.5)*.01);
-        const sev=d.severity==='critical'?'red':d.severity==='warning'?'orange':'yellow';
-        const loc=d.location||(lat.toFixed(4)+', '+lng.toFixed(4));
-        const depth=(d.depth||0).toFixed(1);
-
-        const popup=`<div style="font-family:Inter,sans-serif;min-width:180px">
-            <strong>${loc}</strong><br>
-            <span style="color:#86868b;font-size:12px">Depth: ${depth}cm | ${d.severity||'unknown'}</span><br>
-            <span style="color:#86868b;font-size:11px">${d.source==='sensor'?'🤖 ESP32-1 auto':'📝 Manual'}</span><br>
-            <span style="color:#86868b;font-size:11px">📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}</span>
-            ${d.mapUrl?'<br><a href="'+d.mapUrl+'" target="_blank" style="font-size:11px">Google Maps ↗</a>':''}
-            <div style="margin-top:8px;display:flex;gap:4px">
-                <button onclick="markResolved('${key}')" style="padding:4px 10px;border-radius:12px;border:none;background:#34c759;color:#fff;font-size:11px;cursor:pointer;font-weight:600">✅ Resolve</button>
-                <button onclick="deletePothole('${key}')" style="padding:4px 10px;border-radius:12px;border:none;background:#ff3b30;color:#fff;font-size:11px;cursor:pointer;font-weight:600">🗑️ Delete</button>
-            </div></div>`;
-
-        if(mainMap){const m=L.marker([lat,lng],{icon:makeIcon(sev)}).addTo(mainMap).bindPopup(popup);mapMarkers.push(m)}
-        if(potholePageMap){const m2=L.marker([lat,lng],{icon:makeIcon(sev)}).addTo(potholePageMap).bindPopup(popup);pMapMarkers.push(m2)}
-
-        // Lists
-        const dashList=document.getElementById('dashboardPotholeList');
-        const allList=document.getElementById('allPotholeList');
-        if(dashList&&dashList.querySelector('div[style*="text-align"]'))dashList.innerHTML='';
-        if(allList&&allList.querySelector('div[style*="text-align"]'))allList.innerHTML='';
-
-        const html=`<div class="pothole-severity ${d.severity||'minor'}"></div><div class="pothole-info"><h4>${loc} ${depth!=='0.0'?'— '+depth+'cm':''}</h4><span>${d.source==='sensor'?'🤖 Auto':'📝 Manual'} • ${new Date(d.timestamp*1000||d.timestamp||Date.now()).toLocaleDateString()}</span></div><span class="pothole-status ${d.status||'pending'}">${d.status||'Pending'}</span>`;
-
-        [dashList,allList].forEach(list=>{
-            if(!list)return;
-            const item=document.createElement('div');
-            item.className='pothole-item';item.innerHTML=html;
-            item.onclick=()=>{if(mainMap)mainMap.setView([lat,lng],17);switchPage('dashboard',document.querySelector('[data-page=dashboard]'))};
-            list.insertBefore(item,list.firstChild);
-            if(list===dashList&&list.children.length>8)list.removeChild(list.lastChild);
+        ['gpio26','gpio25','gpio27'].forEach(pin=>{
+            if(d[pin]!==undefined){
+                const num=pin.replace('gpio','');
+                gpioState.esp2[pin]=!!d[pin];
+                updateGPIOUI('esp2',num,!!d[pin]);
+            }
         });
     });
 
-    function markResolved(key){db.ref('/potholes/'+key+'/status').set('resolved').then(()=>showToast('success','✅ Resolved','Updated in Firebase'))}
-    function deletePothole(key){if(confirm('Delete this pothole?'))db.ref('/potholes/'+key).remove().then(()=>showToast('info','🗑️ Deleted','Removed from Firebase'))}
+    // ════════════════════════════════════════
+    //  GPIO CONTROL FUNCTIONS
+    // ════════════════════════════════════════
+    function toggleGPIO(esp,pin){
+        const currentVal=gpioState[esp][pin]||false;
+        const newVal=!currentVal;
+        const num=pin.replace('gpio','');
 
-    // ════════════════════════════════════════════════
-    //  MAP CONTROLS
-    // ════════════════════════════════════════════════
-    function centerMapOnGPS(){if(!currentGPS.fixed){showToast('warning','⚠️ No GPS','Waiting for ESP32-1 GPS fix');return}mainMap.setView([currentGPS.lat,currentGPS.lng],16,{animate:true})}
-    function fitAllMarkers(){if(!mapMarkers.length){showToast('warning','No markers','');return}mainMap.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(.1))}
-    function addPotholeAtCenter(){const c=mainMap.getCenter();document.getElementById('reportLat').value=c.lat.toFixed(6);document.getElementById('reportLng').value=c.lng.toFixed(6);openReportModal()}
-    function copyGPS(){const c=document.getElementById('gpsCoordsDisplay').textContent;navigator.clipboard.writeText(c).then(()=>showToast('success','📋 Copied',c))}
+        gpioState[esp][pin]=newVal;
+        updateGPIOUI(esp,num,newVal);
 
-    // ════════════════════════════════════════════════
-    //  ALERT SYSTEM
-    // ════════════════════════════════════════════════
-    let alertTs={};
-    function addAlert(color,title,msg){
-        const now=Date.now();if(alertTs[title]&&now-alertTs[title]<10000)return;alertTs[title]=now;
-        const list=document.getElementById('alertsList');
-        if(list.children.length>15)list.removeChild(list.lastChild);
-        const time=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-        const item=document.createElement('div');item.className='alert-item';item.style.animation='fadeIn .4s ease-out';
-        item.innerHTML=`<div class="alert-dot ${color}"></div><div class="alert-content"><h4>${title}</h4><p>${msg}</p></div><span class="alert-time">${time}</span>`;
-        list.insertBefore(item,list.firstChild);
-        document.getElementById('notifDot').classList.add('show');
-    }
-    function clearAlerts(){
-        document.getElementById('alertsList').innerHTML='<div class="alert-item"><div class="alert-dot green"></div><div class="alert-content"><h4>Cleared</h4><p>All alerts cleared</p></div><span class="alert-time">Now</span></div>';
-        alertTs={};document.getElementById('notifDot').classList.remove('show');
+        const path='/gpio/'+esp+'/'+pin;
+        db.ref(path).set(newVal).then(()=>{
+            showToast('success','✅ '+esp.toUpperCase()+' GPIO '+num,newVal?'HIGH (ON)':'LOW (OFF)');
+            gpioLog(esp+' GPIO '+num+' → '+(newVal?'HIGH':'LOW'),'success');
+        }).catch(e=>{
+            showToast('error','❌ Failed',e.message);
+            gpioLog('FAIL: '+e.message,'error');
+            gpioState[esp][pin]=currentVal;
+            updateGPIOUI(esp,num,currentVal);
+        });
     }
 
-    // ════════════════════════════════════════════════
-    //  REPORT SUBMISSION → /potholes/manual_*
-    // ════════════════════════════════════════════════
-    function submitReport(){
-        const loc=document.getElementById('reportLocation').value.trim();
-        const lat=parseFloat(document.getElementById('reportLat').value)||0;
-        const lng=parseFloat(document.getElementById('reportLng').value)||0;
-        const severity=document.getElementById('reportSeverity').value;
-        if(!loc&&lat===0){showToast('error','❌ Error','Enter location or pick on map');return}
-        const btn=document.getElementById('submitReportBtn');btn.disabled=true;btn.textContent='Submitting...';
-        const depthMap={minor:3,warning:7,critical:15};
-        db.ref('/potholes/manual_'+Date.now()).set({
-            location:loc||'Manual ('+lat.toFixed(4)+','+lng.toFixed(4)+')',
-            severity,size:document.getElementById('reportSize').value,
-            description:document.getElementById('reportDesc').value,
-            lat,lng,depth:depthMap[severity]||5,
-            timestamp:Math.floor(Date.now()/1000),status:'pending',source:'manual'
-        }).then(()=>{
-            closeReportModal();showToast('success','✅ Submitted!','Saved to /potholes/ in Firebase');
-            logCmd('report','Manual pothole: '+(loc||'GPS'),'success');
-            document.getElementById('reportLocation').value='';document.getElementById('reportDesc').value='';
-            document.getElementById('reportLat').value='';document.getElementById('reportLng').value='';
-            btn.disabled=false;btn.textContent='Submit Report';
-        }).catch(e=>{showToast('error','❌',e.message);btn.disabled=false;btn.textContent='Submit Report'});
+    function setGPIOPWM(esp,pin,value){
+        const num=pin.replace('gpio','');
+        const pwmKey='pwm'+num;
+        value=parseInt(value);
+
+        document.getElementById('pwm-val-'+esp+'-'+num).textContent=value;
+        gpioState[esp][pwmKey]=value;
+
+        // Also update the toggle state
+        const isOn=value>0;
+        gpioState[esp][pin]=isOn;
+        updateGPIOUI(esp,num,isOn);
+
+        // Debounced write
+        clearTimeout(window['_pwmTimer_'+esp+'_'+num]);
+        window['_pwmTimer_'+esp+'_'+num]=setTimeout(()=>{
+            db.ref('/gpio/'+esp+'/'+pwmKey).set(value);
+            db.ref('/gpio/'+esp+'/'+pin).set(isOn);
+            gpioLog(esp+' GPIO '+num+' PWM → '+value,'success');
+        },200);
     }
 
-    function useCurrentLocation(){
-        if(currentGPS.fixed){
-            document.getElementById('reportLat').value=currentGPS.lat.toFixed(6);
-            document.getElementById('reportLng').value=currentGPS.lng.toFixed(6);
-            if(modalMap){modalMap.setView([currentGPS.lat,currentGPS.lng],16);if(modalMapMarker)modalMap.removeLayer(modalMapMarker);modalMapMarker=L.marker([currentGPS.lat,currentGPS.lng],{icon:makeIcon('purple',28)}).addTo(modalMap)}
-            showToast('success','📍 ESP32 GPS','Used '+currentGPS.lat.toFixed(6)+', '+currentGPS.lng.toFixed(6));
-        }else if(navigator.geolocation){
-            navigator.geolocation.getCurrentPosition(p=>{
-                document.getElementById('reportLat').value=p.coords.latitude.toFixed(6);
-                document.getElementById('reportLng').value=p.coords.longitude.toFixed(6);
-                if(modalMap){modalMap.setView([p.coords.latitude,p.coords.longitude],16);if(modalMapMarker)modalMap.removeLayer(modalMapMarker);modalMapMarker=L.marker([p.coords.latitude,p.coords.longitude],{icon:makeIcon('purple',28)}).addTo(modalMap)}
-                showToast('success','📍 Browser GPS',p.coords.latitude.toFixed(6)+', '+p.coords.longitude.toFixed(6));
-            },()=>showToast('error','❌','Location access denied'));
-        }else showToast('error','❌','No GPS available');
+    function updateGPIOUI(esp,num,isOn){
+        const toggle=document.getElementById('gpio-toggle-'+esp+'-'+num);
+        const ind=document.getElementById('gpio-ind-'+esp+'-'+num);
+        const state=document.getElementById('gpio-state-'+esp+'-'+num);
+        if(toggle){isOn?toggle.classList.add('on'):toggle.classList.remove('on')}
+        if(ind){ind.className='gpio-indicator '+(isOn?'on pulse':'off')}
+        if(state){state.textContent=isOn?'ON':'OFF';state.className='gpio-state '+(isOn?'on':'off')}
     }
 
-    // ════════════════════════════════════════════════
-    //  SYSTEM STATUS
-    // ════════════════════════════════════════════════
-    function updateSystemStatus(){
-        const bar=document.getElementById('systemStatusBar'),dot=document.getElementById('systemStatusDot'),txt=document.getElementById('systemStatusText'),conn=document.getElementById('connIndicator');
-        if(esp1Online&&esp2Online){bar.style.background='linear-gradient(135deg,#e8f5e9,#f1f8e9)';bar.style.borderColor='rgba(52,199,89,.15)';dot.style.background='var(--accent-green)';txt.textContent='✅ Both ESP32s connected & streaming';txt.style.color='#2d6a2e';conn.className='conn-indicator online';conn.textContent='🟢 All Online'}
-        else if(esp1Online||esp2Online){bar.style.background='linear-gradient(135deg,#fff3e0,#fef9e7)';bar.style.borderColor='rgba(255,149,0,.15)';dot.style.background='var(--accent-orange)';txt.textContent='⚠️ '+(esp1Online?'ESP32-1':'ESP32-2')+' online';txt.style.color='#e65100';conn.className='conn-indicator partial';conn.textContent='🟡 Partial'}
-        else{bar.style.background='linear-gradient(135deg,#fce4ec,#fff3e0)';bar.style.borderColor='rgba(255,59,48,.15)';dot.style.background='var(--accent-red)';txt.textContent='❌ No ESP32s connected — check WiFi "hotwater"';txt.style.color='#c62828';conn.className='conn-indicator offline';conn.textContent='🔴 Offline'}
+    function bulkGPIO(esp,state){
+        const pins=esp==='esp1'?['gpio25','gpio26','gpio27','gpio13']:['gpio26','gpio25','gpio27'];
+        const updates={};
+        pins.forEach(pin=>{
+            updates[pin]=state;
+            gpioState[esp][pin]=state;
+            updateGPIOUI(esp,pin.replace('gpio',''),state);
+        });
+        if(esp==='esp1'&&state){
+            updates.pwm25=255;updates.pwm26=255;updates.pwm27=255;
+            ['25','26','27'].forEach(n=>{
+                const s=document.getElementById('pwm-esp1-'+n);if(s)s.value=255;
+                const v=document.getElementById('pwm-val-esp1-'+n);if(v)v.textContent=255;
+            });
+        }else if(esp==='esp1'&&!state){
+            updates.pwm25=0;updates.pwm26=0;updates.pwm27=0;
+            ['25','26','27'].forEach(n=>{
+                const s=document.getElementById('pwm-esp1-'+n);if(s)s.value=0;
+                const v=document.getElementById('pwm-val-esp1-'+n);if(v)v.textContent=0;
+            });
+        }
+        db.ref('/gpio/'+esp).update(updates).then(()=>{
+            showToast('success','⚡ '+esp.toUpperCase()+' ALL',state?'All GPIOs HIGH':'All GPIOs LOW');
+            gpioLog(esp+' ALL → '+(state?'HIGH':'LOW'),'success');
+        });
     }
 
-    // ════════════════════════════════════════════════
-    //  COMMAND TERMINAL — writes to /controls/*
-    // ════════════════════════════════════════════════
-    function logCmd(src,msg,type){
-        const log=document.getElementById('commandLog');
+    function resetGPIO(esp){
+        db.ref('/gpio/'+esp).remove().then(()=>{
+            const pins=esp==='esp1'?['25','26','27','13']:['26','25','27'];
+            pins.forEach(n=>{
+                updateGPIOUI(esp,n,false);
+                gpioState[esp]['gpio'+n]=false;
+            });
+            if(esp==='esp1'){['25','26','27'].forEach(n=>{
+                const s=document.getElementById('pwm-esp1-'+n);if(s)s.value=0;
+                const v=document.getElementById('pwm-val-esp1-'+n);if(v)v.textContent=0;
+                gpioState.esp1['pwm'+n]=0;
+            })}
+            showToast('success','🔄 Reset',''+esp.toUpperCase()+' GPIOs cleared — back to auto');
+            gpioLog(esp+' GPIO paths removed — auto mode','success');
+        });
+    }
+
+    function gpioLog(msg,type){
+        const log=document.getElementById('gpioLog');
         const time=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
         const line=document.createElement('div');line.className='cmd-line';
-        line.innerHTML=`<span class="cmd-time">[${time}]</span> <span class="cmd-${type}">[${src}]</span> ${msg}`;
+        line.innerHTML=`<span class="cmd-time">[${time}]</span> <span class="cmd-${type}">${msg}</span>`;
         log.appendChild(line);log.scrollTop=log.scrollHeight;
-        if(log.children.length>100)log.removeChild(log.firstChild);
+        if(log.children.length>50)log.removeChild(log.firstChild);
+    }
+    function clearGpioLog(){document.getElementById('gpioLog').innerHTML='<div class="cmd-line"><span class="cmd-info">Cleared</span></div>'}
+
+    function copyESPCode(){
+        const code=document.getElementById('espCodeBlock').textContent;
+        navigator.clipboard.writeText(code).then(()=>showToast('success','📋 Copied','ESP32 GPIO code copied'));
     }
 
+    // ════════════════════════════════════════
+    //  MAIN CONTROLS
+    // ════════════════════════════════════════
+    function sendControl(key,value,msg,detail){
+        logCmd('dashboard','SET /controls/'+key+'='+value,'info');
+        db.ref('/controls/'+key).set(value).then(()=>{showToast('success',msg,detail);logCmd('firebase','OK','success')}).catch(e=>{showToast('error','❌',e.message);logCmd('firebase','FAIL: '+e.message,'error')});
+    }
+    function toggleControl(key){
+        const n=!controlState[key];
+        const msgs={led:[n?'💡 ON':'💡 Auto',n?'Override LDR':'LDR resumes'],relay:[n?'📂 Open':'📁 Close','Relay '+(n?'HIGH':'LOW')],buzzer:[n?'🔔 Alert!':'🔕 Off','ESP32-2 LEDs']};
+        sendControl(key,n,msgs[key][0],msgs[key][1]);
+    }
+    function resetAllControls(){
+        db.ref('/controls').set({led:false,relay:false,buzzer:false}).then(()=>{showToast('success','🔄 Reset','All auto');logCmd('firebase','All controls reset','success')});
+    }
+    function syncT(id,on){const el=document.getElementById(id);if(el){on?el.classList.add('on'):el.classList.remove('on')}}
+
+    // ════════════════════════════════════════
+    //  POTHOLE MAP
+    // ════════════════════════════════════════
+    let pinCount=0;
+    db.ref('/potholes').orderByChild('timestamp').limitToLast(50).on('child_added',s=>{
+        const d=s.val();if(!d)return;const key=s.key;pinCount++;
+        document.getElementById('mapPinCount').textContent='📍 '+pinCount;
+        const lat=d.lat||(currentGPS.lat+(Math.random()-.5)*.01);const lng=d.lng||(currentGPS.lng+(Math.random()-.5)*.01);
+        const sev=d.severity==='critical'?'red':d.severity==='warning'?'orange':'yellow';
+        const loc=d.location||(lat.toFixed(4)+','+lng.toFixed(4));const depth=(d.depth||0).toFixed(1);
+        const popup=`<div style="font-family:Inter,sans-serif"><strong>${loc}</strong><br><span style="color:#86868b;font-size:12px">Depth:${depth}cm|${d.severity||'?'}</span><br><button onclick="markResolved('${key}')" style="padding:3px 8px;border-radius:8px;border:none;background:#34c759;color:#fff;font-size:11px;cursor:pointer;margin-top:4px">✅ Resolve</button> <button onclick="deletePothole('${key}')" style="padding:3px 8px;border-radius:8px;border:none;background:#ff3b30;color:#fff;font-size:11px;cursor:pointer">🗑️</button></div>`;
+        if(mainMap){mapMarkers.push(L.marker([lat,lng],{icon:makeIcon(sev)}).addTo(mainMap).bindPopup(popup))}
+        if(potholePageMap){pMapMarkers.push(L.marker([lat,lng],{icon:makeIcon(sev)}).addTo(potholePageMap).bindPopup(popup))}
+        const dashList=document.getElementById('dashboardPotholeList'),allList=document.getElementById('allPotholeList');
+        if(dashList&&dashList.querySelector('div[style*="text-align"]'))dashList.innerHTML='';if(allList&&allList.querySelector('div[style*="text-align"]'))allList.innerHTML='';
+        const html=`<div class="pothole-severity ${d.severity||'minor'}"></div><div class="pothole-info"><h4>${loc} ${depth!=='0.0'?'— '+depth+'cm':''}</h4><span>${d.source==='sensor'?'🤖':'📝'} ${new Date((d.timestamp||0)*1000||Date.now()).toLocaleDateString()}</span></div><span class="pothole-status ${d.status||'pending'}">${d.status||'Pending'}</span>`;
+        [dashList,allList].forEach(l=>{if(!l)return;const i=document.createElement('div');i.className='pothole-item';i.innerHTML=html;i.onclick=()=>{if(mainMap)mainMap.setView([lat,lng],17);switchPage('dashboard',document.querySelector('[data-page=dashboard]'))};l.insertBefore(i,l.firstChild);if(l===dashList&&l.children.length>8)l.removeChild(l.lastChild)});
+    });
+    function markResolved(k){db.ref('/potholes/'+k+'/status').set('resolved').then(()=>showToast('success','✅','Resolved'))}
+    function deletePothole(k){if(confirm('Delete?'))db.ref('/potholes/'+k).remove().then(()=>showToast('info','🗑️','Deleted'))}
+    function centerMapOnGPS(){if(!currentGPS.fixed){showToast('warning','⚠️','No GPS');return}mainMap.setView([currentGPS.lat,currentGPS.lng],16,{animate:true})}
+    function fitAllMarkers(){if(!mapMarkers.length){showToast('warning','No markers','');return}mainMap.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(.1))}
+    function addPotholeAtCenter(){const c=mainMap.getCenter();document.getElementById('reportLat').value=c.lat.toFixed(6);document.getElementById('reportLng').value=c.lng.toFixed(6);openReportModal()}
+
+    // ════════════════════════════════════════
+    //  ALERTS
+    // ════════════════════════════════════════
+    let alertTs={};
+    function addAlert(c,t,m){const n=Date.now();if(alertTs[t]&&n-alertTs[t]<10000)return;alertTs[t]=n;const l=document.getElementById('alertsList');if(l.children.length>15)l.removeChild(l.lastChild);const time=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});const i=document.createElement('div');i.className='alert-item';i.style.animation='fadeIn .4s';i.innerHTML=`<div class="alert-dot ${c}"></div><div class="alert-content"><h4>${t}</h4><p>${m}</p></div><span class="alert-time">${time}</span>`;l.insertBefore(i,l.firstChild);document.getElementById('notifDot').classList.add('show')}
+    function clearAlerts(){document.getElementById('alertsList').innerHTML='<div class="alert-item"><div class="alert-dot green"></div><div class="alert-content"><h4>Cleared</h4><p>OK</p></div><span class="alert-time">Now</span></div>';alertTs={};document.getElementById('notifDot').classList.remove('show')}
+
+    // ════════════════════════════════════════
+    //  REPORT
+    // ════════════════════════════════════════
+    function submitReport(){const loc=document.getElementById('reportLocation').value.trim();const lat=parseFloat(document.getElementById('reportLat').value)||0;const lng=parseFloat(document.getElementById('reportLng').value)||0;if(!loc&&!lat){showToast('error','❌','Enter location');return}const btn=document.getElementById('submitReportBtn');btn.disabled=true;btn.textContent='...';const dm={minor:3,warning:7,critical:15};db.ref('/potholes/manual_'+Date.now()).set({location:loc||lat.toFixed(4)+','+lng.toFixed(4),severity:document.getElementById('reportSeverity').value,size:document.getElementById('reportSize').value,description:document.getElementById('reportDesc').value,lat,lng,depth:dm[document.getElementById('reportSeverity').value]||5,timestamp:Math.floor(Date.now()/1000),status:'pending',source:'manual'}).then(()=>{closeReportModal();showToast('success','✅','Saved');document.getElementById('reportLocation').value='';document.getElementById('reportDesc').value='';btn.disabled=false;btn.textContent='Submit'}).catch(e=>{showToast('error','❌',e.message);btn.disabled=false;btn.textContent='Submit'})}
+    function useCurrentLocation(){if(currentGPS.fixed){document.getElementById('reportLat').value=currentGPS.lat.toFixed(6);document.getElementById('reportLng').value=currentGPS.lng.toFixed(6);showToast('success','📍','ESP32 GPS used')}else if(navigator.geolocation){navigator.geolocation.getCurrentPosition(p=>{document.getElementById('reportLat').value=p.coords.latitude.toFixed(6);document.getElementById('reportLng').value=p.coords.longitude.toFixed(6);showToast('success','📍','Browser GPS')},()=>showToast('error','❌','No GPS'))}else showToast('error','❌','No GPS')}
+
+    // ════════════════════════════════════════
+    //  SYSTEM STATUS
+    // ════════════════════════════════════════
+    function updateSystemStatus(){const b=document.getElementById('systemStatusBar'),d=document.getElementById('systemStatusDot'),t=document.getElementById('systemStatusText'),c=document.getElementById('connIndicator');if(esp1Online&&esp2Online){b.style.background='linear-gradient(135deg,#e8f5e9,#f1f8e9)';d.style.background='var(--accent-green)';t.textContent='✅ Both ESP32s online';t.style.color='#2d6a2e';c.className='conn-indicator online';c.textContent='🟢 Online'}else if(esp1Online||esp2Online){b.style.background='linear-gradient(135deg,#fff3e0,#fef9e7)';d.style.background='var(--accent-orange)';t.textContent='⚠️ '+(esp1Online?'ESP1':'ESP2')+' only';t.style.color='#e65100';c.className='conn-indicator partial';c.textContent='🟡 Partial'}else{b.style.background='linear-gradient(135deg,#fce4ec,#fff3e0)';d.style.background='var(--accent-red)';t.textContent='❌ Both offline';t.style.color='#c62828';c.className='conn-indicator offline';c.textContent='🔴 Offline'}}
+
+    // ════════════════════════════════════════
+    //  TERMINAL — now supports gpio commands
+    // ════════════════════════════════════════
+    function logCmd(s,m,t){const l=document.getElementById('commandLog');const time=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});const line=document.createElement('div');line.className='cmd-line';line.innerHTML=`<span class="cmd-time">[${time}]</span> <span class="cmd-${t}">[${s}]</span> ${m}`;l.appendChild(line);l.scrollTop=l.scrollHeight;if(l.children.length>100)l.removeChild(l.firstChild)}
     function executeCommand(){
-        const input=document.getElementById('terminalInput');
-        const cmd=input.value.trim().toLowerCase();if(!cmd)return;input.value='';
-        logCmd('you',cmd,'info');
+        const input=document.getElementById('terminalInput');const cmd=input.value.trim().toLowerCase();if(!cmd)return;input.value='';logCmd('you',cmd,'info');
+        // GPIO commands: gpio esp1 25 on, gpio esp2 26 off, gpio esp1 25 pwm 128
+        const gpioMatch=cmd.match(/^gpio\s+(esp[12])\s+(\d+)\s+(on|off|high|low)$/);
+        const pwmMatch=cmd.match(/^gpio\s+(esp[12])\s+(\d+)\s+pwm\s+(\d+)$/);
+        if(gpioMatch){
+            const [_,esp,pin,state]=gpioMatch;const val=state==='on'||state==='high';
+            db.ref('/gpio/'+esp+'/gpio'+pin).set(val).then(()=>{logCmd('sys','→ /gpio/'+esp+'/gpio'+pin+' = '+val,'success');updateGPIOUI(esp,pin,val)});return;
+        }
+        if(pwmMatch){
+            const [_,esp,pin,val]=pwmMatch;const v=Math.min(255,Math.max(0,parseInt(val)));
+            db.ref('/gpio/'+esp+'/pwm'+pin).set(v).then(()=>{logCmd('sys','→ /gpio/'+esp+'/pwm'+pin+' = '+v,'success')});
+            db.ref('/gpio/'+esp+'/gpio'+pin).set(v>0);return;
+        }
         const cmds={
-            'led on':()=>{sendControl('led',true,'💡 ON','Override LDR');return'→ /controls/led = true'},
-            'led off':()=>{sendControl('led',false,'💡 Auto','LDR resumes');return'→ /controls/led = false'},
-            'relay on':()=>{sendControl('relay',true,'📂 Open','Relay HIGH');return'→ /controls/relay = true'},
-            'relay off':()=>{sendControl('relay',false,'📁 Close','Relay LOW');return'→ /controls/relay = false'},
-            'buzzer on':()=>{sendControl('buzzer',true,'🔔 Alert','ESP32-2 will flash LEDs');return'→ /controls/buzzer = true'},
-            'buzzer off':()=>{sendControl('buzzer',false,'🔕 Off','');return'→ /controls/buzzer = false'},
-            'status':()=>`ESP32-1: ${esp1Online?'🟢':'🔴'} | ESP32-2: ${esp2Online?'🟢':'🔴'} | Controls: LED=${controlState.led} RELAY=${controlState.relay} BUZZER=${controlState.buzzer}`,
-            'reset':()=>{resetAllControls();return'All /controls/* → false'},
-            'gps':()=>currentGPS.fixed?`GPS: ${currentGPS.lat.toFixed(6)}, ${currentGPS.lng.toFixed(6)}`:'No GPS fix',
-            'help':()=>'Commands: led on/off, relay on/off, buzzer on/off, status, reset, gps, clear, help',
+            'led on':()=>{sendControl('led',true,'💡 ON','');return'→ /controls/led=true'},'led off':()=>{sendControl('led',false,'💡 Auto','');return'→ /controls/led=false'},
+            'relay on':()=>{sendControl('relay',true,'📂','');return'→ /controls/relay=true'},'relay off':()=>{sendControl('relay',false,'📁','');return'→ /controls/relay=false'},
+            'buzzer on':()=>{sendControl('buzzer',true,'🔔','');return'→ /controls/buzzer=true'},'buzzer off':()=>{sendControl('buzzer',false,'🔕','');return'→ /controls/buzzer=false'},
+            'status':()=>`ESP1:${esp1Online?'🟢':'🔴'} ESP2:${esp2Online?'🟢':'🔴'} LED:${controlState.led} RELAY:${controlState.relay} BUZZER:${controlState.buzzer}`,
+            'reset':()=>{resetAllControls();return'Reset all'},'help':()=>'led on/off, relay on/off, buzzer on/off, gpio esp1 25 on/off, gpio esp1 25 pwm 128, status, reset',
             'clear':()=>{clearCommandLog();return'Cleared'},
         };
-        const h=cmds[cmd];if(h){logCmd('sys',h(),'success')}
-        else logCmd('sys','Unknown: "'+cmd+'". Type "help"','error');
+        const h=cmds[cmd];if(h){logCmd('sys',h(),'success')}else logCmd('sys','Unknown: "'+cmd+'". Type help','error');
     }
     function runQuickCmd(c){document.getElementById('terminalInput').value=c;executeCommand()}
-    function clearCommandLog(){document.getElementById('commandLog').innerHTML='<div class="cmd-line"><span class="cmd-time">[sys]</span> <span class="cmd-info">Cleared</span></div>'}
+    function clearCommandLog(){document.getElementById('commandLog').innerHTML='<div class="cmd-line"><span class="cmd-info">Cleared</span></div>'}
 
-    // ════════════════════════════════════════════════
-    //  UI UTILITIES
-    // ════════════════════════════════════════════════
+    // ════════════════════════════════════════
+    //  UI
+    // ════════════════════════════════════════
     function updateTime(){const el=document.getElementById('liveTime');if(el)el.textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}
     setInterval(updateTime,1000);updateTime();
-
     function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show')}
-
-    const pageTitles={dashboard:['Dashboard','Live data from ESP32-1 & ESP32-2'],potholes:['Pothole Reports','Map + detection log'],devices:['IoT Devices','ESP32 status & Firebase paths'],lighting:['Street Lighting','ESP32-1 LDR auto-control'],water:['Water Supply','ESP32-2 float sensor'],waste:['Waste Management','Smart dustbin + MQ gas sensor'],terminal:['Command Terminal','Direct /controls/* writes']};
-    function switchPage(page,navEl){
-        document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-        if(navEl)navEl.classList.add('active');
-        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-        const el=document.getElementById('page-'+page);if(el)el.classList.add('active');
-        if(pageTitles[page]){document.getElementById('pageTitle').textContent=pageTitles[page][0];document.getElementById('pageSubtitle').textContent=pageTitles[page][1]}
-        document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show');
-        setTimeout(()=>{if(mainMap)mainMap.invalidateSize();if(potholePageMap)potholePageMap.invalidateSize()},300);
-    }
-
+    const pageTitles={dashboard:['Dashboard','Live data from ESP32-1 & ESP32-2'],potholes:['Potholes','Map + reports'],devices:['Devices','ESP32 status'],lighting:['Street Lights','LDR auto-control'],water:['Water Supply','Float sensor'],waste:['Waste Management','Dustbin + gas'],misc:['Misc / GPIO Control','Individual pin ON/OFF for every GPIO'],terminal:['Terminal','Direct Firebase writes']};
+    function switchPage(p,n){document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));if(n)n.classList.add('active');document.querySelectorAll('.page').forEach(i=>i.classList.remove('active'));const el=document.getElementById('page-'+p);if(el)el.classList.add('active');if(pageTitles[p]){document.getElementById('pageTitle').textContent=pageTitles[p][0];document.getElementById('pageSubtitle').textContent=pageTitles[p][1]}document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show');setTimeout(()=>{if(mainMap)mainMap.invalidateSize();if(potholePageMap)potholePageMap.invalidateSize()},300)}
     function openReportModal(){document.getElementById('reportModal').classList.add('show');if(currentGPS.fixed){document.getElementById('reportLat').value=currentGPS.lat.toFixed(6);document.getElementById('reportLng').value=currentGPS.lng.toFixed(6)}initModalMap()}
     function closeReportModal(){document.getElementById('reportModal').classList.remove('show')}
     document.getElementById('reportModal').addEventListener('click',function(e){if(e.target===this)closeReportModal()});
     document.addEventListener('keydown',e=>{if(e.key==='Escape')closeReportModal()});
 
-    // Toast
     let toastN=0;
-    function showToast(type,title,msg){
-        const c=document.getElementById('toastContainer');const id='t'+(++toastN);
-        const icons={success:'<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',error:'<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>',info:'<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>',warning:'<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>'};
-        const t=document.createElement('div');t.className='toast';t.id=id;
-        t.innerHTML=`<div class="toast-icon ${type}"><svg viewBox="0 0 24 24">${icons[type]||icons.info}</svg></div><div class="toast-text"><h4>${title}</h4><p>${msg||''}</p></div><button class="toast-close" onclick="dismissToast('${id}')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>`;
-        c.appendChild(t);requestAnimationFrame(()=>t.classList.add('show'));
-        setTimeout(()=>dismissToast(id),4000);
-        while(c.children.length>4)c.removeChild(c.firstChild);
-    }
+    function showToast(type,title,msg){const c=document.getElementById('toastContainer');const id='t'+(++toastN);const icons={success:'<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',error:'<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>',info:'<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>',warning:'<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>'};const t=document.createElement('div');t.className='toast';t.id=id;t.innerHTML=`<div class="toast-icon ${type}"><svg viewBox="0 0 24 24">${icons[type]||icons.info}</svg></div><div class="toast-text"><h4>${title}</h4><p>${msg||''}</p></div><button class="toast-close" onclick="dismissToast('${id}')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>`;c.appendChild(t);requestAnimationFrame(()=>t.classList.add('show'));setTimeout(()=>dismissToast(id),4000);while(c.children.length>4)c.removeChild(c.firstChild)}
     function dismissToast(id){const t=document.getElementById(id);if(t){t.classList.remove('show');setTimeout(()=>t.remove(),500)}}
 
-    // ════════════════════════════════════════════════
-    //  INIT
-    // ════════════════════════════════════════════════
-    document.addEventListener('DOMContentLoaded',()=>{
-        initMaps();
-        logCmd('boot','SmartVillage Dashboard v2.0','success');
-        logCmd('boot','Firebase: pothole-detection-90641','info');
-        logCmd('boot','Control paths: /controls/led, /controls/relay, /controls/buzzer','info');
-        logCmd('boot','ESP32-1 polls /controls/led every 1000ms','info');
-        logCmd('boot','ESP32-2 polls /controls/relay + /controls/buzzer every 1000ms','info');
-    });
-
-    // Browser geolocation fallback
-    if(navigator.geolocation){
-        navigator.geolocation.getCurrentPosition(p=>{
-            if(!currentGPS.fixed){
-                currentGPS.lat=p.coords.latitude;currentGPS.lng=p.coords.longitude;
-                if(mainMap)mainMap.setView([currentGPS.lat,currentGPS.lng],14);
-                if(potholePageMap)potholePageMap.setView([currentGPS.lat,currentGPS.lng],14);
-            }
-        },()=>{},{enableHighAccuracy:false,timeout:5000});
-    }
-
-    console.log('🏘️ SmartVillage Dashboard READY');
-    console.log('📡 Control flow: Dashboard → /controls/* → ESP32 reads every 1s → actuates hardware');
+    // INIT
+    document.addEventListener('DOMContentLoaded',()=>{initMaps();logCmd('boot','SmartVillage v3.0 with GPIO control','success');logCmd('boot','GPIO paths: /gpio/esp1/gpio25..27,13  /gpio/esp2/gpio25..27','info')});
+    if(navigator.geolocation){navigator.geolocation.getCurrentPosition(p=>{if(!currentGPS.fixed){currentGPS.lat=p.coords.latitude;currentGPS.lng=p.coords.longitude;if(mainMap)mainMap.setView([currentGPS.lat,currentGPS.lng],14);if(potholePageMap)potholePageMap.setView([currentGPS.lat,currentGPS.lng],14)}},()=>{},{enableHighAccuracy:false,timeout:5000})}
     </script>
 </body>
 </html>
