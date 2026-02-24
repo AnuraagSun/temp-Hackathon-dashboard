@@ -52,7 +52,6 @@
 
         .app { position: relative; z-index: 1; display: flex; min-height: 100vh; }
 
-        /* Sidebar */
         .sidebar { width: 260px; background: rgba(255,255,255,0.72); backdrop-filter: blur(40px) saturate(180%); border-right: 1px solid var(--border); padding: 28px 16px; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; transition: transform var(--transition); }
         .sidebar-brand { display: flex; align-items: center; gap: 12px; padding: 4px 12px 24px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
         .brand-icon { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo)); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -74,7 +73,6 @@
         .user-details h4 { font-size: 13px; font-weight: 600; }
         .user-details span { font-size: 11px; color: var(--text-secondary); }
 
-        /* Main */
         .main { flex: 1; margin-left: 260px; padding: 28px 32px; max-width: calc(100vw - 260px); }
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
         .header-left h2 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
@@ -87,7 +85,6 @@
         .menu-toggle { display: none; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--card); align-items: center; justify-content: center; cursor: pointer; }
         .menu-toggle svg { width: 18px; height: 18px; fill: var(--text-primary); }
 
-        /* Status Bar */
         .status-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: linear-gradient(135deg, #e8f5e9, #f1f8e9); border-radius: var(--radius-sm); margin-bottom: 24px; border: 1px solid rgba(52,199,89,0.15); animation: slideDown 0.6s ease-out; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .status-dot { width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
@@ -95,7 +92,6 @@
         .status-bar span { font-size: 13px; font-weight: 500; color: #2d6a2e; }
         .status-bar .status-time { margin-left: auto; font-size: 12px; color: #4a8c4b; }
 
-        /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
         .stat-card { background: var(--card); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border); transition: all var(--transition); cursor: default; animation: cardAppear 0.6s ease-out both; position: relative; overflow: hidden; }
         .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 3px 3px 0 0; opacity: 0; transition: opacity var(--transition); }
@@ -120,7 +116,6 @@
         .stat-value { font-size: 32px; font-weight: 800; letter-spacing: -1px; line-height: 1; margin-bottom: 4px; }
         .stat-label { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
 
-        /* Content Grid */
         .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
         .card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; animation: cardAppear 0.6s ease-out both; }
         .card-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 14px; }
@@ -129,7 +124,6 @@
         .card-header-action:hover { opacity: 0.7; }
         .card-body { padding: 0 20px 20px; }
 
-        /* Map */
         .map-container { width: 100%; height: 280px; border-radius: var(--radius-sm); background: linear-gradient(145deg, #e8ecf4, #f0f4fa); position: relative; overflow: hidden; }
         .map-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px); background-size: 30px 30px; }
         .map-road { position: absolute; background: rgba(0,0,0,0.08); border-radius: 4px; }
@@ -142,14 +136,12 @@
         .map-pin.critical { background: var(--accent-red); box-shadow: 0 3px 12px rgba(255,59,48,0.4); animation: pinPulse 2s ease-in-out infinite; }
         .map-pin.warning { background: var(--accent-orange); box-shadow: 0 3px 12px rgba(255,149,0,0.4); }
         .map-pin.minor { background: var(--accent-yellow); box-shadow: 0 3px 12px rgba(255,204,0,0.4); }
-        .map-pin.resolved { background: var(--accent-green); box-shadow: 0 3px 12px rgba(52,199,89,0.4); }
         @keyframes pinPulse { 0%, 100% { box-shadow: 0 3px 12px rgba(255,59,48,0.4); } 50% { box-shadow: 0 3px 24px rgba(255,59,48,0.6); } }
         .map-pin-inner { width: 10px; height: 10px; background: white; border-radius: 50%; transform: rotate(45deg); }
         .map-legend { display: flex; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
         .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 500; }
         .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
 
-        /* Pothole List */
         .pothole-list { display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto; }
         .pothole-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: var(--radius-xs); background: var(--bg); transition: all var(--transition); cursor: pointer; }
         .pothole-item:hover { background: rgba(0,0,0,0.04); transform: translateX(4px); }
@@ -163,9 +155,7 @@
         .pothole-status { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
         .pothole-status.pending { color: var(--accent-orange); background: rgba(255,149,0,0.1); }
         .pothole-status.progress { color: var(--accent-blue); background: rgba(0,122,255,0.1); }
-        .pothole-status.resolved { color: var(--accent-green); background: rgba(52,199,89,0.1); }
 
-        /* Devices */
         .devices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .device-card { padding: 16px; border-radius: var(--radius-sm); background: var(--bg); transition: all var(--transition); cursor: pointer; }
         .device-card:hover { background: rgba(0,0,0,0.04); transform: translateY(-1px); }
@@ -175,42 +165,14 @@
         .device-icon-wrap.light { background: linear-gradient(135deg, #ffcc00, #ff9500); }
         .device-icon-wrap.water { background: linear-gradient(135deg, #5ac8fa, #007aff); }
         .device-icon-wrap.waste { background: linear-gradient(135deg, #34c759, #30b050); }
-        .device-icon-wrap.power { background: linear-gradient(135deg, #af52de, #5856d6); }
-        .device-card.off .device-icon-wrap { background: #d1d1d6 !important; opacity: 0.6; }
         .toggle { width: 48px; height: 28px; border-radius: 14px; background: #d1d1d6; cursor: pointer; transition: background var(--transition); position: relative; flex-shrink: 0; }
         .toggle.on { background: var(--accent-green); }
         .toggle-knob { position: absolute; top: 2px; left: 2px; width: 24px; height: 24px; border-radius: 50%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.15); transition: transform var(--spring); }
         .toggle.on .toggle-knob { transform: translateX(20px); }
         .device-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
         .device-status { font-size: 12px; color: var(--text-secondary); }
-        .device-value { margin-top: 10px; display: flex; align-items: flex-end; gap: 4px; }
-        .device-value strong { font-size: 22px; font-weight: 700; line-height: 1; letter-spacing: -0.5px; }
-        .device-value span { font-size: 12px; color: var(--text-secondary); font-weight: 500; margin-bottom: 2px; }
 
-        /* Progress Bar */
-        .progress-wrap { margin-top: 10px; }
-        .progress-bar { width: 100%; height: 6px; border-radius: 3px; background: rgba(0,0,0,0.08); overflow: hidden; }
-        .progress-fill { height: 100%; border-radius: 3px; transition: width 1s ease-out; }
-        .progress-fill.blue { background: linear-gradient(90deg, #007aff, #5ac8fa); }
-        .progress-fill.green { background: linear-gradient(90deg, #34c759, #5dd97c); }
-        .progress-fill.orange { background: linear-gradient(90deg, #ff9500, #ffb340); }
-        .progress-fill.red { background: linear-gradient(90deg, #ff3b30, #ff6259); }
-
-        /* Full Grid */
         .full-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
-
-        /* Chart */
-        .chart-area { width: 100%; height: 200px; }
-        .chart-svg { width: 100%; height: 100%; }
-        .chart-line { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-        .chart-area-fill { opacity: 0.1; }
-        .chart-labels { display: flex; justify-content: space-between; padding: 0 4px; margin-top: 8px; }
-        .chart-labels span { font-size: 11px; color: var(--text-tertiary); font-weight: 500; }
-        .chart-legend { display: flex; gap: 16px; margin-bottom: 14px; }
-        .chart-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--text-secondary); }
-        .chart-legend-dot { width: 10px; height: 10px; border-radius: 3px; }
-
-        /* Alerts */
         .alerts-list { display: flex; flex-direction: column; gap: 8px; max-height: 350px; overflow-y: auto; }
         .alert-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border-radius: var(--radius-xs); transition: all var(--transition); cursor: pointer; }
         .alert-item:hover { background: var(--bg); }
@@ -223,10 +185,7 @@
         .alert-content p { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
         .alert-time { font-size: 11px; color: var(--text-tertiary); margin-left: auto; white-space: nowrap; flex-shrink: 0; }
 
-        /* Controls Grid */
         .controls-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-
-        /* Gauge */
         .gauge-container { display: flex; flex-direction: column; align-items: center; padding-top: 8px; }
         .gauge-svg { width: 140px; height: 140px; transform: rotate(-90deg); }
         .gauge-bg { fill: none; stroke: rgba(0,0,0,0.06); stroke-width: 10; }
@@ -237,30 +196,23 @@
         .gauge-label { margin-top: 10px; font-size: 14px; font-weight: 600; text-align: center; }
         .gauge-sublabel { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
 
-        /* Quick Actions */
         .quick-actions { display: flex; flex-direction: column; gap: 8px; }
         .action-btn { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: var(--radius-xs); border: none; background: var(--bg); cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 600; color: var(--text-primary); transition: all var(--transition); text-align: left; }
         .action-btn:hover { background: rgba(0,0,0,0.06); transform: translateX(4px); }
-        .action-btn:active { transform: scale(0.98) translateX(4px); }
         .action-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
         .action-btn .action-arrow { margin-left: auto; width: 16px; height: 16px; fill: var(--text-tertiary); }
 
-        /* Sparkline */
-        .sparkline { margin-top: 10px; height: 30px; }
-        .sparkline svg { width: 100%; height: 100%; }
-        .sparkline-line { fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+        .progress-wrap { margin-top: 10px; }
+        .progress-bar { width: 100%; height: 6px; border-radius: 3px; background: rgba(0,0,0,0.08); overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 3px; transition: width 1s ease-out; }
+        .progress-fill.orange { background: linear-gradient(90deg, #ff9500, #ffb340); }
 
-        /* GPS Info Bar - NEW */
         .gps-bar { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: rgba(0,122,255,0.06); border-radius: var(--radius-xs); margin-bottom: 12px; border: 1px solid rgba(0,122,255,0.1); }
-        .gps-bar .gps-icon { font-size: 16px; }
         .gps-bar .gps-text { font-size: 12px; color: var(--accent-blue); font-weight: 500; }
         .gps-bar .gps-coords { font-family: monospace; font-size: 12px; color: var(--text-primary); font-weight: 600; margin-left: auto; }
-
-        /* Live Data Indicator - NEW */
         .live-indicator { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--accent-red); font-weight: 600; }
         .live-dot { width: 6px; height: 6px; background: var(--accent-red); border-radius: 50%; animation: pulse 1s ease-in-out infinite; }
 
-        /* Modal */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .modal-overlay.show { opacity: 1; pointer-events: all; }
         .modal { background: var(--card); border-radius: 20px; padding: 32px; width: 90%; max-width: 480px; box-shadow: var(--shadow-xl); transform: scale(0.9) translateY(20px); transition: transform var(--spring); }
@@ -269,21 +221,17 @@
         .modal p { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; }
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-        .form-input { width: 100%; padding: 10px 14px; border-radius: var(--radius-xs); border: 1px solid var(--border); background: var(--bg); font-family: inherit; font-size: 14px; color: var(--text-primary); transition: all var(--transition); outline: none; }
+        .form-input { width: 100%; padding: 10px 14px; border-radius: var(--radius-xs); border: 1px solid var(--border); background: var(--bg); font-family: inherit; font-size: 14px; color: var(--text-primary); outline: none; }
         .form-input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(0,122,255,0.15); }
-        .form-input::placeholder { color: var(--text-tertiary); }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        select.form-input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%2386868b' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+        select.form-input { appearance: none; }
         textarea.form-input { resize: vertical; min-height: 80px; }
         .modal-actions { display: flex; gap: 10px; margin-top: 24px; }
         .btn { padding: 10px 20px; border-radius: var(--radius-xs); border: none; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: all var(--transition); flex: 1; }
-        .btn:active { transform: scale(0.97); }
         .btn-primary { background: var(--accent-blue); color: white; }
         .btn-primary:hover { background: #0071e3; }
         .btn-secondary { background: var(--bg); color: var(--text-primary); }
-        .btn-secondary:hover { background: rgba(0,0,0,0.06); }
 
-        /* Toast */
         .toast { position: fixed; top: 24px; right: 24px; background: var(--card); border-radius: var(--radius-sm); padding: 14px 20px; box-shadow: var(--shadow-xl); display: flex; align-items: center; gap: 12px; z-index: 2000; transform: translateX(120%); transition: transform var(--spring); max-width: 360px; border: 1px solid var(--border); }
         .toast.show { transform: translateX(0); }
         .toast-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -294,21 +242,16 @@
         .toast-text h4 { font-size: 13px; font-weight: 600; }
         .toast-text p { font-size: 12px; color: var(--text-secondary); }
 
-        /* Page */
         .page { display: none; animation: fadeIn 0.4s ease-out; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes drawLine { to { stroke-dashoffset: 0; } }
 
-        /* Responsive */
-        @media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .controls-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 900px) { .sidebar { transform: translateX(-100%); } .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-xl); } .main { margin-left: 0; max-width: 100vw; padding: 20px 16px; } .menu-toggle { display: flex; } .content-grid, .full-grid { grid-template-columns: 1fr; } .header-left h2 { font-size: 22px; } }
-        @media (max-width: 600px) { .stats-grid { grid-template-columns: 1fr; } .devices-grid { grid-template-columns: 1fr; } .controls-grid { grid-template-columns: 1fr; } .form-row { grid-template-columns: 1fr; } }
         .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 99; }
         .sidebar-overlay.show { display: block; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+
+        @media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .controls-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 900px) { .sidebar { transform: translateX(-100%); } .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-xl); } .main { margin-left: 0; max-width: 100vw; padding: 20px 16px; } .menu-toggle { display: flex; } .content-grid, .full-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 600px) { .stats-grid { grid-template-columns: 1fr; } .devices-grid { grid-template-columns: 1fr; } .controls-grid { grid-template-columns: 1fr; } .form-row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -321,87 +264,40 @@
     <div class="app">
         <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-brand">
-                <div class="brand-icon">
-                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18L19.35 7.5 12 10.82 4.65 7.5 12 4.18zM4 8.9l7 3.5v7.7l-7-3.5V8.9zm9 11.2V12.4l7-3.5v7.7l-7 3.5z"/></svg>
-                </div>
-                <div class="brand-text">
-                    <h1>SmartVillage</h1>
-                    <span>IoT Management</span>
-                </div>
+                <div class="brand-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18L19.35 7.5 12 10.82 4.65 7.5 12 4.18zM4 8.9l7 3.5v7.7l-7-3.5V8.9zm9 11.2V12.4l7-3.5v7.7l-7 3.5z"/></svg></div>
+                <div class="brand-text"><h1>SmartVillage</h1><span>IoT Management</span></div>
             </div>
-
             <div class="nav-section">
                 <div class="nav-label">Main</div>
-                <div class="nav-item active" data-page="dashboard" onclick="switchPage('dashboard', this)">
-                    <svg viewBox="0 0 24 24"><path d="M4 13h6c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1zm0 8h6c.55 0 1-.45 1-1v-4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1zm10 0h6c.55 0 1-.45 1-1v-8c0-.55-.45-1-1-1h-6c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1zm-1-18v4c0 .55.45 1 1 1h6c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1h-6c-.55 0-1 .45-1 1z"/></svg>
-                    Dashboard
-                </div>
-                <div class="nav-item" data-page="potholes" onclick="switchPage('potholes', this)">
-                    <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-                    Potholes
-                    <span class="nav-badge" id="navPotholeBadge">0</span>
-                </div>
-                <div class="nav-item" data-page="devices" onclick="switchPage('devices', this)">
-                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
-                    Devices
-                </div>
+                <div class="nav-item active" onclick="switchPage('dashboard', this)"><svg viewBox="0 0 24 24"><path d="M4 13h6c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1zm0 8h6c.55 0 1-.45 1-1v-4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1zm10 0h6c.55 0 1-.45 1-1v-8c0-.55-.45-1-1-1h-6c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1zm-1-18v4c0 .55.45 1 1 1h6c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1h-6c-.55 0-1 .45-1 1z"/></svg>Dashboard</div>
+                <div class="nav-item" onclick="switchPage('potholes', this)"><svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>Potholes<span class="nav-badge" id="navPotholeBadge">0</span></div>
+                <div class="nav-item" onclick="switchPage('devices', this)"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>Devices</div>
             </div>
-
             <div class="nav-section">
                 <div class="nav-label">Infrastructure</div>
-                <div class="nav-item" data-page="lighting" onclick="switchPage('lighting', this)">
-                    <svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
-                    Street Lights
-                </div>
-                <div class="nav-item" data-page="water" onclick="switchPage('water', this)">
-                    <svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
-                    Water Supply
-                </div>
-                <div class="nav-item" data-page="waste" onclick="switchPage('waste', this)">
-                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                    Waste Mgmt
-                </div>
+                <div class="nav-item" onclick="switchPage('lighting', this)"><svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>Street Lights</div>
+                <div class="nav-item" onclick="switchPage('water', this)"><svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>Water Supply</div>
+                <div class="nav-item" onclick="switchPage('waste', this)"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>Waste Mgmt</div>
             </div>
-
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar">VP</div>
-                    <div class="user-details">
-                        <h4>Village Panchayat</h4>
-                        <span>Admin Access</span>
-                    </div>
-                </div>
-            </div>
+            <div class="sidebar-footer"><div class="user-info"><div class="user-avatar">VP</div><div class="user-details"><h4>Village Panchayat</h4><span>Admin Access</span></div></div></div>
         </aside>
 
-        <!-- Main Content -->
         <main class="main">
             <div class="header">
                 <div style="display:flex;align-items:center;gap:12px;">
-                    <div class="menu-toggle" onclick="toggleSidebar()">
-                        <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-                    </div>
-                    <div class="header-left">
-                        <h2 id="pageTitle">Dashboard</h2>
-                        <p id="pageSubtitle">Overview of village infrastructure</p>
-                    </div>
+                    <div class="menu-toggle" onclick="toggleSidebar()"><svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></div>
+                    <div class="header-left"><h2 id="pageTitle">Dashboard</h2><p id="pageSubtitle">Live data from ESP32-1 & ESP32-2</p></div>
                 </div>
                 <div class="header-right">
                     <div class="live-indicator"><div class="live-dot"></div>LIVE</div>
-                    <div class="header-btn" onclick="openReportModal()">
-                        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="#86868b"/></svg>
-                    </div>
-                    <div class="header-btn" onclick="showToast('info', 'Notifications', 'Checking for new alerts...')">
-                        <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                        <div class="notif-dot"></div>
-                    </div>
+                    <div class="header-btn" onclick="openReportModal()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="#86868b"/></svg></div>
+                    <div class="header-btn" onclick="showToast('info','Notifications','Check alerts panel below')"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg><div class="notif-dot"></div></div>
                 </div>
             </div>
 
-            <!-- ========== DASHBOARD PAGE ========== -->
+            <!-- ==================== DASHBOARD PAGE ==================== -->
             <div class="page active" id="page-dashboard">
                 <div class="status-bar" id="systemStatusBar">
                     <div class="status-dot" id="systemStatusDot"></div>
@@ -409,193 +305,103 @@
                     <span class="status-time" id="liveTime"></span>
                 </div>
 
-                <!-- STEP 23: GPS Info Bar -->
                 <div class="gps-bar" id="gpsBar" style="display:none">
-                    <span class="gps-icon">📍</span>
+                    <span>📍</span>
                     <span class="gps-text" id="gpsStatusText">GPS: Searching...</span>
                     <span class="gps-coords" id="gpsCoordsDisplay">---, ---</span>
                 </div>
 
-                <!-- STEP 20: Stats with live IDs -->
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-icon red"><svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div>
-                            <span class="stat-trend up" id="potholeTrend">--</span>
-                        </div>
+                        <div class="stat-header"><div class="stat-icon red"><svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div><span class="stat-trend up" id="potholeTrend">--</span></div>
                         <div class="stat-value" id="potholeCount">0</div>
                         <div class="stat-label">Active Potholes</div>
-                        <div class="sparkline"><svg viewBox="0 0 120 30" preserveAspectRatio="none"><polyline class="sparkline-line" stroke="#ff3b30" points="0,25 15,20 30,22 45,15 60,18 75,10 90,12 105,8 120,5" opacity="0.6"/></svg></div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-icon green"><svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg></div>
-                            <span class="stat-trend down" id="lightsTrend">--</span>
-                        </div>
+                        <div class="stat-header"><div class="stat-icon green"><svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg></div><span class="stat-trend down" id="lightsTrend">--</span></div>
                         <div class="stat-value" id="lightsOn">--</div>
                         <div class="stat-label">Street Lights</div>
                         <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px" id="ldrDisplay">LDR: --</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-icon blue"><svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg></div>
-                            <span class="stat-trend down" id="waterTrend">--</span>
-                        </div>
+                        <div class="stat-header"><div class="stat-icon blue"><svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg></div><span class="stat-trend down" id="waterTrend">--</span></div>
                         <div class="stat-value" id="waterLevel">--</div>
                         <div class="stat-label">Water Level</div>
                         <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px" id="waterAlertDisplay">Alerts: 0</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-icon orange"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></div>
-                            <span class="stat-trend up" id="wasteTrend">--</span>
-                        </div>
+                        <div class="stat-header"><div class="stat-icon orange"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></div><span class="stat-trend up" id="wasteTrend">--</span></div>
                         <div class="stat-value" id="wasteBins">--</div>
                         <div class="stat-label">Dustbin Fill</div>
                         <div style="font-size:11px;color:var(--text-tertiary);margin-top:4px" id="gasDisplay">Gas: --</div>
                     </div>
                 </div>
 
-                <!-- Map + Recent Reports -->
                 <div class="content-grid">
                     <div class="card">
-                        <div class="card-header">
-                            <h3>🗺️ Pothole Map</h3>
-                            <span class="card-header-action" onclick="showToast('info','Map','Map shows auto-detected potholes')">ℹ️ Info</span>
-                        </div>
+                        <div class="card-header"><h3>🗺️ Pothole Map</h3><span class="card-header-action" id="mapPinCount">📍 0 potholes</span></div>
                         <div class="card-body">
                             <div class="map-container" id="potholeMap">
                                 <div class="map-grid"></div>
-                                <div class="map-road h1"></div>
-                                <div class="map-road h2"></div>
-                                <div class="map-road v1"></div>
-                                <div class="map-road v2"></div>
-                                <!-- STEP 23: Pins added dynamically by JavaScript -->
-                                <div style="position:absolute;bottom:10px;left:10px;background:rgba(255,255,255,0.9);padding:6px 10px;border-radius:6px;font-size:11px;color:var(--text-secondary);" id="mapPinCount">
-                                    📍 0 potholes mapped
-                                </div>
+                                <div class="map-road h1"></div><div class="map-road h2"></div><div class="map-road v1"></div><div class="map-road v2"></div>
                             </div>
                             <div class="map-legend">
-                                <div class="legend-item"><div class="legend-dot" style="background:var(--accent-red)"></div> Critical (&gt;10cm)</div>
-                                <div class="legend-item"><div class="legend-dot" style="background:var(--accent-orange)"></div> Warning (5-10cm)</div>
-                                <div class="legend-item"><div class="legend-dot" style="background:var(--accent-yellow)"></div> Minor (&lt;5cm)</div>
+                                <div class="legend-item"><div class="legend-dot" style="background:var(--accent-red)"></div>Critical (&gt;10cm)</div>
+                                <div class="legend-item"><div class="legend-dot" style="background:var(--accent-orange)"></div>Warning (5-10cm)</div>
+                                <div class="legend-item"><div class="legend-dot" style="background:var(--accent-yellow)"></div>Minor (&lt;5cm)</div>
                             </div>
                         </div>
                     </div>
-
                     <div class="card">
-                        <div class="card-header">
-                            <h3>📋 Recent Reports</h3>
-                            <span class="card-header-action" onclick="switchPage('potholes', document.querySelector('[data-page=potholes]'))">View All</span>
-                        </div>
-                        <div class="card-body">
-                            <div class="pothole-list" id="dashboardPotholeList">
-                                <div style="text-align:center;padding:20px;color:var(--text-tertiary);font-size:13px;">
-                                    Waiting for sensor data...
-                                </div>
-                            </div>
-                        </div>
+                        <div class="card-header"><h3>📋 Recent Reports</h3><span class="card-header-action" onclick="switchPage('potholes',document.querySelector('[onclick*=potholes]'))">View All</span></div>
+                        <div class="card-body"><div class="pothole-list" id="dashboardPotholeList"><div style="text-align:center;padding:20px;color:var(--text-tertiary);font-size:13px">Waiting for sensor data...</div></div></div>
                     </div>
                 </div>
 
-                <!-- Alerts -->
                 <div class="full-grid">
                     <div class="card">
-                        <div class="card-header">
-                            <h3>📊 Sensor Readings</h3>
-                            <span class="card-header-action" id="sensorUpdateTime">Last update: --</span>
-                        </div>
+                        <div class="card-header"><h3>📊 Live Sensor Readings</h3><span class="card-header-action" id="sensorUpdateTime">--</span></div>
                         <div class="card-body">
                             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
-                                    <div style="font-size:24px;font-weight:800" id="sensorDistance">--</div>
-                                    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Road Distance (cm)</div>
-                                </div>
-                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
-                                    <div style="font-size:24px;font-weight:800" id="sensorBaseline">--</div>
-                                    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Baseline (cm)</div>
-                                </div>
-                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
-                                    <div style="font-size:24px;font-weight:800" id="sensorGas">--</div>
-                                    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Gas Level</div>
-                                </div>
-                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
-                                    <div style="font-size:24px;font-weight:800" id="sensorDustbin">--</div>
-                                    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Dustbin Fill %</div>
-                                </div>
-                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
-                                    <div style="font-size:24px;font-weight:800" id="sensorLDR">--</div>
-                                    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">LDR Value</div>
-                                </div>
-                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
-                                    <div style="font-size:24px;font-weight:800" id="sensorSats">--</div>
-                                    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">GPS Satellites</div>
-                                </div>
+                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:24px;font-weight:800" id="sensorDistance">--</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Road Distance (cm)</div></div>
+                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:24px;font-weight:800" id="sensorBaseline">--</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Baseline (cm)</div></div>
+                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:24px;font-weight:800" id="sensorGas">--</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Gas Level</div></div>
+                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:24px;font-weight:800" id="sensorDustbin">--</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Dustbin Fill %</div></div>
+                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:24px;font-weight:800" id="sensorLDR">--</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">LDR Value</div></div>
+                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:24px;font-weight:800" id="sensorSats">--</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">GPS Satellites</div></div>
                             </div>
                         </div>
                     </div>
-
                     <div class="card">
-                        <div class="card-header">
-                            <h3>🔔 Live Alerts</h3>
-                            <span class="card-header-action" onclick="clearAlerts()">Clear All</span>
-                        </div>
-                        <div class="card-body">
-                            <div class="alerts-list" id="alertsList">
-                                <div class="alert-item">
-                                    <div class="alert-dot blue"></div>
-                                    <div class="alert-content"><h4>System Starting</h4><p>Waiting for ESP32 connections...</p></div>
-                                    <span class="alert-time">Now</span>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="card-header"><h3>🔔 Live Alerts</h3><span class="card-header-action" onclick="clearAlerts()">Clear</span></div>
+                        <div class="card-body"><div class="alerts-list" id="alertsList"><div class="alert-item"><div class="alert-dot blue"></div><div class="alert-content"><h4>System Starting</h4><p>Waiting for ESP32 connections...</p></div><span class="alert-time">Now</span></div></div></div>
                     </div>
                 </div>
 
-                <!-- STEP 21: Control Buttons -->
                 <div class="controls-grid">
                     <div class="card">
-                        <div class="card-header">
-                            <h3>🎮 Hardware Controls</h3>
-                            <span class="card-header-action">via Firebase</span>
-                        </div>
+                        <div class="card-header"><h3>🎮 Hardware Controls</h3></div>
                         <div class="card-body">
                             <div class="devices-grid">
                                 <div class="device-card" id="dev-light">
-                                    <div class="device-card-header">
-                                        <div class="device-icon-wrap light"><svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg></div>
-                                        <div class="toggle" id="ledToggle" onclick="toggleLED()"><div class="toggle-knob"></div></div>
-                                    </div>
-                                    <div class="device-name">Street Lights</div>
-                                    <div class="device-status" id="ledStatus">ESP32-1 → Auto Mode</div>
+                                    <div class="device-card-header"><div class="device-icon-wrap light"><svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg></div><div class="toggle" id="ledToggle" onclick="toggleLED()"><div class="toggle-knob"></div></div></div>
+                                    <div class="device-name">Street Lights</div><div class="device-status" id="ledStatus">ESP32-1 → Auto</div>
                                 </div>
                                 <div class="device-card" id="dev-relay">
-                                    <div class="device-card-header">
-                                        <div class="device-icon-wrap water"><svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg></div>
-                                        <div class="toggle" id="relayToggle" onclick="toggleRelay()"><div class="toggle-knob"></div></div>
-                                    </div>
-                                    <div class="device-name">Dustbin Lid</div>
-                                    <div class="device-status" id="relayStatus">ESP32-2 → Relay</div>
+                                    <div class="device-card-header"><div class="device-icon-wrap water"><svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg></div><div class="toggle" id="relayToggle" onclick="toggleRelay()"><div class="toggle-knob"></div></div></div>
+                                    <div class="device-name">Dustbin Lid</div><div class="device-status" id="relayStatus">ESP32-2 → Relay</div>
                                 </div>
                                 <div class="device-card" id="dev-buzzer">
-                                    <div class="device-card-header">
-                                        <div class="device-icon-wrap" style="background:linear-gradient(135deg,#ff3b30,#ff6259)"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div>
-                                        <div class="toggle" id="buzzerToggle" onclick="toggleBuzzer()"><div class="toggle-knob"></div></div>
-                                    </div>
-                                    <div class="device-name">Alert Buzzer</div>
-                                    <div class="device-status" id="buzzerStatus">ESP32-2 → LED Flash</div>
+                                    <div class="device-card-header"><div class="device-icon-wrap" style="background:linear-gradient(135deg,#ff3b30,#ff6259)"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div><div class="toggle" id="buzzerToggle" onclick="toggleBuzzer()"><div class="toggle-knob"></div></div></div>
+                                    <div class="device-name">Alert</div><div class="device-status" id="buzzerStatus">ESP32-2 → LEDs</div>
                                 </div>
                                 <div class="device-card">
-                                    <div class="device-card-header">
-                                        <div class="device-icon-wrap" style="background:linear-gradient(135deg,#af52de,#5856d6)"><svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div>
-                                    </div>
-                                    <div class="device-name">Report Pothole</div>
-                                    <div class="device-status" style="cursor:pointer;color:var(--accent-blue)" onclick="openReportModal()">📝 Click to report</div>
+                                    <div class="device-card-header"><div class="device-icon-wrap" style="background:linear-gradient(135deg,#af52de,#5856d6)"><svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div></div>
+                                    <div class="device-name">Report Pothole</div><div class="device-status" style="cursor:pointer;color:var(--accent-blue)" onclick="openReportModal()">📝 Click here</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="card-header"><h3>💧 Water Tank</h3></div>
                         <div class="card-body">
@@ -607,131 +413,79 @@
                                     <text class="gauge-text" x="60" y="56"><tspan class="gauge-value" id="gaugeVal">--</tspan></text>
                                     <text class="gauge-text" x="60" y="72"><tspan class="gauge-unit" id="gaugeUnit">waiting</tspan></text>
                                 </svg>
-                                <div class="gauge-label" id="gaugeLabel">Water Level</div>
-                                <div class="gauge-sublabel" id="gaugeSublabel">Float sensor monitoring</div>
+                                <div class="gauge-label">Water Level</div>
+                                <div class="gauge-sublabel">Float sensor on ESP32-2</div>
                             </div>
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="card-header"><h3>⚡ Quick Actions</h3></div>
                         <div class="card-body">
                             <div class="quick-actions">
-                                <button class="action-btn" onclick="openReportModal()">
-                                    <svg viewBox="0 0 24 24" fill="#ff3b30"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-                                    Report Pothole
-                                    <svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                                </button>
-                                <button class="action-btn" onclick="triggerAlert()">
-                                    <svg viewBox="0 0 24 24" fill="#ff9500"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                                    Trigger Alert on ESP32
-                                    <svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                                </button>
-                                <button class="action-btn" onclick="openDustbinLid()">
-                                    <svg viewBox="0 0 24 24" fill="#007aff"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                                    Open Dustbin Lid
-                                    <svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                                </button>
-                                <button class="action-btn" onclick="forceStreetLights()">
-                                    <svg viewBox="0 0 24 24" fill="#34c759"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
-                                    Force Street Lights ON
-                                    <svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                                </button>
+                                <button class="action-btn" onclick="openReportModal()"><svg viewBox="0 0 24 24" fill="#ff3b30"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>Report Pothole<svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                                <button class="action-btn" onclick="triggerAlert()"><svg viewBox="0 0 24 24" fill="#ff9500"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>Trigger Alert on ESP32<svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                                <button class="action-btn" onclick="openDustbinLid()"><svg viewBox="0 0 24 24" fill="#007aff"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>Open Dustbin Lid<svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                                <button class="action-btn" onclick="forceStreetLights()"><svg viewBox="0 0 24 24" fill="#34c759"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>Force Lights ON<svg class="action-arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Potholes Page -->
+            <!-- ==================== POTHOLES PAGE ==================== -->
             <div class="page" id="page-potholes">
-                <div class="card">
-                    <div class="card-header"><h3>All Pothole Reports</h3><span class="card-header-action" onclick="openReportModal()">+ Report</span></div>
-                    <div class="card-body">
-                        <div class="pothole-list" id="allPotholeList">
-                            <div style="text-align:center;padding:20px;color:var(--text-tertiary)">Loading from Firebase...</div>
-                        </div>
-                    </div>
-                </div>
+                <div class="card"><div class="card-header"><h3>All Pothole Reports</h3><span class="card-header-action" onclick="openReportModal()">+ Report</span></div>
+                <div class="card-body"><div class="pothole-list" id="allPotholeList"><div style="text-align:center;padding:20px;color:var(--text-tertiary)">Loading...</div></div></div></div>
             </div>
 
-            <!-- Devices Page -->
+            <!-- ==================== DEVICES PAGE ==================== -->
             <div class="page" id="page-devices">
-                <div class="status-bar"><div class="status-dot"></div><span id="devicesStatus">Checking ESP32 connections...</span></div>
-                <div class="card">
-                    <div class="card-header"><h3>ESP32 Status</h3></div>
-                    <div class="card-body">
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-                            <div style="padding:20px;background:var(--bg);border-radius:var(--radius-sm);border-left:4px solid var(--accent-blue)">
-                                <div style="font-size:16px;font-weight:700;margin-bottom:8px">ESP32-1</div>
-                                <div style="font-size:13px;color:var(--text-secondary)">Pothole + Street Lights + GPS</div>
-                                <div style="margin-top:12px;font-size:14px;font-weight:600" id="esp1StatusDisplay">⏳ Waiting...</div>
-                            </div>
-                            <div style="padding:20px;background:var(--bg);border-radius:var(--radius-sm);border-left:4px solid var(--accent-green)">
-                                <div style="font-size:16px;font-weight:700;margin-bottom:8px">ESP32-2</div>
-                                <div style="font-size:13px;color:var(--text-secondary)">Dustbin + Water + Gas</div>
-                                <div style="margin-top:12px;font-size:14px;font-weight:600" id="esp2StatusDisplay">⏳ Waiting...</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div class="card"><div class="card-header"><h3>ESP32 Status</h3></div>
+                <div class="card-body"><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                    <div style="padding:20px;background:var(--bg);border-radius:var(--radius-sm);border-left:4px solid var(--accent-blue)"><div style="font-size:16px;font-weight:700;margin-bottom:8px">ESP32-1</div><div style="font-size:13px;color:var(--text-secondary)">Pothole + Street Lights + GPS</div><div style="margin-top:12px;font-size:14px;font-weight:600" id="esp1StatusDisplay">⏳ Waiting...</div></div>
+                    <div style="padding:20px;background:var(--bg);border-radius:var(--radius-sm);border-left:4px solid var(--accent-green)"><div style="font-size:16px;font-weight:700;margin-bottom:8px">ESP32-2</div><div style="font-size:13px;color:var(--text-secondary)">Dustbin + Water + Gas</div><div style="margin-top:12px;font-size:14px;font-weight:600" id="esp2StatusDisplay">⏳ Waiting...</div></div>
+                </div></div></div>
             </div>
 
-            <!-- Other pages (simplified) -->
+            <!-- ==================== LIGHTING PAGE ==================== -->
             <div class="page" id="page-lighting">
                 <div class="card"><div class="card-header"><h3>Street Light Control</h3></div>
-                <div class="card-body"><p style="color:var(--text-secondary)">Street lights are controlled automatically by LDR on ESP32-1. Use the toggle on Dashboard to override.</p>
-                <div style="margin-top:16px;padding:20px;background:var(--bg);border-radius:var(--radius-sm);text-align:center">
-                    <div style="font-size:32px;font-weight:800" id="lightPageStatus">--</div>
-                    <div style="font-size:14px;color:var(--text-secondary);margin-top:4px">Current Status</div>
-                    <div style="font-size:12px;color:var(--text-tertiary);margin-top:8px" id="lightPageLDR">LDR: --</div>
-                </div></div></div>
+                <div class="card-body"><div style="text-align:center;padding:30px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:40px;font-weight:800" id="lightPageStatus">--</div><div style="font-size:14px;color:var(--text-secondary);margin-top:8px">Auto-controlled by LDR on ESP32-1</div><div style="font-size:12px;color:var(--text-tertiary);margin-top:4px" id="lightPageLDR">LDR: --</div></div></div></div>
             </div>
 
+            <!-- ==================== WATER PAGE ==================== -->
             <div class="page" id="page-water">
                 <div class="card"><div class="card-header"><h3>Water Level Monitor</h3></div>
-                <div class="card-body"><p style="color:var(--text-secondary)">Float sensor on ESP32-2 detects high water levels.</p>
-                <div style="margin-top:16px;padding:20px;background:var(--bg);border-radius:var(--radius-sm);text-align:center">
-                    <div style="font-size:32px;font-weight:800" id="waterPageStatus">--</div>
-                    <div style="font-size:14px;color:var(--text-secondary);margin-top:4px" id="waterPageAlerts">Alerts: 0</div>
-                </div></div></div>
+                <div class="card-body"><div style="text-align:center;padding:30px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:40px;font-weight:800" id="waterPageStatus">--</div><div style="font-size:14px;color:var(--text-secondary);margin-top:8px">Float sensor on ESP32-2</div><div style="font-size:12px;color:var(--text-tertiary);margin-top:4px" id="waterPageAlerts">Alerts: 0</div></div></div></div>
             </div>
 
+            <!-- ==================== WASTE PAGE ==================== -->
             <div class="page" id="page-waste">
                 <div class="card"><div class="card-header"><h3>Smart Dustbin</h3></div>
                 <div class="card-body">
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                    <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
-                        <div style="font-size:28px;font-weight:800" id="wastePageFill">--</div>
-                        <div style="font-size:12px;color:var(--text-secondary)">Fill Level</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+                        <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:28px;font-weight:800" id="wastePageFill">--</div><div style="font-size:12px;color:var(--text-secondary)">Fill Level</div></div>
+                        <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:28px;font-weight:800" id="wastePageGas">--</div><div style="font-size:12px;color:var(--text-secondary)">Gas Level</div></div>
+                        <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)"><div style="font-size:28px;font-weight:800" id="wastePageLid">--</div><div style="font-size:12px;color:var(--text-secondary)">Lid Status</div></div>
                     </div>
-                    <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
-                        <div style="font-size:28px;font-weight:800" id="wastePageGas">--</div>
-                        <div style="font-size:12px;color:var(--text-secondary)">Gas Level</div>
-                    </div>
-                    <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
-                        <div style="font-size:28px;font-weight:800" id="wastePageLid">--</div>
-                        <div style="font-size:12px;color:var(--text-secondary)">Lid Status</div>
-                    </div>
-                </div>
-                <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill orange" id="wasteProgressBar" style="width:0%"></div></div></div>
+                    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill orange" id="wasteProgressBar" style="width:0%"></div></div></div>
                 </div></div>
             </div>
         </main>
     </div>
 
-    <!-- Report Modal -->
+    <!-- ==================== REPORT MODAL ==================== -->
     <div class="modal-overlay" id="reportModal">
         <div class="modal">
             <h3>📍 Report a Pothole</h3>
-            <p>Submit details. GPS coordinates auto-filled from ESP32-1.</p>
-            <div class="form-group"><label>Location</label><input type="text" class="form-input" id="reportLocation" placeholder="e.g., Main Bazaar Road, near shop #12"></div>
+            <p>GPS auto-filled from ESP32-1 sensor.</p>
+            <div class="form-group"><label>Location</label><input type="text" class="form-input" id="reportLocation" placeholder="e.g., Main Bazaar Road"></div>
             <div class="form-row">
                 <div class="form-group"><label>Severity</label><select class="form-input" id="reportSeverity"><option>minor</option><option selected>warning</option><option>critical</option></select></div>
                 <div class="form-group"><label>Size</label><select class="form-input" id="reportSize"><option>Small</option><option selected>Medium</option><option>Large</option></select></div>
             </div>
-            <div class="form-group"><label>Description</label><textarea class="form-input" id="reportDesc" placeholder="Additional details..."></textarea></div>
-            <div class="form-group"><label>GPS (auto from ESP32-1)</label><input type="text" class="form-input" id="reportGPS" value="Waiting for GPS fix..." readonly style="color:var(--text-secondary)"></div>
+            <div class="form-group"><label>Description</label><textarea class="form-input" id="reportDesc" placeholder="Details..."></textarea></div>
+            <div class="form-group"><label>GPS (auto)</label><input type="text" class="form-input" id="reportGPS" value="Waiting for GPS..." readonly style="color:var(--text-secondary)"></div>
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="closeReportModal()">Cancel</button>
                 <button class="btn btn-primary" onclick="submitReport()">Submit Report</button>
@@ -739,22 +493,68 @@
         </div>
     </div>
 
-    <!-- Toast -->
+    <!-- ==================== TOAST ==================== -->
     <div class="toast" id="toast">
         <div class="toast-icon success" id="toastIcon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
         <div class="toast-text"><h4 id="toastTitle">Success</h4><p id="toastMsg">Done</p></div>
     </div>
 
-    <!-- =========================================================== -->
-    <!-- STEP 18: Firebase SDK -->
-    <!-- =========================================================== -->
+
+
+
+
+
+    <!-- ============================================================ -->
+    <!-- ============================================================ -->
+    <!-- ============================================================ -->
+    <!-- ============================================================ -->
+    <!-- ============================================================ -->
+    <!--                                                              -->
+    <!--         🔥🔥🔥 STEP 18: FIREBASE SDK 🔥🔥🔥                -->
+    <!--         CHANGE NOTHING HERE - JUST LEAVE IT                  -->
+    <!--                                                              -->
+    <!-- ============================================================ -->
+    <!-- ============================================================ -->
+    <!-- ============================================================ -->
+    <!-- ============================================================ -->
+    <!-- ============================================================ -->
+
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
+    <!-- ============================================================ -->
+    <!-- ============================================================ -->
+    <!-- ============================================================ -->
+    <!-- ============================================================ -->
+    <!-- ============================================================ -->
+
+
+
+
+
+
     <script>
-    // =========================================================
-    // STEP 18: INITIALIZE FIREBASE
-    // =========================================================
+
+    // ============================================================
+    // ============================================================
+    // ============================================================
+    // ============================================================
+    // ============================================================
+    //
+    //  🔥🔥🔥 CHANGE THIS: YOUR FIREBASE CONFIG 🔥🔥🔥
+    //  
+    //  Go to Firebase Console → Project Settings → Your Apps
+    //  Copy your config values and paste them below
+    //  
+    //  RIGHT NOW IT HAS YOUR "pothole-detection-90641" PROJECT
+    //  IF YOU CHANGE PROJECTS, UPDATE THESE VALUES
+    //
+    // ============================================================
+    // ============================================================
+    // ============================================================
+    // ============================================================
+    // ============================================================
+
     firebase.initializeApp({
         apiKey: "AIzaSyAwEExMpZV7NXQjG--d3LKIk4ZWhdFANCU",
         authDomain: "pothole-detection-90641.firebaseapp.com",
@@ -762,248 +562,180 @@
         projectId: "pothole-detection-90641"
     });
     const db = firebase.database();
-    console.log('🔥 STEP 18: Firebase SDK loaded and initialized');
+
+    // ============================================================
+    // ============================================================
+    // ============================================================
+    // ============================================================
+    // ============================================================
+    //  END OF FIREBASE CONFIG - DON'T TOUCH BELOW UNLESS YOU
+    //  KNOW WHAT YOU'RE DOING
+    // ============================================================
+    // ============================================================
+    // ============================================================
+    // ============================================================
+    // ============================================================
+
+
+    console.log('🔥 Firebase initialized for: pothole-detection-90641');
+
 
     // =========================================================
-    // STEP 19: CONNECT DASHBOARD TO READ SENSOR DATA IN REAL-TIME
+    // STEP 19: REAL-TIME SENSOR DATA LISTENERS
     // =========================================================
 
-    // ---- ESP32-1: Pothole Detection ----
+    // ESP32-1: Pothole Data
     db.ref('/esp1/pothole').on('value', snap => {
-        const d = snap.val();
-        if (!d) return;
-        console.log('📡 STEP 19 [ESP1/pothole]:', d);
-
-        // Update pothole count
-        const el = document.getElementById('potholeCount');
-        if (el) el.textContent = d.totalCount || 0;
+        const d = snap.val(); if (!d) return;
+        document.getElementById('potholeCount').textContent = d.totalCount || 0;
         document.getElementById('navPotholeBadge').textContent = d.totalCount || 0;
-        document.getElementById('potholeTrend').textContent = (d.totalCount || 0) + ' found';
-
-        // Sensor readings panel
-        document.getElementById('sensorDistance').textContent = (d.currentDistance || 0).toFixed(1);
-        document.getElementById('sensorBaseline').textContent = (d.baseline || 0).toFixed(1);
-
-        // Alert on detection
+        document.getElementById('potholeTrend').textContent = (d.totalCount||0) + ' found';
+        document.getElementById('sensorDistance').textContent = (d.currentDistance||0).toFixed(1);
+        document.getElementById('sensorDistance').style.color = d.detected ? 'var(--accent-red)' : 'var(--accent-green)';
+        document.getElementById('sensorBaseline').textContent = (d.baseline||0).toFixed(1);
         if (d.detected) {
-            document.getElementById('sensorDistance').style.color = 'var(--accent-red)';
-            showToast('error', '🕳️ POTHOLE!', 'Depth: ' + (d.depth || 0).toFixed(1) + ' cm');
-            addAlert('red', '🕳️ Pothole Detected!', 'Depth: ' + (d.depth||0).toFixed(1) + 'cm — Sensor triggered');
-        } else {
-            document.getElementById('sensorDistance').style.color = 'var(--accent-green)';
+            showToast('error', '🕳️ POTHOLE!', 'Depth: ' + (d.depth||0).toFixed(1) + ' cm');
+            addAlert('red', '🕳️ Pothole Detected!', 'Depth: ' + (d.depth||0).toFixed(1) + 'cm');
         }
     });
 
-    // ---- ESP32-1: Street Lights ----
+    // ESP32-1: Street Lights
     db.ref('/esp1/streetLights').on('value', snap => {
-        const d = snap.val();
-        if (!d) return;
-        console.log('📡 STEP 19 [ESP1/streetLights]:', d);
-
+        const d = snap.val(); if (!d) return;
         const el = document.getElementById('lightsOn');
-        if (el) el.textContent = d.isOn ? 'ON' : 'OFF';
+        el.textContent = d.isOn ? 'ON' : 'OFF';
         el.style.color = d.isOn ? 'var(--accent-green)' : 'var(--text-tertiary)';
-
         document.getElementById('lightsTrend').textContent = d.isOn ? 'Active' : 'Off';
-        document.getElementById('ldrDisplay').textContent = 'LDR: ' + (d.ldrValue || '--') + ' | Brightness: ' + (d.brightness || 0);
+        document.getElementById('ldrDisplay').textContent = 'LDR: ' + (d.ldrValue||'--') + ' | Lvl: ' + (d.brightness||0);
         document.getElementById('sensorLDR').textContent = d.ldrValue || '--';
-
-        // Light page
         document.getElementById('lightPageStatus').textContent = d.isOn ? '💡 ON' : '🌙 OFF';
-        document.getElementById('lightPageLDR').textContent = 'LDR Value: ' + (d.ldrValue || '--') + ' | Brightness Level: ' + (d.brightness || 0);
+        document.getElementById('lightPageLDR').textContent = 'LDR: ' + (d.ldrValue||'--') + ' | Brightness: ' + (d.brightness||0);
     });
 
-    // ---- ESP32-1: GPS ----
+    // ESP32-1: GPS
     db.ref('/esp1/gps').on('value', snap => {
-        const d = snap.val();
-        if (!d) return;
-        console.log('📡 STEP 19 [ESP1/gps]:', d);
-
-        // STEP 23: Update GPS bar
+        const d = snap.val(); if (!d) return;
         const gpsBar = document.getElementById('gpsBar');
-        const gpsText = document.getElementById('gpsStatusText');
-        const gpsCoords = document.getElementById('gpsCoordsDisplay');
-        const gpsInput = document.getElementById('reportGPS');
-
+        gpsBar.style.display = 'flex';
         if (d.fixed && d.lat !== 0) {
-            gpsBar.style.display = 'flex';
-            gpsText.textContent = 'GPS Fixed ✅ | Sats: ' + (d.satellites||0) + ' | Speed: ' + (d.speed||0).toFixed(1) + ' km/h';
-            gpsCoords.textContent = d.lat.toFixed(6) + ', ' + d.lng.toFixed(6);
-            if (gpsInput) gpsInput.value = d.lat.toFixed(6) + '° N, ' + d.lng.toFixed(6) + '° E';
+            document.getElementById('gpsStatusText').textContent = 'GPS Fixed ✅ | Sats: ' + (d.satellites||0) + ' | Speed: ' + (d.speed||0).toFixed(1) + ' km/h';
+            document.getElementById('gpsCoordsDisplay').textContent = d.lat.toFixed(6) + ', ' + d.lng.toFixed(6);
+            document.getElementById('reportGPS').value = d.lat.toFixed(6) + '° N, ' + d.lng.toFixed(6) + '° E';
         } else {
-            gpsBar.style.display = 'flex';
-            gpsText.textContent = 'GPS Searching... | Sats: ' + (d.satellites||0);
-            gpsCoords.textContent = 'No fix';
-            if (gpsInput) gpsInput.value = 'Waiting for GPS fix...';
+            document.getElementById('gpsStatusText').textContent = 'GPS Searching... | Sats: ' + (d.satellites||0);
+            document.getElementById('gpsCoordsDisplay').textContent = 'No fix';
         }
-
         document.getElementById('sensorSats').textContent = d.satellites || 0;
     });
 
-    // ---- ESP32-1: Online Status ----
+    // ESP32-1: Status
     db.ref('/esp1/status').on('value', snap => {
-        const d = snap.val();
-        if (!d) return;
+        const d = snap.val(); if (!d) return;
         document.getElementById('esp1StatusDisplay').textContent = d.online ? '🟢 Online' : '🔴 Offline';
         updateSystemStatus();
     });
 
-    // ---- ESP32-2: Dustbin ----
+    // ESP32-2: Dustbin
     db.ref('/esp2/dustbin').on('value', snap => {
-        const d = snap.val();
-        if (!d) return;
-        console.log('📡 STEP 19 [ESP2/dustbin]:', d);
-
-        // STEP 20: Update dashboard stat card
+        const d = snap.val(); if (!d) return;
         const el = document.getElementById('wasteBins');
-        if (el) {
-            el.textContent = Math.round(d.fillPercent || 0) + '%';
-            if (d.fillPercent > 80) el.style.color = 'var(--accent-red)';
-            else if (d.fillPercent > 60) el.style.color = 'var(--accent-orange)';
-            else el.style.color = '';
-        }
+        el.textContent = Math.round(d.fillPercent||0) + '%';
+        el.style.color = d.fillPercent > 80 ? 'var(--accent-red)' : d.fillPercent > 60 ? 'var(--accent-orange)' : '';
         document.getElementById('wasteTrend').textContent = d.status || '--';
-        document.getElementById('sensorDustbin').textContent = Math.round(d.fillPercent || 0) + '%';
-
-        // Waste page
+        document.getElementById('sensorDustbin').textContent = Math.round(d.fillPercent||0) + '%';
         document.getElementById('wastePageFill').textContent = Math.round(d.fillPercent||0) + '%';
         document.getElementById('wastePageLid').textContent = d.lidOpen ? '📂 OPEN' : '📁 Closed';
         document.getElementById('wasteProgressBar').style.width = (d.fillPercent||0) + '%';
-
-        // Relay toggle sync
-        const relayToggle = document.getElementById('relayToggle');
-        if (relayToggle) d.lidOpen ? relayToggle.classList.add('on') : relayToggle.classList.remove('on');
         document.getElementById('relayStatus').textContent = d.lidOpen ? '📂 Lid OPEN' : '📁 Lid Closed';
-
-        if (d.status === 'FULL') addAlert('red', '🗑️ Dustbin FULL!', 'Fill: ' + Math.round(d.fillPercent) + '% — needs collection');
+        const rt = document.getElementById('relayToggle');
+        if (rt) d.lidOpen ? rt.classList.add('on') : rt.classList.remove('on');
+        if (d.status === 'FULL') addAlert('red', '🗑️ Dustbin FULL!', 'Fill: ' + Math.round(d.fillPercent) + '%');
     });
 
-    // ---- ESP32-2: Gas ----
+    // ESP32-2: Gas
     db.ref('/esp2/gas').on('value', snap => {
-        const d = snap.val();
-        if (!d) return;
-        console.log('📡 STEP 19 [ESP2/gas]:', d);
-
+        const d = snap.val(); if (!d) return;
         document.getElementById('gasDisplay').textContent = 'Gas: ' + (d.value||0) + ' (' + (d.status||'--') + ')';
         document.getElementById('sensorGas').textContent = d.value || '--';
-        document.getElementById('sensorGas').style.color =
-            d.level === 2 ? 'var(--accent-red)' : d.level === 1 ? 'var(--accent-orange)' : 'var(--accent-green)';
-
+        document.getElementById('sensorGas').style.color = d.level===2 ? 'var(--accent-red)' : d.level===1 ? 'var(--accent-orange)' : 'var(--accent-green)';
         document.getElementById('wastePageGas').textContent = d.value || '--';
-
-        if (d.level === 2) {
-            showToast('error', '⚠️ GAS DANGER!', 'Level: ' + d.value);
-            addAlert('red', '💨 DANGEROUS GAS!', 'Gas reading: ' + d.value + ' — evacuate area!');
-        } else if (d.level === 1) {
-            addAlert('orange', '💨 Gas Warning', 'Elevated gas: ' + d.value);
-        }
+        if (d.level === 2) { showToast('error', '⚠️ GAS DANGER!', 'Level: ' + d.value); addAlert('red', '💨 GAS DANGER!', 'Reading: ' + d.value); }
+        else if (d.level === 1) { addAlert('orange', '💨 Gas Warning', 'Reading: ' + d.value); }
     });
 
-    // ---- ESP32-2: Water / Float ----
+    // ESP32-2: Water
     db.ref('/esp2/water').on('value', snap => {
-        const d = snap.val();
-        if (!d) return;
-        console.log('📡 STEP 19 [ESP2/water]:', d);
-
-        // STEP 20: Update water card + gauge
-        const waterEl = document.getElementById('waterLevel');
-        const gaugeVal = document.getElementById('gaugeVal');
-        const gaugeFill = document.getElementById('waterGaugeFill');
-        const gaugeUnit = document.getElementById('gaugeUnit');
-
+        const d = snap.val(); if (!d) return;
+        const wEl = document.getElementById('waterLevel');
+        const gVal = document.getElementById('gaugeVal');
+        const gFill = document.getElementById('waterGaugeFill');
+        const gUnit = document.getElementById('gaugeUnit');
         if (d.floatHigh) {
-            if (waterEl) { waterEl.textContent = '⚠️ HIGH'; waterEl.style.color = 'var(--accent-red)'; }
-            if (gaugeVal) gaugeVal.textContent = '!';
-            if (gaugeUnit) gaugeUnit.textContent = 'OVERFLOW';
-            if (gaugeFill) { gaugeFill.setAttribute('stroke-dashoffset', 314 - (314*95/100)); gaugeFill.setAttribute('stroke', '#ff3b30'); }
-            document.getElementById('waterTrend').textContent = '⚠️ HIGH';
-            document.getElementById('waterTrend').className = 'stat-trend up';
-            addAlert('red', '🌊 Water Overflow!', 'Float sensor triggered! Alert #' + (d.alertCount||0));
+            wEl.textContent = '⚠️ HIGH'; wEl.style.color = 'var(--accent-red)';
+            gVal.textContent = '!'; gUnit.textContent = 'OVERFLOW';
+            gFill.setAttribute('stroke-dashoffset', 314-(314*95/100)); gFill.setAttribute('stroke', '#ff3b30');
+            document.getElementById('waterTrend').textContent = '⚠️ HIGH'; document.getElementById('waterTrend').className = 'stat-trend up';
+            addAlert('red', '🌊 Water Overflow!', 'Alert #' + (d.alertCount||0));
         } else {
-            if (waterEl) { waterEl.textContent = 'Normal'; waterEl.style.color = 'var(--accent-green)'; }
-            if (gaugeVal) gaugeVal.textContent = 'OK';
-            if (gaugeUnit) gaugeUnit.textContent = 'Normal';
-            if (gaugeFill) { gaugeFill.setAttribute('stroke-dashoffset', 314 - (314*45/100)); gaugeFill.setAttribute('stroke', 'url(#waterGauge)'); }
-            document.getElementById('waterTrend').textContent = '✅ Normal';
-            document.getElementById('waterTrend').className = 'stat-trend down';
+            wEl.textContent = 'Normal'; wEl.style.color = 'var(--accent-green)';
+            gVal.textContent = 'OK'; gUnit.textContent = 'Normal';
+            gFill.setAttribute('stroke-dashoffset', 314-(314*45/100)); gFill.setAttribute('stroke', 'url(#waterGauge)');
+            document.getElementById('waterTrend').textContent = '✅ Normal'; document.getElementById('waterTrend').className = 'stat-trend down';
         }
-
-        document.getElementById('waterAlertDisplay').textContent = 'Alerts: ' + (d.alertCount || 0);
+        document.getElementById('waterAlertDisplay').textContent = 'Alerts: ' + (d.alertCount||0);
         document.getElementById('waterPageStatus').textContent = d.floatHigh ? '🌊 HIGH ⚠️' : '✅ Normal';
-        document.getElementById('waterPageAlerts').textContent = 'Total alerts: ' + (d.alertCount || 0);
+        document.getElementById('waterPageAlerts').textContent = 'Alerts: ' + (d.alertCount||0);
     });
 
-    // ---- ESP32-2: Online Status ----
+    // ESP32-2: Status
     db.ref('/esp2/status').on('value', snap => {
-        const d = snap.val();
-        if (!d) return;
+        const d = snap.val(); if (!d) return;
         document.getElementById('esp2StatusDisplay').textContent = d.online ? '🟢 Online' : '🔴 Offline';
         document.getElementById('sensorUpdateTime').textContent = 'Uptime: ' + (d.lastUpdate||0) + 's';
         updateSystemStatus();
     });
 
-    // =========================================================
-    // STEP 20: DISPLAY LIVE VALUES (handled above in listeners)
-    // Each listener updates the corresponding DOM element
-    // =========================================================
-    console.log('📊 STEP 20: Live value displays configured');
 
     // =========================================================
-    // STEP 21: CONTROL BUTTONS THAT WRITE TO FIREBASE
+    // STEP 20: (Handled above - each listener updates DOM elements)
+    // =========================================================
+
+
+    // =========================================================
+    // STEP 21: CONTROL BUTTONS → WRITE TO FIREBASE
     // =========================================================
 
     function toggleLED() {
-        const toggle = document.getElementById('ledToggle');
-        toggle.classList.toggle('on');
-        const isOn = toggle.classList.contains('on');
+        const t = document.getElementById('ledToggle'); t.classList.toggle('on');
+        const isOn = t.classList.contains('on');
         db.ref('/controls/led').set(isOn).then(() => {
-            showToast('success', isOn ? '💡 Lights ON' : '💡 Auto Mode', isOn ? 'Street lights forced ON via dashboard' : 'Returned to LDR auto control');
-            document.getElementById('ledStatus').textContent = isOn ? '📱 Manual Override ON' : 'ESP32-1 → Auto Mode';
+            showToast('success', isOn ? '💡 Lights ON' : '💡 Auto Mode', isOn ? 'Forced ON' : 'Back to LDR auto');
+            document.getElementById('ledStatus').textContent = isOn ? '📱 Manual ON' : 'ESP32-1 → Auto';
         });
     }
 
     function toggleRelay() {
-        const toggle = document.getElementById('relayToggle');
-        toggle.classList.toggle('on');
-        const isOn = toggle.classList.contains('on');
-        db.ref('/controls/relay').set(isOn).then(() => {
-            showToast('success', isOn ? '📂 Lid Opened' : '📁 Lid Closed', 'Dustbin lid controlled from dashboard');
-        });
+        const t = document.getElementById('relayToggle'); t.classList.toggle('on');
+        const isOn = t.classList.contains('on');
+        db.ref('/controls/relay').set(isOn).then(() => showToast('success', isOn ? '📂 Lid Opened' : '📁 Lid Closed', 'Sent to ESP32-2'));
     }
 
     function toggleBuzzer() {
-        const toggle = document.getElementById('buzzerToggle');
-        toggle.classList.toggle('on');
-        const isOn = toggle.classList.contains('on');
+        const t = document.getElementById('buzzerToggle'); t.classList.toggle('on');
+        const isOn = t.classList.contains('on');
         db.ref('/controls/buzzer').set(isOn).then(() => {
             showToast(isOn ? 'error' : 'success', isOn ? '🔔 Alert ON' : '🔔 Alert OFF', 'Sent to ESP32-2');
-            if (isOn) setTimeout(() => { db.ref('/controls/buzzer').set(false); toggle.classList.remove('on'); }, 5000);
+            if (isOn) setTimeout(() => { db.ref('/controls/buzzer').set(false); t.classList.remove('on'); }, 5000);
         });
     }
 
-    // Quick action buttons
-    function triggerAlert() {
-        db.ref('/controls/buzzer').set(true);
-        showToast('error', '🔔 Alert Triggered!', 'LEDs flashing on ESP32-2');
-        setTimeout(() => db.ref('/controls/buzzer').set(false), 5000);
-    }
+    function triggerAlert() { db.ref('/controls/buzzer').set(true); showToast('error','🔔 Alert!','LEDs flashing on ESP32-2'); setTimeout(()=>db.ref('/controls/buzzer').set(false),5000); }
+    function openDustbinLid() { db.ref('/controls/relay').set(true); showToast('success','📂 Opening','Relay on ESP32-2'); document.getElementById('relayToggle').classList.add('on'); }
+    function forceStreetLights() { db.ref('/controls/led').set(true); showToast('success','💡 ON','ESP32-1 override'); document.getElementById('ledToggle').classList.add('on'); }
 
-    function openDustbinLid() {
-        db.ref('/controls/relay').set(true);
-        showToast('success', '📂 Lid Opening', 'Relay activated on ESP32-2');
-        document.getElementById('relayToggle').classList.add('on');
-    }
-
-    function forceStreetLights() {
-        db.ref('/controls/led').set(true);
-        showToast('success', '💡 Lights Forced ON', 'ESP32-1 will override LDR auto mode');
-        document.getElementById('ledToggle').classList.add('on');
-    }
-
-    // Sync toggles with Firebase
+    // Sync toggles from Firebase
     db.ref('/controls').on('value', snap => {
-        const c = snap.val();
-        if (!c) return;
+        const c = snap.val(); if (!c) return;
         const lt = document.getElementById('ledToggle');
         const rt = document.getElementById('relayToggle');
         const bt = document.getElementById('buzzerToggle');
@@ -1012,114 +744,72 @@
         if (bt) c.buzzer ? bt.classList.add('on') : bt.classList.remove('on');
     });
 
-    console.log('🎮 STEP 21: Control buttons configured');
 
     // =========================================================
-    // STEP 22: ESP32 reads commands (handled in ESP32 code)
-    // ESP32-1 reads /controls/led
-    // ESP32-2 reads /controls/relay and /controls/buzzer
-    // =========================================================
-    console.log('🔌 STEP 22: ESP32s read from /controls/ (in their firmware)');
-
-    // =========================================================
-    // STEP 23: GPS POTHOLE LOCATION ON MAP
+    // STEP 23: GPS POTHOLE PINS ON MAP
     // =========================================================
 
-    let mapPinCount = 0;
-
+    let mapPins = 0;
     db.ref('/potholes').orderByChild('timestamp').limitToLast(15).on('child_added', snap => {
-        const d = snap.val();
-        if (!d) return;
+        const d = snap.val(); if (!d) return;
+        mapPins++;
+        document.getElementById('mapPinCount').textContent = '📍 ' + mapPins + ' potholes';
 
-        mapPinCount++;
-        document.getElementById('mapPinCount').textContent = '📍 ' + mapPinCount + ' potholes mapped';
-
-        // Add pin to map (random position since we can't show real lat/lng on CSS map)
+        // Add pin to visual map
         const map = document.getElementById('potholeMap');
-        if (map) {
-            const pin = document.createElement('div');
-            const sevClass = d.severity === 'critical' ? 'critical' : d.severity === 'warning' ? 'warning' : 'minor';
-            pin.className = 'map-pin ' + sevClass;
+        const pin = document.createElement('div');
+        const sev = d.severity === 'critical' ? 'critical' : d.severity === 'warning' ? 'warning' : 'minor';
+        pin.className = 'map-pin ' + sev;
+        pin.style.top = (15 + (mapPins*37+13)%65) + '%';
+        pin.style.left = (10 + (mapPins*53+7)%75) + '%';
+        const loc = d.location || (d.lat ? d.lat.toFixed(4)+','+d.lng.toFixed(4) : 'Unknown');
+        pin.title = loc + ' | ' + (d.depth||0).toFixed(1) + 'cm | ' + sev;
+        pin.innerHTML = '<div class="map-pin-inner"></div>';
+        pin.onclick = () => showToast('info', '📍 '+loc, 'Depth: '+(d.depth||0).toFixed(1)+'cm | '+sev);
+        map.appendChild(pin);
 
-            // Position based on hash of coordinates or random
-            const top = 15 + (mapPinCount * 37 + 13) % 65;
-            const left = 10 + (mapPinCount * 53 + 7) % 75;
-            pin.style.top = top + '%';
-            pin.style.left = left + '%';
-
-            const loc = d.location || (d.lat ? d.lat.toFixed(4) + ',' + d.lng.toFixed(4) : 'Unknown');
-            pin.title = loc + ' | Depth: ' + (d.depth||0).toFixed(1) + 'cm | ' + (d.severity||'minor');
-            pin.innerHTML = '<div class="map-pin-inner"></div>';
-            pin.onclick = () => showToast('info', '📍 ' + loc, 'Severity: ' + (d.severity||'minor') + ' | Depth: ' + (d.depth||0).toFixed(1) + 'cm');
-
-            map.appendChild(pin);
-        }
-
-        // Add to pothole lists
+        // Add to lists
         const dashList = document.getElementById('dashboardPotholeList');
         const allList = document.getElementById('allPotholeList');
-
-        // Clear placeholder
         if (dashList && dashList.querySelector('div[style]')) dashList.innerHTML = '';
         if (allList && allList.querySelector('div[style]')) allList.innerHTML = '';
 
-        const loc = d.location || (d.lat ? d.lat.toFixed(4) + ', ' + d.lng.toFixed(4) : 'Unknown');
-        const sevClass = d.severity === 'critical' ? 'critical' : d.severity === 'warning' ? 'warning' : 'minor';
-        const depth = d.depth ? d.depth.toFixed(1) + 'cm' : '';
-        const src = d.source === 'sensor' ? 'Auto-detected by sensor' : 'Manual report';
+        const sevClass = sev;
+        const html = `<div class="pothole-severity ${sevClass}"></div><div class="pothole-info"><h4>${loc} ${d.depth ? '— '+d.depth.toFixed(1)+'cm' : ''}</h4><span>${d.source==='sensor'?'Auto-detected':'Manual report'}</span></div><span class="pothole-status pending">${d.status||'Pending'}</span>`;
 
-        const html = `<div class="pothole-severity ${sevClass}"></div>
-            <div class="pothole-info"><h4>${loc} ${depth ? '— '+depth+' deep' : ''}</h4><span>${src}</span></div>
-            <span class="pothole-status ${d.status||'pending'}">${d.status||'Pending'}</span>`;
-
-        if (dashList) {
+        [dashList, allList].forEach(list => {
+            if (!list) return;
             const item = document.createElement('div');
-            item.className = 'pothole-item';
-            item.innerHTML = html;
-            dashList.insertBefore(item, dashList.firstChild);
-            if (dashList.children.length > 8) dashList.removeChild(dashList.lastChild);
-        }
-        if (allList) {
-            const item2 = document.createElement('div');
-            item2.className = 'pothole-item';
-            item2.innerHTML = html;
-            allList.insertBefore(item2, allList.firstChild);
-        }
+            item.className = 'pothole-item'; item.innerHTML = html;
+            list.insertBefore(item, list.firstChild);
+            if (list === dashList && list.children.length > 8) list.removeChild(list.lastChild);
+        });
     });
 
-    console.log('🗺️ STEP 23: GPS pothole map configured');
 
     // =========================================================
-    // STEP 24: ALERT SYSTEM (buzzer triggers from dashboard)
+    // STEP 24: ALERT SYSTEM
     // =========================================================
 
-    let alertTimestamps = {};
+    let alertTs = {};
     function addAlert(color, title, message) {
-        const key = title;
         const now = Date.now();
-        if (alertTimestamps[key] && now - alertTimestamps[key] < 10000) return; // Prevent spam
-        alertTimestamps[key] = now;
-
+        if (alertTs[title] && now - alertTs[title] < 10000) return;
+        alertTs[title] = now;
         const list = document.getElementById('alertsList');
-        if (!list) return;
         if (list.children.length > 10) list.removeChild(list.lastChild);
-
-        const time = new Date().toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'});
+        const time = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
         const item = document.createElement('div');
-        item.className = 'alert-item';
-        item.style.animation = 'fadeIn 0.4s ease-out';
-        item.innerHTML = `<div class="alert-dot ${color}"></div>
-            <div class="alert-content"><h4>${title}</h4><p>${message}</p></div>
-            <span class="alert-time">${time}</span>`;
+        item.className = 'alert-item'; item.style.animation = 'fadeIn 0.4s ease-out';
+        item.innerHTML = `<div class="alert-dot ${color}"></div><div class="alert-content"><h4>${title}</h4><p>${message}</p></div><span class="alert-time">${time}</span>`;
         list.insertBefore(item, list.firstChild);
     }
 
     function clearAlerts() {
-        document.getElementById('alertsList').innerHTML = '<div class="alert-item"><div class="alert-dot green"></div><div class="alert-content"><h4>Alerts Cleared</h4><p>All clear!</p></div><span class="alert-time">Now</span></div>';
-        alertTimestamps = {};
+        document.getElementById('alertsList').innerHTML = '<div class="alert-item"><div class="alert-dot green"></div><div class="alert-content"><h4>Cleared</h4><p>All alerts cleared</p></div><span class="alert-time">Now</span></div>';
+        alertTs = {};
     }
 
-    console.log('🔔 STEP 24: Alert system configured');
 
     // =========================================================
     // POTHOLE REPORT SUBMISSION
@@ -1127,28 +817,21 @@
 
     function submitReport() {
         const loc = document.getElementById('reportLocation').value;
-        if (!loc) { showToast('error', 'Error', 'Enter a location'); return; }
-
+        if (!loc) { showToast('error','Error','Enter a location'); return; }
         db.ref('/potholes/manual_' + Date.now()).set({
-            location: loc,
-            severity: document.getElementById('reportSeverity').value,
-            size: document.getElementById('reportSize').value,
-            description: document.getElementById('reportDesc').value,
-            gps: document.getElementById('reportGPS').value,
-            lat: 0, lng: 0, depth: 0,
-            timestamp: Date.now(),
-            status: 'pending',
-            source: 'manual'
+            location: loc, severity: document.getElementById('reportSeverity').value,
+            size: document.getElementById('reportSize').value, description: document.getElementById('reportDesc').value,
+            gps: document.getElementById('reportGPS').value, lat: 0, lng: 0, depth: 0,
+            timestamp: Date.now(), status: 'pending', source: 'manual'
         }).then(() => {
-            closeReportModal();
-            showToast('success', '✅ Report Submitted!', 'Pothole logged in Firebase');
-            document.getElementById('reportLocation').value = '';
-            document.getElementById('reportDesc').value = '';
-        }).catch(err => showToast('error', 'Error', err.message));
+            closeReportModal(); showToast('success','✅ Submitted!','Pothole saved to Firebase');
+            document.getElementById('reportLocation').value = ''; document.getElementById('reportDesc').value = '';
+        });
     }
 
+
     // =========================================================
-    // SYSTEM STATUS
+    // SYSTEM STATUS CHECKER
     // =========================================================
 
     function updateSystemStatus() {
@@ -1158,66 +841,39 @@
                 const bar = document.getElementById('systemStatusBar');
                 const dot = document.getElementById('systemStatusDot');
                 const txt = document.getElementById('systemStatusText');
-
                 if (e1 && e2) {
-                    bar.style.background = 'linear-gradient(135deg, #e8f5e9, #f1f8e9)';
-                    bar.style.borderColor = 'rgba(52,199,89,0.15)';
-                    dot.style.background = 'var(--accent-green)';
-                    txt.textContent = '✅ All systems operational — Both ESP32s connected';
-                    txt.style.color = '#2d6a2e';
-                    document.getElementById('devicesStatus').textContent = 'Both ESP32 nodes online ✅';
+                    bar.style.background = 'linear-gradient(135deg,#e8f5e9,#f1f8e9)'; bar.style.borderColor = 'rgba(52,199,89,0.15)';
+                    dot.style.background = 'var(--accent-green)'; txt.textContent = '✅ Both ESP32s connected'; txt.style.color = '#2d6a2e';
                 } else if (e1 || e2) {
-                    bar.style.background = 'linear-gradient(135deg, #fff3e0, #fef9e7)';
-                    bar.style.borderColor = 'rgba(255,149,0,0.15)';
-                    dot.style.background = 'var(--accent-orange)';
-                    txt.textContent = '⚠️ Partial — ' + (e1?'ESP32-1 (Pothole)':'ESP32-2 (Dustbin)') + ' connected';
-                    txt.style.color = '#e65100';
+                    bar.style.background = 'linear-gradient(135deg,#fff3e0,#fef9e7)'; bar.style.borderColor = 'rgba(255,149,0,0.15)';
+                    dot.style.background = 'var(--accent-orange)'; txt.textContent = '⚠️ ' + (e1?'ESP32-1':'ESP32-2') + ' connected'; txt.style.color = '#e65100';
                 } else {
-                    bar.style.background = 'linear-gradient(135deg, #fce4ec, #fff3e0)';
-                    bar.style.borderColor = 'rgba(255,59,48,0.15)';
-                    dot.style.background = 'var(--accent-red)';
-                    txt.textContent = '❌ Both ESP32s disconnected — check hardware & WiFi';
-                    txt.style.color = '#c62828';
+                    bar.style.background = 'linear-gradient(135deg,#fce4ec,#fff3e0)'; bar.style.borderColor = 'rgba(255,59,48,0.15)';
+                    dot.style.background = 'var(--accent-red)'; txt.textContent = '❌ Both ESP32s disconnected'; txt.style.color = '#c62828';
                 }
             });
         });
     }
+    setTimeout(updateSystemStatus, 3000);
+
 
     // =========================================================
     // UI UTILITIES
     // =========================================================
 
-    function updateTime() {
-        const el = document.getElementById('liveTime');
-        if (el) el.textContent = new Date().toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    }
+    function updateTime() { const el = document.getElementById('liveTime'); if(el) el.textContent = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
     setInterval(updateTime, 1000); updateTime();
 
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('open');
-        document.getElementById('sidebarOverlay').classList.toggle('show');
-    }
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('show'); }
 
-    const pageTitles = {
-        dashboard: ['Dashboard', 'Overview of village infrastructure — Live from ESP32'],
-        potholes: ['Pothole Reports', 'All detected and manual reports'],
-        devices: ['IoT Devices', 'ESP32-1 & ESP32-2 status'],
-        lighting: ['Street Lighting', 'ESP32-1 LDR auto-control'],
-        water: ['Water Supply', 'ESP32-2 float sensor monitoring'],
-        waste: ['Waste Management', 'ESP32-2 dustbin + gas sensor']
-    };
-
+    const pageTitles = { dashboard:['Dashboard','Live from ESP32-1 & ESP32-2'], potholes:['Pothole Reports','All reports'], devices:['IoT Devices','ESP32 status'], lighting:['Street Lighting','ESP32-1 LDR control'], water:['Water Supply','ESP32-2 float sensor'], waste:['Waste Management','ESP32-2 dustbin + gas'] };
     function switchPage(page, navEl) {
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         if (navEl) navEl.classList.add('active');
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById('page-' + page)?.classList.add('active');
-        if (pageTitles[page]) {
-            document.getElementById('pageTitle').textContent = pageTitles[page][0];
-            document.getElementById('pageSubtitle').textContent = pageTitles[page][1];
-        }
-        document.getElementById('sidebar').classList.remove('open');
-        document.getElementById('sidebarOverlay').classList.remove('show');
+        document.getElementById('page-'+page)?.classList.add('active');
+        if (pageTitles[page]) { document.getElementById('pageTitle').textContent = pageTitles[page][0]; document.getElementById('pageSubtitle').textContent = pageTitles[page][1]; }
+        document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('show');
     }
 
     function openReportModal() { document.getElementById('reportModal').classList.add('show'); }
@@ -1227,42 +883,16 @@
 
     let toastTimeout;
     function showToast(type, title, msg) {
-        const toast = document.getElementById('toast');
-        const icon = document.getElementById('toastIcon');
+        const toast = document.getElementById('toast'), icon = document.getElementById('toastIcon');
         icon.className = 'toast-icon ' + type;
-        const icons = {
-            success: '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>',
-            error: '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>',
-            info: '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>'
-        };
-        icon.innerHTML = icons[type] || icons.info;
-        document.getElementById('toastTitle').textContent = title;
-        document.getElementById('toastMsg').textContent = msg;
-        toast.classList.add('show');
-        clearTimeout(toastTimeout);
-        toastTimeout = setTimeout(() => toast.classList.remove('show'), 3500);
+        const icons = { success:'<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>', error:'<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>', info:'<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>' };
+        icon.innerHTML = icons[type]||icons.info;
+        document.getElementById('toastTitle').textContent = title; document.getElementById('toastMsg').textContent = msg;
+        toast.classList.add('show'); clearTimeout(toastTimeout); toastTimeout = setTimeout(() => toast.classList.remove('show'), 3500);
     }
 
-    // Initial status check
-    setTimeout(updateSystemStatus, 3000);
-
-    console.log('');
-    console.log('🏘️ ========================================');
-    console.log('🏘️  SmartVillage Dashboard READY!');
-    console.log('🏘️  STEP 18: Firebase SDK ✅');
-    console.log('🏘️  STEP 19: Real-time listeners ✅');
-    console.log('🏘️  STEP 20: Live value display ✅');
-    console.log('🏘️  STEP 21: Control buttons ✅');
-    console.log('🏘️  STEP 22: ESP32 reads (firmware) ✅');
-    console.log('🏘️  STEP 23: GPS map ✅');
-    console.log('🏘️  STEP 24: Alert system ✅');
-    console.log('🏘️ ========================================');
-    console.log('');
-    console.log('📡 Listening:');
-    console.log('   ESP32-1 → /esp1/pothole, /esp1/streetLights, /esp1/gps');
-    console.log('   ESP32-2 → /esp2/dustbin, /esp2/gas, /esp2/water');
-    console.log('   Controls → /controls/led, /controls/relay, /controls/buzzer');
-    console.log('   Potholes → /potholes/*');
+    console.log('🏘️ SmartVillage Dashboard READY!');
+    console.log('📡 ESP32-1 → /esp1/   |   ESP32-2 → /esp2/   |   Controls → /controls/');
     </script>
 </body>
 </html>
