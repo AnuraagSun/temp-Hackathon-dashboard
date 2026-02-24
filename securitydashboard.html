@@ -1,0 +1,3650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartVillage — IoT Dashboard</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        /* ============================================
+           CSS CUSTOM PROPERTIES - Centralized theming
+           ============================================ */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f5f5f7;
+            --card: #fff;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --text-tertiary: #aeaeb2;
+            --accent-blue: #007aff;
+            --accent-green: #34c759;
+            --accent-orange: #ff9500;
+            --accent-red: #ff3b30;
+            --accent-purple: #af52de;
+            --accent-teal: #5ac8fa;
+            --accent-indigo: #5856d6;
+            --accent-yellow: #ffcc00;
+            --border: rgba(0, 0, 0, 0.06);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 14px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+            --shadow-xl: 0 20px 60px rgba(0,0,0,0.1), 0 8px 20px rgba(0,0,0,0.06);
+            --radius: 16px;
+            --radius-sm: 12px;
+            --radius-xs: 8px;
+            --transition: 0.3s cubic-bezier(.25,.46,.45,.94);
+            --spring: 0.5s cubic-bezier(.34,1.56,.64,1);
+            --sidebar-width: 260px;
+            --header-height: 60px;
+        }
+
+        /* ============================================
+           BASE STYLES
+           ============================================ */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ============================================
+           ANIMATED BACKGROUND
+           ============================================ */
+        .bg-blobs {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.35;
+            animation: blobFloat 20s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        .blob--primary {
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, #007aff33, #5ac8fa33);
+            top: -10%;
+            right: -5%;
+        }
+
+        .blob--secondary {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, #34c75933, #ffcc0033);
+            bottom: -10%;
+            left: -5%;
+            animation-delay: -7s;
+        }
+
+        .blob--tertiary {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, #af52de33, #ff950033);
+            top: 40%;
+            left: 30%;
+            animation-delay: -14s;
+        }
+
+        @keyframes blobFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(50px, -30px) scale(1.1); }
+            50% { transform: translate(-20px, 40px) scale(0.95); }
+            75% { transform: translate(30px, 20px) scale(1.05); }
+        }
+
+        /* ============================================
+           LAYOUT
+           ============================================ */
+        .app {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ============================================
+           SIDEBAR
+           ============================================ */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border-right: 1px solid var(--border);
+            padding: 28px 16px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+            transition: transform var(--transition);
+        }
+
+        .sidebar__brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 4px 12px 24px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .sidebar__brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar__brand-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: #fff;
+        }
+
+        .sidebar__brand-title {
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .sidebar__brand-subtitle {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Navigation */
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section__label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 0 12px;
+            margin-bottom: 6px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: var(--radius-xs);
+            cursor: pointer;
+            transition: all var(--transition);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            user-select: none;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-item:hover {
+            background: rgba(0, 0, 0, 0.04);
+            color: var(--text-primary);
+        }
+
+        .nav-item:focus-visible {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+
+        .nav-item--active {
+            background: var(--accent-blue);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+        }
+
+        .nav-item--active svg {
+            fill: #fff;
+        }
+
+        .nav-item svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+
+        .nav-item__badge {
+            margin-left: auto;
+            background: var(--accent-red);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 10px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .nav-item--active .nav-item__badge {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .sidebar__footer {
+            margin-top: auto;
+            padding: 16px 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info__avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .user-info__name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .user-info__role {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* ============================================
+           MAIN CONTENT AREA
+           ============================================ */
+        .main {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 28px 32px;
+            max-width: calc(100vw - var(--sidebar-width));
+        }
+
+        /* ============================================
+           HEADER
+           ============================================ */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .header__left h2 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header__left p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .header__right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header__btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition);
+            position: relative;
+        }
+
+        .header__btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .header__btn:focus-visible {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+
+        .header__btn svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-secondary);
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-red);
+            border-radius: 50%;
+            border: 2px solid var(--card);
+            display: none;
+        }
+
+        .notification-dot--visible {
+            display: block;
+        }
+
+        .menu-toggle {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--card);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .menu-toggle svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-primary);
+        }
+
+        /* ============================================
+           INDICATORS
+           ============================================ */
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--accent-red);
+            font-weight: 600;
+        }
+
+        .live-indicator__dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent-red);
+            border-radius: 50%;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .connection-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all var(--transition);
+        }
+
+        .connection-indicator--online {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--accent-green);
+        }
+
+        .connection-indicator--offline {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--accent-red);
+        }
+
+        .connection-indicator--partial {
+            background: rgba(255, 149, 0, 0.1);
+            color: var(--accent-orange);
+        }
+
+        /* ============================================
+           STATUS BAR
+           ============================================ */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 24px;
+            border: 1px solid rgba(52, 199, 89, 0.15);
+            animation: slideDown 0.6s ease-out;
+            background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .status-bar__dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        .status-bar__text {
+            font-size: 13px;
+            font-weight: 500;
+            color: #2d6a2e;
+        }
+
+        .status-bar__time {
+            margin-left: auto;
+            font-size: 12px;
+            color: #4a8c4b;
+        }
+
+        /* GPS Bar */
+        .gps-bar {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            background: rgba(0, 122, 255, 0.06);
+            border-radius: var(--radius-xs);
+            margin-bottom: 12px;
+            border: 1px solid rgba(0, 122, 255, 0.1);
+        }
+
+        .gps-bar--visible {
+            display: flex;
+        }
+
+        .gps-bar__text {
+            font-size: 12px;
+            color: var(--accent-blue);
+            font-weight: 500;
+        }
+
+        .gps-bar__coords {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        /* ============================================
+           STATS GRID
+           ============================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--border);
+            transition: all var(--transition);
+            cursor: default;
+            animation: cardAppear 0.6s ease-out both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: 3px 3px 0 0;
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .stat-card:hover::before { opacity: 1; }
+
+        .stat-card:nth-child(1)::before { background: var(--accent-red); }
+        .stat-card:nth-child(2)::before { background: var(--accent-green); }
+        .stat-card:nth-child(3)::before { background: var(--accent-blue); }
+        .stat-card:nth-child(4)::before { background: var(--accent-orange); }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes cardAppear {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.05s; }
+        .stat-card:nth-child(2) { animation-delay: 0.1s; }
+        .stat-card:nth-child(3) { animation-delay: 0.15s; }
+        .stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+        .stat-card__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .stat-card__icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-xs);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-card__icon svg {
+            width: 20px;
+            height: 20px;
+            fill: #fff;
+        }
+
+        .stat-card__icon--red { background: linear-gradient(135deg, #ff3b30, #ff6259); }
+        .stat-card__icon--green { background: linear-gradient(135deg, #34c759, #5dd97c); }
+        .stat-card__icon--blue { background: linear-gradient(135deg, #007aff, #409cff); }
+        .stat-card__icon--orange { background: linear-gradient(135deg, #ff9500, #ffb340); }
+
+        .stat-card__trend {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+
+        .stat-card__trend--up {
+            color: var(--accent-red);
+            background: rgba(255, 59, 48, 0.1);
+        }
+
+        .stat-card__trend--down {
+            color: var(--accent-green);
+            background: rgba(52, 199, 89, 0.1);
+        }
+
+        .stat-card__value {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-card__label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .stat-card__sublabel {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+
+        /* ============================================
+           CONTENT GRID
+           ============================================ */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            animation: cardAppear 0.6s ease-out both;
+        }
+
+        .card__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px 14px;
+        }
+
+        .card__header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+        }
+
+        .card__header-action {
+            font-size: 13px;
+            color: var(--accent-blue);
+            cursor: pointer;
+            font-weight: 600;
+            transition: opacity var(--transition);
+            background: none;
+            border: none;
+            font-family: inherit;
+        }
+
+        .card__header-action:hover {
+            opacity: 0.7;
+        }
+
+        .card__body {
+            padding: 0 20px 20px;
+        }
+
+        /* ============================================
+           MAP
+           ============================================ */
+        .map-container {
+            width: 100%;
+            height: 380px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .map-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .map-controls__btn {
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .map-controls__btn:hover {
+            background: var(--accent-blue);
+            color: #fff;
+            border-color: var(--accent-blue);
+        }
+
+        .map-controls__btn:focus-visible {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+
+        .map-legend {
+            display: flex;
+            gap: 14px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .map-legend__item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .map-legend__dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        /* ============================================
+           POTHOLE LIST
+           ============================================ */
+        .pothole-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 460px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
+        .pothole-list::-webkit-scrollbar { width: 4px; }
+        .pothole-list::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .pothole-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: var(--radius-xs);
+            background: var(--bg);
+            transition: all var(--transition);
+            cursor: pointer;
+        }
+
+        .pothole-item:hover {
+            background: rgba(0, 0, 0, 0.04);
+            transform: translateX(4px);
+        }
+
+        .pothole-item__severity {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .pothole-item__severity--critical { background: var(--accent-red); }
+        .pothole-item__severity--warning { background: var(--accent-orange); }
+        .pothole-item__severity--minor { background: var(--accent-yellow); }
+
+        .pothole-item__info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .pothole-item__title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pothole-item__meta {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .pothole-item__status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .pothole-item__status--pending {
+            color: var(--accent-orange);
+            background: rgba(255, 149, 0, 0.1);
+        }
+
+        .pothole-item__status--resolved {
+            color: var(--accent-green);
+            background: rgba(52, 199, 89, 0.1);
+        }
+
+        /* ============================================
+           DEVICE CARDS
+           ============================================ */
+        .devices-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .device-card {
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            background: var(--bg);
+            transition: all var(--transition);
+            cursor: pointer;
+        }
+
+        .device-card:hover {
+            background: rgba(0, 0, 0, 0.04);
+            transform: translateY(-1px);
+        }
+
+        .device-card__header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .device-card__icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-xs);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .device-card__icon svg {
+            width: 22px;
+            height: 22px;
+            fill: #fff;
+        }
+
+        .device-card__name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .device-card__status {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* ============================================
+           TOGGLE SWITCH
+           ============================================ */
+        .toggle {
+            width: 48px;
+            height: 28px;
+            border-radius: 14px;
+            background: #d1d1d6;
+            cursor: pointer;
+            transition: background var(--transition);
+            position: relative;
+            flex-shrink: 0;
+            border: none;
+        }
+
+        .toggle:focus-visible {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+
+        .toggle--on {
+            background: var(--accent-green);
+        }
+
+        .toggle--sending {
+            background: var(--accent-orange);
+            animation: togglePulse 1s infinite;
+        }
+
+        @keyframes togglePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .toggle__knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+            transition: transform var(--spring);
+            pointer-events: none;
+        }
+
+        .toggle--on .toggle__knob {
+            transform: translateX(20px);
+        }
+
+        /* ============================================
+           FULL WIDTH GRID
+           ============================================ */
+        .full-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        /* ============================================
+           ALERTS
+           ============================================ */
+        .alerts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 350px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+
+        .alerts-list::-webkit-scrollbar { width: 4px; }
+        .alerts-list::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px;
+            border-radius: var(--radius-xs);
+            transition: all var(--transition);
+            cursor: pointer;
+        }
+
+        .alert-item:hover { background: var(--bg); }
+
+        .alert-item__dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+
+        .alert-item__dot--red { background: var(--accent-red); }
+        .alert-item__dot--orange { background: var(--accent-orange); }
+        .alert-item__dot--blue { background: var(--accent-blue); }
+        .alert-item__dot--green { background: var(--accent-green); }
+
+        .alert-item__title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .alert-item__message {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .alert-item__time {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-left: auto;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* ============================================
+           CONTROLS GRID
+           ============================================ */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        /* ============================================
+           GAUGE
+           ============================================ */
+        .gauge-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 8px;
+        }
+
+        .gauge-svg {
+            width: 140px;
+            height: 140px;
+            transform: rotate(-90deg);
+        }
+
+        .gauge-svg__bg {
+            fill: none;
+            stroke: rgba(0, 0, 0, 0.06);
+            stroke-width: 10;
+        }
+
+        .gauge-svg__fill {
+            fill: none;
+            stroke-width: 10;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1.5s ease-out;
+        }
+
+        .gauge-svg__text {
+            text-anchor: middle;
+            font-family: 'Inter', sans-serif;
+            transform: rotate(90deg);
+            transform-origin: center;
+        }
+
+        .gauge-svg__value {
+            font-size: 24px;
+            font-weight: 800;
+            fill: var(--text-primary);
+        }
+
+        .gauge-svg__unit {
+            font-size: 11px;
+            fill: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .gauge__label {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .gauge__sublabel {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* ============================================
+           QUICK ACTIONS
+           ============================================ */
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: var(--radius-xs);
+            border: none;
+            background: var(--bg);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all var(--transition);
+            text-align: left;
+            width: 100%;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 0, 0, 0.06);
+            transform: translateX(4px);
+        }
+
+        .action-btn:active {
+            transform: translateX(2px) scale(0.98);
+        }
+
+        .action-btn:focus-visible {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+
+        .action-btn svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .action-btn__arrow {
+            margin-left: auto;
+            width: 16px;
+            height: 16px;
+            fill: var(--text-tertiary);
+        }
+
+        /* ============================================
+           PROGRESS BAR
+           ============================================ */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .progress-bar__fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1s ease-out;
+        }
+
+        .progress-bar__fill--green { background: linear-gradient(90deg, #34c759, #5dd97c); }
+        .progress-bar__fill--orange { background: linear-gradient(90deg, #ff9500, #ffb340); }
+        .progress-bar__fill--red { background: linear-gradient(90deg, #ff3b30, #ff6259); }
+
+        /* ============================================
+           COMMAND LOG / TERMINAL
+           ============================================ */
+        .command-log {
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 11px;
+            background: #1d1d1f;
+            color: #34c759;
+            padding: 12px;
+            border-radius: var(--radius-xs);
+            margin-top: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: #333 transparent;
+        }
+
+        .command-log::-webkit-scrollbar { width: 4px; }
+        .command-log::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        .cmd-line {
+            padding: 2px 0;
+            opacity: 0.8;
+        }
+
+        .cmd-line:last-child { opacity: 1; }
+
+        .cmd-time { color: #86868b; }
+        .cmd-success { color: #34c759; }
+        .cmd-error { color: #ff3b30; }
+        .cmd-info { color: #5ac8fa; }
+
+        /* ============================================
+           WATER TANK
+           ============================================ */
+        .water-tank {
+            width: 100%;
+            height: 120px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #90caf9;
+        }
+
+        .water-tank__fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, #42a5f5, #1565c0);
+            transition: height 1s ease;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .water-tank__text {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1565c0;
+            z-index: 1;
+        }
+
+        /* ============================================
+           GPIO CONTROLS
+           ============================================ */
+        .gpio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .gpio-card {
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            transition: all var(--transition);
+        }
+
+        .gpio-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .gpio-card__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .gpio-pin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+        }
+
+        .gpio-pin-badge--esp1 {
+            background: rgba(0, 122, 255, 0.1);
+            color: var(--accent-blue);
+        }
+
+        .gpio-pin-badge--esp2 {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--accent-green);
+        }
+
+        .gpio-card__name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .gpio-card__desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .gpio-card__status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .gpio-state {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+
+        .gpio-state--on {
+            background: rgba(52, 199, 89, 0.12);
+            color: var(--accent-green);
+        }
+
+        .gpio-state--off {
+            background: rgba(0, 0, 0, 0.04);
+            color: var(--text-tertiary);
+        }
+
+        .gpio-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            transition: all var(--transition);
+        }
+
+        .gpio-indicator--on {
+            background: var(--accent-green);
+            box-shadow: 0 0 8px rgba(52, 199, 89, 0.5);
+        }
+
+        .gpio-indicator--off { background: #d1d1d6; }
+
+        .gpio-indicator--pulse {
+            animation: gpioPulse 1s infinite;
+        }
+
+        @keyframes gpioPulse {
+            0%, 100% { box-shadow: 0 0 4px rgba(52, 199, 89, 0.3); }
+            50% { box-shadow: 0 0 16px rgba(52, 199, 89, 0.8); }
+        }
+
+        /* ESP Sections */
+        .esp-section {
+            margin-bottom: 24px;
+        }
+
+        .esp-section__title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .esp-section__title h4 {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .esp-tag {
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .esp-tag--blue {
+            background: rgba(0, 122, 255, 0.1);
+            color: var(--accent-blue);
+        }
+
+        .esp-tag--green {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--accent-green);
+        }
+
+        /* Bulk Actions */
+        .bulk-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .bulk-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .bulk-btn:hover { box-shadow: var(--shadow-sm); }
+
+        .bulk-btn:focus-visible {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+
+        .bulk-btn--on {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+        .bulk-btn--on:hover {
+            background: var(--accent-green);
+            color: #fff;
+        }
+
+        .bulk-btn--off {
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+        .bulk-btn--off:hover {
+            background: var(--accent-red);
+            color: #fff;
+        }
+
+        .bulk-btn--reset {
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+        .bulk-btn--reset:hover {
+            background: var(--accent-orange);
+            color: #fff;
+        }
+
+        /* PWM Slider */
+        .pwm-slider-wrap {
+            margin-top: 10px;
+        }
+
+        .pwm-slider-wrap label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .pwm-slider {
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            appearance: none;
+            -webkit-appearance: none;
+            background: rgba(0, 0, 0, 0.08);
+            outline: none;
+            margin-top: 4px;
+            cursor: pointer;
+        }
+
+        .pwm-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .pwm-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            border: none;
+        }
+
+        .pwm-value {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-blue);
+            margin-left: 8px;
+        }
+
+        /* ============================================
+           MODAL
+           ============================================ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay--visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 32px;
+            width: 90%;
+            max-width: 520px;
+            box-shadow: var(--shadow-xl);
+            transform: scale(0.9) translateY(20px);
+            transition: transform var(--spring);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay--visible .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .modal p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: var(--radius-xs);
+            border: 1px solid var(--border);
+            background: var(--bg);
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text-primary);
+            outline: none;
+            transition: all var(--transition);
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        select.form-input {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%2386868b'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal__actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-xs);
+            border: none;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            flex: 1;
+        }
+
+        .btn:active { transform: scale(0.97); }
+
+        .btn:focus-visible {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+
+        .btn--primary {
+            background: var(--accent-blue);
+            color: #fff;
+        }
+
+        .btn--primary:hover { background: #0071e3; }
+        .btn--primary:disabled { opacity: 0.5; pointer-events: none; }
+
+        .btn--secondary {
+            background: var(--bg);
+            color: var(--text-primary);
+        }
+
+        .modal-map-container {
+            width: 100%;
+            height: 200px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            margin-top: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .map-pick-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: var(--radius-xs);
+            border: 1px dashed var(--accent-blue);
+            background: rgba(0, 122, 255, 0.04);
+            color: var(--accent-blue);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            margin-top: 6px;
+            font-family: inherit;
+        }
+
+        .map-pick-btn:hover {
+            background: rgba(0, 122, 255, 0.1);
+        }
+
+        /* ============================================
+           TOAST NOTIFICATIONS
+           ============================================ */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            padding: 14px 20px;
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(120%);
+            transition: transform var(--spring);
+            max-width: 360px;
+            border: 1px solid var(--border);
+        }
+
+        .toast--visible { transform: translateX(0); }
+
+        .toast__icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .toast__icon svg {
+            width: 16px;
+            height: 16px;
+            fill: #fff;
+        }
+
+        .toast__icon--success { background: var(--accent-green); }
+        .toast__icon--error { background: var(--accent-red); }
+        .toast__icon--info { background: var(--accent-blue); }
+        .toast__icon--warning { background: var(--accent-orange); }
+
+        .toast__title {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .toast__message {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .toast__close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            margin-left: 8px;
+            opacity: 0.5;
+            transition: opacity var(--transition);
+        }
+
+        .toast__close:hover { opacity: 1; }
+
+        .toast__close svg {
+            width: 14px;
+            height: 14px;
+            fill: var(--text-secondary);
+        }
+
+        /* ============================================
+           PAGE TRANSITIONS
+           ============================================ */
+        .page {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .page--active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 99;
+        }
+
+        .sidebar-overlay--visible { display: block; }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .controls-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar--open {
+                transform: translateX(0);
+                box-shadow: var(--shadow-xl);
+            }
+            .main {
+                margin-left: 0;
+                max-width: 100vw;
+                padding: 20px 16px;
+            }
+            .menu-toggle { display: flex; }
+            .content-grid,
+            .full-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .devices-grid { grid-template-columns: 1fr; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .gpio-grid { grid-template-columns: 1fr; }
+            .header__left h2 { font-size: 22px; }
+        }
+
+        /* ============================================
+           ACCESSIBILITY
+           ============================================ */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .blob { animation: none; }
+        }
+
+        /* Screen reader only */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-blobs" aria-hidden="true">
+        <div class="blob blob--primary"></div>
+        <div class="blob blob--secondary"></div>
+        <div class="blob blob--tertiary"></div>
+    </div>
+
+    <div class="app">
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="SmartVillage.toggleSidebar()"></div>
+
+        <!-- ════════════════════════════════ -->
+        <!--  SIDEBAR NAVIGATION             -->
+        <!-- ════════════════════════════════ -->
+        <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+            <div class="sidebar__brand">
+                <div class="sidebar__brand-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18L19.35 7.5 12 10.82 4.65 7.5 12 4.18zM4 8.9l7 3.5v7.7l-7-3.5V8.9zm9 11.2V12.4l7-3.5v7.7l-7 3.5z"/></svg>
+                </div>
+                <div>
+                    <h1 class="sidebar__brand-title">SmartVillage</h1>
+                    <span class="sidebar__brand-subtitle">IoT Management</span>
+                </div>
+            </div>
+
+            <nav class="nav-section">
+                <div class="nav-section__label">Main</div>
+                <button class="nav-item nav-item--active" data-page="dashboard" onclick="SmartVillage.switchPage('dashboard', this)" aria-current="page">
+                    <svg viewBox="0 0 24 24"><path d="M4 13h6c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1zm0 8h6c.55 0 1-.45 1-1v-4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1zm10 0h6c.55 0 1-.45 1-1v-8c0-.55-.45-1-1-1h-6c-.55 0-1 .45-1 1v8c0 .55.45 1 1 1zm-1-18v4c0 .55.45 1 1 1h6c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1h-6c-.55 0-1 .45-1 1z"/></svg>
+                    Dashboard
+                </button>
+                <button class="nav-item" data-page="potholes" onclick="SmartVillage.switchPage('potholes', this)">
+                    <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                    Potholes
+                    <span class="nav-item__badge" id="navPotholeBadge">0</span>
+                </button>
+                <button class="nav-item" data-page="devices" onclick="SmartVillage.switchPage('devices', this)">
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                    Devices
+                </button>
+            </nav>
+
+            <nav class="nav-section">
+                <div class="nav-section__label">Infrastructure</div>
+                <button class="nav-item" data-page="lighting" onclick="SmartVillage.switchPage('lighting', this)">
+                    <svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
+                    Street Lights
+                </button>
+                <button class="nav-item" data-page="water" onclick="SmartVillage.switchPage('water', this)">
+                    <svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
+                    Water Supply
+                </button>
+                <button class="nav-item" data-page="waste" onclick="SmartVillage.switchPage('waste', this)">
+                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                    Waste Mgmt
+                </button>
+            </nav>
+
+            <nav class="nav-section">
+                <div class="nav-section__label">Advanced</div>
+                <button class="nav-item" data-page="misc" onclick="SmartVillage.switchPage('misc', this)">
+                    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                    Misc / GPIO
+                </button>
+                <button class="nav-item" data-page="terminal" onclick="SmartVillage.switchPage('terminal', this)">
+                    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16v10zm-2-1h-6v-2h6v2zM7.5 17l-1.41-1.41L8.67 13l-2.59-2.59L7.5 9l4 4-4 4z"/></svg>
+                    Terminal
+                </button>
+            </nav>
+
+            <div class="sidebar__footer">
+                <div class="user-info">
+                    <div class="user-info__avatar" aria-hidden="true">VP</div>
+                    <div>
+                        <div class="user-info__name">Village Panchayat</div>
+                        <span class="user-info__role">Admin Access</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ════════════════════════════════ -->
+        <!--  MAIN CONTENT                   -->
+        <!-- ════════════════════════════════ -->
+        <main class="main" role="main">
+            <div class="header">
+                <div style="display:flex;align-items:center;gap:12px">
+                    <button class="menu-toggle" onclick="SmartVillage.toggleSidebar()" aria-label="Toggle navigation menu">
+                        <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </button>
+                    <div class="header__left">
+                        <h2 id="pageTitle">Dashboard</h2>
+                        <p id="pageSubtitle">Live data from ESP32-1 &amp; ESP32-2</p>
+                    </div>
+                </div>
+                <div class="header__right">
+                    <div class="connection-indicator connection-indicator--offline" id="connIndicator" role="status" aria-live="polite">⏳ Connecting</div>
+                    <div class="live-indicator" aria-label="Live data stream active">
+                        <div class="live-indicator__dot" aria-hidden="true"></div>LIVE
+                    </div>
+                    <button class="header__btn" onclick="SmartVillage.openReportModal()" title="Report Pothole" aria-label="Report a pothole">
+                        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="#86868b"/></svg>
+                    </button>
+                    <button class="header__btn" title="Notifications" aria-label="View notifications">
+                        <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                        <div class="notification-dot" id="notifDot" aria-hidden="true"></div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════ -->
+            <!--  DASHBOARD PAGE                 -->
+            <!-- ═══════════════════════════════ -->
+            <div class="page page--active" id="page-dashboard">
+                <div class="status-bar" id="systemStatusBar" role="status" aria-live="polite">
+                    <div class="status-bar__dot" id="systemStatusDot" aria-hidden="true"></div>
+                    <span class="status-bar__text" id="systemStatusText">Connecting...</span>
+                    <span class="status-bar__time" id="liveTime"></span>
+                </div>
+
+                <div class="gps-bar" id="gpsBar">
+                    <span aria-hidden="true">📡</span>
+                    <span class="gps-bar__text" id="gpsStatusText">GPS: Searching...</span>
+                    <span class="gps-bar__coords" id="gpsCoordsDisplay">---, ---</span>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card__header">
+                            <div class="stat-card__icon stat-card__icon--red" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                            </div>
+                            <span class="stat-card__trend stat-card__trend--up" id="potholeTrend">--</span>
+                        </div>
+                        <div class="stat-card__value" id="potholeCount">0</div>
+                        <div class="stat-card__label">Active Potholes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__header">
+                            <div class="stat-card__icon stat-card__icon--green" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
+                            </div>
+                            <span class="stat-card__trend stat-card__trend--down" id="lightsTrend">--</span>
+                        </div>
+                        <div class="stat-card__value" id="lightsOn">--</div>
+                        <div class="stat-card__label">Street Lights</div>
+                        <div class="stat-card__sublabel" id="ldrDisplay">LDR: --</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__header">
+                            <div class="stat-card__icon stat-card__icon--blue" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg>
+                            </div>
+                            <span class="stat-card__trend stat-card__trend--down" id="waterTrend">--</span>
+                        </div>
+                        <div class="stat-card__value" id="waterLevel">--</div>
+                        <div class="stat-card__label">Water Level</div>
+                        <div class="stat-card__sublabel" id="waterAlertDisplay">Alerts: 0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__header">
+                            <div class="stat-card__icon stat-card__icon--orange" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            </div>
+                            <span class="stat-card__trend stat-card__trend--up" id="wasteTrend">--</span>
+                        </div>
+                        <div class="stat-card__value" id="wasteBins">--</div>
+                        <div class="stat-card__label">Dustbin Fill</div>
+                        <div class="stat-card__sublabel" id="gasDisplay">Gas: --</div>
+                    </div>
+                </div>
+
+                <!-- Map & Reports -->
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>🗺️ Live Pothole Map</h3>
+                            <span class="card__header-action" id="mapPinCount">📍 0</span>
+                        </div>
+                        <div class="card__body">
+                            <div class="map-container" id="mainMapContainer"></div>
+                            <div class="map-controls">
+                                <button class="map-controls__btn" onclick="SmartVillage.centerMapOnGPS()">📍 GPS</button>
+                                <button class="map-controls__btn" onclick="SmartVillage.fitAllMarkers()">🔲 Fit All</button>
+                                <button class="map-controls__btn" onclick="SmartVillage.addPotholeAtCenter()">➕ Add</button>
+                            </div>
+                            <div class="map-legend">
+                                <div class="map-legend__item"><div class="map-legend__dot" style="background:var(--accent-red)"></div>Critical</div>
+                                <div class="map-legend__item"><div class="map-legend__dot" style="background:var(--accent-orange)"></div>Warning</div>
+                                <div class="map-legend__item"><div class="map-legend__dot" style="background:var(--accent-yellow)"></div>Minor</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>📋 Recent Reports</h3>
+                            <button class="card__header-action" onclick="SmartVillage.switchPage('potholes',document.querySelector('[data-page=potholes]'))">View All →</button>
+                        </div>
+                        <div class="card__body">
+                            <div class="pothole-list" id="dashboardPotholeList">
+                                <div style="text-align:center;padding:20px;color:var(--text-tertiary);font-size:13px">Waiting for data...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sensors & Alerts -->
+                <div class="full-grid">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>📊 Live Sensors</h3>
+                            <span class="card__header-action" id="sensorUpdateTime">--</span>
+                        </div>
+                        <div class="card__body">
+                            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
+                                    <div style="font-size:24px;font-weight:800" id="sensorDistance">--</div>
+                                    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Road Dist (cm)</div>
+                                </div>
+                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
+                                    <div style="font-size:24px;font-weight:800" id="sensorBaseline">--</div>
+                                    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Baseline (cm)</div>
+                                </div>
+                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
+                                    <div style="font-size:24px;font-weight:800" id="sensorGas">--</div>
+                                    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Gas Level</div>
+                                </div>
+                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
+                                    <div style="font-size:24px;font-weight:800" id="sensorDustbin">--</div>
+                                    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">Dustbin %</div>
+                                </div>
+                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
+                                    <div style="font-size:24px;font-weight:800" id="sensorLDR">--</div>
+                                    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">LDR Value</div>
+                                </div>
+                                <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
+                                    <div style="font-size:24px;font-weight:800" id="sensorSats">--</div>
+                                    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">GPS Sats</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>🔔 Alerts</h3>
+                            <button class="card__header-action" onclick="SmartVillage.clearAlerts()">Clear</button>
+                        </div>
+                        <div class="card__body">
+                            <div class="alerts-list" id="alertsList" role="log" aria-live="polite">
+                                <div class="alert-item">
+                                    <div class="alert-item__dot alert-item__dot--blue"></div>
+                                    <div>
+                                        <h4 class="alert-item__title">System Starting</h4>
+                                        <p class="alert-item__message">Waiting for ESP32...</p>
+                                    </div>
+                                    <span class="alert-item__time">Now</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls, Water Gauge, Quick Actions -->
+                <div class="controls-grid">
+                    <div class="card">
+                        <div class="card__header"><h3>🎛 Controls</h3></div>
+                        <div class="card__body">
+                            <div class="devices-grid">
+                                <div class="device-card">
+                                    <div class="device-card__header">
+                                        <div class="device-card__icon" style="background:linear-gradient(135deg,#ffcc00,#ff9500)" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
+                                        </div>
+                                        <button class="toggle" id="ledToggle" onclick="SmartVillage.toggleControl('led')" aria-label="Toggle street lights" role="switch" aria-checked="false">
+                                            <div class="toggle__knob"></div>
+                                        </button>
+                                    </div>
+                                    <div class="device-card__name">Street Lights</div>
+                                    <div class="device-card__status" id="ledStatus">Auto (LDR)</div>
+                                </div>
+                                <div class="device-card">
+                                    <div class="device-card__header">
+                                        <div class="device-card__icon" style="background:linear-gradient(135deg,#5ac8fa,#007aff)" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                        </div>
+                                        <button class="toggle" id="relayToggle" onclick="SmartVillage.toggleControl('relay')" aria-label="Toggle dustbin lid" role="switch" aria-checked="false">
+                                            <div class="toggle__knob"></div>
+                                        </button>
+                                    </div>
+                                    <div class="device-card__name">Dustbin Lid</div>
+                                    <div class="device-card__status" id="relayStatus">Closed</div>
+                                </div>
+                                <div class="device-card">
+                                    <div class="device-card__header">
+                                        <div class="device-card__icon" style="background:linear-gradient(135deg,#ff3b30,#ff6259)" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                                        </div>
+                                        <button class="toggle" id="buzzerToggle" onclick="SmartVillage.toggleControl('buzzer')" aria-label="Toggle alert LEDs" role="switch" aria-checked="false">
+                                            <div class="toggle__knob"></div>
+                                        </button>
+                                    </div>
+                                    <div class="device-card__name">Alert LEDs</div>
+                                    <div class="device-card__status" id="buzzerStatus">Off</div>
+                                </div>
+                                <div class="device-card" onclick="SmartVillage.switchPage('misc',document.querySelector('[data-page=misc]'))">
+                                    <div class="device-card__header">
+                                        <div class="device-card__icon" style="background:linear-gradient(135deg,#af52de,#5856d6)" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                                        </div>
+                                    </div>
+                                    <div class="device-card__name">GPIO Control</div>
+                                    <div class="device-card__status" style="color:var(--accent-blue)">Individual pin control →</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__header"><h3>💧 Water Tank</h3></div>
+                        <div class="card__body">
+                            <div class="gauge-container">
+                                <svg class="gauge-svg" viewBox="0 0 120 120" role="img" aria-label="Water level gauge">
+                                    <circle class="gauge-svg__bg" cx="60" cy="60" r="50"/>
+                                    <circle class="gauge-svg__fill" cx="60" cy="60" r="50" stroke="url(#wg)" stroke-dasharray="314" stroke-dashoffset="314" id="waterGaugeFill"/>
+                                    <defs>
+                                        <linearGradient id="wg" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="#007aff"/>
+                                            <stop offset="100%" stop-color="#5ac8fa"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <text class="gauge-svg__text" x="60" y="56">
+                                        <tspan class="gauge-svg__value" id="gaugeVal">--</tspan>
+                                    </text>
+                                    <text class="gauge-svg__text" x="60" y="72">
+                                        <tspan class="gauge-svg__unit" id="gaugeUnit">waiting</tspan>
+                                    </text>
+                                </svg>
+                                <div class="gauge__label">Water Level</div>
+                                <div class="gauge__sublabel">Float sensor ESP32-2</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__header"><h3>⚡ Quick Actions</h3></div>
+                        <div class="card__body">
+                            <div class="quick-actions">
+                                <button class="action-btn" onclick="SmartVillage.openReportModal()">
+                                    <svg viewBox="0 0 24 24" fill="#ff3b30"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                                    Report Pothole
+                                    <svg class="action-btn__arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                                </button>
+                                <button class="action-btn" onclick="SmartVillage.sendControl('buzzer',true,'🔔 Alert!','ESP32-2 LEDs flash')">
+                                    <svg viewBox="0 0 24 24" fill="#ff9500"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                                    Trigger Alert
+                                    <svg class="action-btn__arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                                </button>
+                                <button class="action-btn" onclick="SmartVillage.sendControl('relay',true,'📤 Opening','Relay HIGH')">
+                                    <svg viewBox="0 0 24 24" fill="#007aff"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg>
+                                    Open Dustbin
+                                    <svg class="action-btn__arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                                </button>
+                                <button class="action-btn" onclick="SmartVillage.switchPage('misc',document.querySelector('[data-page=misc]'))">
+                                    <svg viewBox="0 0 24 24" fill="#af52de"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/></svg>
+                                    Individual GPIO Control →
+                                    <svg class="action-btn__arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                                </button>
+                                <button class="action-btn" onclick="SmartVillage.resetAllControls()">
+                                    <svg viewBox="0 0 24 24" fill="#86868b"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                                    Reset All
+                                    <svg class="action-btn__arrow" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════ -->
+            <!--  POTHOLES PAGE                  -->
+            <!-- ═══════════════════════════════ -->
+            <div class="page" id="page-potholes">
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card__header"><h3>Map</h3></div>
+                        <div class="card__body"><div class="map-container" id="potholePageMap"></div></div>
+                    </div>
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>All Reports</h3>
+                            <button class="card__header-action" onclick="SmartVillage.openReportModal()">+ Report</button>
+                        </div>
+                        <div class="card__body">
+                            <div class="pothole-list" id="allPotholeList">
+                                <div style="text-align:center;padding:20px;color:var(--text-tertiary)">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════ -->
+            <!--  DEVICES PAGE                   -->
+            <!-- ═══════════════════════════════ -->
+            <div class="page" id="page-devices">
+                <div class="card">
+                    <div class="card__header"><h3>ESP32 Status</h3></div>
+                    <div class="card__body">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                            <div style="padding:20px;background:var(--bg);border-radius:var(--radius-sm);border-left:4px solid var(--accent-blue)">
+                                <div style="font-size:16px;font-weight:700;margin-bottom:8px">ESP32-1</div>
+                                <div style="font-size:13px;color:var(--text-secondary)">Pothole + Lights + GPS</div>
+                                <div style="font-size:14px;font-weight:600;margin-top:8px" id="esp1StatusDisplay">⏳ Waiting...</div>
+                                <div style="font-size:12px;color:var(--text-tertiary);margin-top:4px" id="esp1Uptime">Uptime: --</div>
+                            </div>
+                            <div style="padding:20px;background:var(--bg);border-radius:var(--radius-sm);border-left:4px solid var(--accent-green)">
+                                <div style="font-size:16px;font-weight:700;margin-bottom:8px">ESP32-2</div>
+                                <div style="font-size:13px;color:var(--text-secondary)">Dustbin + Water + Gas</div>
+                                <div style="font-size:14px;font-weight:600;margin-top:8px" id="esp2StatusDisplay">⏳ Waiting...</div>
+                                <div style="font-size:12px;color:var(--text-tertiary);margin-top:4px" id="esp2Uptime">Uptime: --</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════ -->
+            <!--  LIGHTING PAGE                  -->
+            <!-- ═══════════════════════════════ -->
+            <div class="page" id="page-lighting">
+                <div class="card">
+                    <div class="card__header"><h3>Street Lights</h3></div>
+                    <div class="card__body">
+                        <div style="text-align:center;padding:40px;background:var(--bg);border-radius:var(--radius-sm)">
+                            <div style="font-size:48px;font-weight:800" id="lightPageStatus">--</div>
+                            <div style="font-size:14px;color:var(--text-secondary);margin-top:8px" id="lightPageLDR">LDR: --</div>
+                            <div style="margin-top:20px">
+                                <button class="toggle" id="ledTogglePage" onclick="SmartVillage.toggleControl('led')" style="margin:0 auto" aria-label="Toggle street lights" role="switch" aria-checked="false">
+                                    <div class="toggle__knob"></div>
+                                </button>
+                                <div style="font-size:12px;color:var(--text-secondary);margin-top:8px">Manual Override</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════ -->
+            <!--  WATER PAGE                     -->
+            <!-- ═══════════════════════════════ -->
+            <div class="page" id="page-water">
+                <div class="card">
+                    <div class="card__header"><h3>Water Level</h3></div>
+                    <div class="card__body">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                            <div style="text-align:center;padding:40px;background:var(--bg);border-radius:var(--radius-sm)">
+                                <div style="font-size:48px;font-weight:800" id="waterPageStatus">--</div>
+                                <div style="font-size:12px;color:var(--text-tertiary);margin-top:4px" id="waterPageAlerts">Alerts: 0</div>
+                            </div>
+                            <div style="padding:30px;background:var(--bg);border-radius:var(--radius-sm)">
+                                <h4 style="margin-bottom:16px;font-size:14px">Tank</h4>
+                                <div class="water-tank">
+                                    <div class="water-tank__fill" id="waterVisual" style="height:45%"></div>
+                                    <div class="water-tank__text" id="waterVisualText">Normal</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════ -->
+            <!--  WASTE PAGE                     -->
+            <!-- ═══════════════════════════════ -->
+            <div class="page" id="page-waste">
+                <div class="card">
+                    <div class="card__header"><h3>Smart Dustbin</h3></div>
+                    <div class="card__body">
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+                            <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
+                                <div style="font-size:28px;font-weight:800" id="wastePageFill">--</div>
+                                <div style="font-size:12px;color:var(--text-secondary)">Fill</div>
+                            </div>
+                            <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
+                                <div style="font-size:28px;font-weight:800" id="wastePageGas">--</div>
+                                <div style="font-size:12px;color:var(--text-secondary)">Gas</div>
+                            </div>
+                            <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
+                                <div style="font-size:28px;font-weight:800" id="wastePageLid">--</div>
+                                <div style="font-size:12px;color:var(--text-secondary)">Lid</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                            <span style="font-size:12px;color:var(--text-secondary)">Fill</span>
+                            <span style="font-size:12px;font-weight:600" id="wastePercentText">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-bar__fill progress-bar__fill--orange" id="wasteProgressBar" style="width:0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════ -->
+            <!--  GPIO CONTROL PAGE              -->
+            <!-- ═══════════════════════════════ -->
+            <div class="page" id="page-misc">
+                <div class="esp-section">
+                    <div class="esp-section__title">
+                        <h4>ESP32-1 GPIO Control</h4>
+                        <span class="esp-tag esp-tag--blue">GPIO 25, 26, 27, 13</span>
+                        <span style="font-size:11px;color:var(--text-tertiary);margin-left:auto" id="esp1GpioStatus">⏳</span>
+                    </div>
+                    <div class="bulk-actions">
+                        <button class="bulk-btn bulk-btn--on" onclick="SmartVillage.bulkGPIO('esp1',true)">⚡ All ON</button>
+                        <button class="bulk-btn bulk-btn--off" onclick="SmartVillage.bulkGPIO('esp1',false)">⭕ All OFF</button>
+                        <button class="bulk-btn bulk-btn--reset" onclick="SmartVillage.resetGPIO('esp1')">🔄 Reset to Auto</button>
+                    </div>
+                    <div class="gpio-grid" id="esp1GpioGrid">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+
+                <div class="esp-section">
+                    <div class="esp-section__title">
+                        <h4>ESP32-2 GPIO Control</h4>
+                        <span class="esp-tag esp-tag--green">GPIO 26, 25, 27</span>
+                        <span style="font-size:11px;color:var(--text-tertiary);margin-left:auto" id="esp2GpioStatus">⏳</span>
+                    </div>
+                    <div class="bulk-actions">
+                        <button class="bulk-btn bulk-btn--on" onclick="SmartVillage.bulkGPIO('esp2',true)">⚡ All ON</button>
+                        <button class="bulk-btn bulk-btn--off" onclick="SmartVillage.bulkGPIO('esp2',false)">⭕ All OFF</button>
+                        <button class="bulk-btn bulk-btn--reset" onclick="SmartVillage.resetGPIO('esp2')">🔄 Reset to Auto</button>
+                    </div>
+                    <div class="gpio-grid" id="esp2GpioGrid">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card__header">
+                        <h3>📜 GPIO Command Log</h3>
+                        <button class="card__header-action" onclick="SmartVillage.clearGpioLog()">Clear</button>
+                    </div>
+                    <div class="card__body">
+                        <div class="command-log" id="gpioLog" role="log" aria-live="polite">
+                            <div class="cmd-line"><span class="cmd-time">[info]</span> <span class="cmd-info">GPIO controls write to /gpio/esp1/* and /gpio/esp2/*</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════ -->
+            <!--  TERMINAL PAGE                  -->
+            <!-- ═══════════════════════════════ -->
+            <div class="page" id="page-terminal">
+                <div class="card">
+                    <div class="card__header">
+                        <h3>💻 Terminal</h3>
+                        <button class="card__header-action" onclick="SmartVillage.clearCommandLog()">Clear</button>
+                    </div>
+                    <div class="card__body">
+                        <div class="command-log" id="commandLog" role="log" aria-live="polite">
+                            <div class="cmd-line"><span class="cmd-time">[boot]</span> <span class="cmd-info">SmartVillage Terminal</span></div>
+                        </div>
+                        <div style="display:flex;gap:8px;margin-top:12px">
+                            <label for="terminalInput" class="sr-only">Terminal command input</label>
+                            <input type="text" class="form-input" id="terminalInput" placeholder="led on, relay off, gpio esp1 25 on, help..." style="flex:1" autocomplete="off">
+                            <button class="btn btn--primary" onclick="SmartVillage.executeCommand()" style="flex:none;width:80px">Send</button>
+                        </div>
+                        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+                            <button class="map-controls__btn" onclick="SmartVillage.runQuickCmd('led on')">led on</button>
+                            <button class="map-controls__btn" onclick="SmartVillage.runQuickCmd('led off')">led off</button>
+                            <button class="map-controls__btn" onclick="SmartVillage.runQuickCmd('relay on')">relay on</button>
+                            <button class="map-controls__btn" onclick="SmartVillage.runQuickCmd('relay off')">relay off</button>
+                            <button class="map-controls__btn" onclick="SmartVillage.runQuickCmd('buzzer on')">buzzer on</button>
+                            <button class="map-controls__btn" onclick="SmartVillage.runQuickCmd('gpio esp1 25 on')">gpio25 on</button>
+                            <button class="map-controls__btn" onclick="SmartVillage.runQuickCmd('status')">status</button>
+                            <button class="map-controls__btn" onclick="SmartVillage.runQuickCmd('reset')">reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ═══════════════════════════════ -->
+    <!--  REPORT MODAL                   -->
+    <!-- ═══════════════════════════════ -->
+    <div class="modal-overlay" id="reportModal" role="dialog" aria-modal="true" aria-labelledby="reportModalTitle">
+        <div class="modal">
+            <h3 id="reportModalTitle">📍 Report Pothole</h3>
+            <p>Click map or enter coordinates.</p>
+            <div class="form-group">
+                <label for="reportLocation">Location</label>
+                <input type="text" class="form-input" id="reportLocation" placeholder="Main Bazaar Road">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="reportSeverity">Severity</label>
+                    <select class="form-input" id="reportSeverity">
+                        <option value="minor">Minor</option>
+                        <option value="warning" selected>Warning</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reportSize">Size</label>
+                    <select class="form-input" id="reportSize">
+                        <option>Small</option>
+                        <option selected>Medium</option>
+                        <option>Large</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="reportDesc">Description</label>
+                <textarea class="form-input" id="reportDesc" placeholder="Details..."></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="reportLat">Latitude</label>
+                    <input type="number" step="0.000001" class="form-input" id="reportLat">
+                </div>
+                <div class="form-group">
+                    <label for="reportLng">Longitude</label>
+                    <input type="number" step="0.000001" class="form-input" id="reportLng">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Pick on Map</label>
+                <div class="modal-map-container" id="modalMapContainer"></div>
+                <button class="map-pick-btn" onclick="SmartVillage.useCurrentLocation()">📍 Use GPS</button>
+            </div>
+            <div class="modal__actions">
+                <button class="btn btn--secondary" onclick="SmartVillage.closeReportModal()">Cancel</button>
+                <button class="btn btn--primary" id="submitReportBtn" onclick="SmartVillage.submitReport()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer" role="alert" aria-live="assertive"></div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  SCRIPTS                                    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+    /**
+     * SmartVillage IoT Dashboard
+     * 
+     * Encapsulated application module using IIFE pattern
+     * to avoid global scope pollution.
+     * 
+     * SECURITY NOTE: Firebase API key is exposed client-side.
+     * Use Firebase Security Rules to restrict read/write access.
+     * For production, implement Firebase Authentication.
+     */
+    const SmartVillage = (() => {
+        'use strict';
+
+        // ════════════════════════════════════════
+        //  CONFIGURATION
+        // ════════════════════════════════════════
+        const CONFIG = Object.freeze({
+            firebase: {
+                apiKey: "AIzaSyAwEExMpZV7NXQjG--d3LKIk4ZWhdFANCU",
+                authDomain: "pothole-detection-90641.firebaseapp.com",
+                databaseURL: "https://pothole-detection-90641-default-rtdb.firebaseio.com",
+                projectId: "pothole-detection-90641"
+            },
+            defaultCenter: { lat: 20.5937, lng: 78.9629 },
+            mapZoom: 14,
+            maxAlerts: 15,
+            maxLogLines: 100,
+            maxPotholeListItems: 8,
+            toastDuration: 4000,
+            maxToasts: 4,
+            alertThrottleMs: 10000,
+            pwmDebounceMs: 200,
+            potholeLimit: 50,
+            gpioConfig: {
+                esp1: [
+                    { pin: 25, name: '💡 Street Light 1', desc: 'LED_STREET_1 — PWM Channel 0', hasPwm: true },
+                    { pin: 26, name: '💡 Street Light 2', desc: 'LED_STREET_2 — PWM Channel 1', hasPwm: true },
+                    { pin: 27, name: '💡 Street Light 3', desc: 'LED_STREET_3 — PWM Channel 2', hasPwm: true },
+                    { pin: 13, name: '🔊 Buzzer', desc: 'BUZZER_PIN — Digital OUT', hasPwm: false }
+                ],
+                esp2: [
+                    { pin: 26, name: '🔄 Relay (Dustbin Lid)', desc: 'RELAY_PIN — Controls lid servo/motor', hasPwm: false },
+                    { pin: 25, name: '🔴 Dustbin Full LED', desc: 'LED_DUSTBIN_FULL — Blinks when full', hasPwm: false },
+                    { pin: 27, name: '🔵 Water Alert LED', desc: 'LED_WATER_ALERT — ON when water HIGH', hasPwm: false }
+                ]
+            },
+            pageTitles: {
+                dashboard: ['Dashboard', 'Live data from ESP32-1 & ESP32-2'],
+                potholes: ['Potholes', 'Map + reports'],
+                devices: ['Devices', 'ESP32 status'],
+                lighting: ['Street Lights', 'LDR auto-control'],
+                water: ['Water Supply', 'Float sensor'],
+                waste: ['Waste Management', 'Dustbin + gas'],
+                misc: ['Misc / GPIO Control', 'Individual pin ON/OFF for every GPIO'],
+                terminal: ['Terminal', 'Direct Firebase writes']
+            }
+        });
+
+        // ════════════════════════════════════════
+        //  STATE
+        // ════════════════════════════════════════
+        const state = {
+            currentGPS: { ...CONFIG.defaultCenter, fixed: false },
+            esp1Online: false,
+            esp2Online: false,
+            controlState: { led: false, relay: false, buzzer: false },
+            gpioState: {
+                esp1: { gpio25: false, gpio26: false, gpio27: false, gpio13: false, pwm25: 0, pwm26: 0, pwm27: 0 },
+                esp2: { gpio26: false, gpio25: false, gpio27: false }
+            },
+            pinCount: 0,
+            toastCount: 0,
+            alertTimestamps: {},
+            pwmTimers: {}
+        };
+
+        // ════════════════════════════════════════
+        //  MAP STATE
+        // ════════════════════════════════════════
+        let mainMap = null;
+        let potholePageMap = null;
+        let modalMap = null;
+        let modalMapMarker = null;
+        let espMarker = null;
+        const mapMarkers = [];
+        const pMapMarkers = [];
+
+        // ════════════════════════════════════════
+        //  DOM HELPERS
+        // ════════════════════════════════════════
+        const $ = (id) => document.getElementById(id);
+        const $$ = (sel) => document.querySelectorAll(sel);
+        
+        function setTextContent(id, text) {
+            const el = $(id);
+            if (el) el.textContent = text;
+        }
+
+        function setStyle(id, prop, val) {
+            const el = $(id);
+            if (el) el.style[prop] = val;
+        }
+
+        function setClassName(id, className) {
+            const el = $(id);
+            if (el) el.className = className;
+        }
+
+        function sanitizeHTML(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // ════════════════════════════════════════
+        //  FIREBASE INIT
+        // ════════════════════════════════════════
+        firebase.initializeApp(CONFIG.firebase);
+        const db = firebase.database();
+
+        // ════════════════════════════════════════
+        //  LEAFLET MAP UTILITIES
+        // ════════════════════════════════════════
+        function makeIcon(color, size = 24) {
+            const colors = {
+                red: '#ff3b30', orange: '#ff9500', yellow: '#ffcc00',
+                blue: '#007aff', green: '#34c759', purple: '#af52de'
+            };
+            const c = colors[color] || color;
+            return L.divIcon({
+                className: '',
+                html: `<div style="width:${size}px;height:${size}px;background:${c};border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center"><div style="width:${size/3}px;height:${size/3}px;background:#fff;border-radius:50%;transform:rotate(45deg)"></div></div>`,
+                iconSize: [size, size],
+                iconAnchor: [size / 2, size],
+                popupAnchor: [0, -size]
+            });
+        }
+
+        function espIcon() {
+            return L.divIcon({
+                className: '',
+                html: `<div style="width:32px;height:32px;background:linear-gradient(135deg,#007aff,#5856d6);border-radius:50%;border:3px solid #fff;box-shadow:0 2px 12px rgba(0,122,255,.4);display:flex;align-items:center;justify-content:center"><div style="width:12px;height:12px;background:#fff;border-radius:50%"></div></div>`,
+                iconSize: [32, 32],
+                iconAnchor: [16, 16],
+                popupAnchor: [0, -20]
+            });
+        }
+
+        function initMaps() {
+            const { lat, lng } = state.currentGPS;
+            
+            mainMap = L.map('mainMapContainer').setView([lat, lng], CONFIG.mapZoom);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://openstreetmap.org/copyright">OSM</a>',
+                maxZoom: 19
+            }).addTo(mainMap);
+
+            potholePageMap = L.map('potholePageMap').setView([lat, lng], CONFIG.mapZoom);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(potholePageMap);
+
+            setTimeout(() => {
+                mainMap.invalidateSize();
+                potholePageMap.invalidateSize();
+            }, 400);
+        }
+
+        function initModalMap() {
+            if (modalMap) modalMap.remove();
+            setTimeout(() => {
+                const { lat, lng } = state.currentGPS;
+                modalMap = L.map('modalMapContainer', { zoomControl: false }).setView([lat, lng], 15);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(modalMap);
+                
+                modalMap.on('click', (e) => {
+                    $('reportLat').value = e.latlng.lat.toFixed(6);
+                    $('reportLng').value = e.latlng.lng.toFixed(6);
+                    if (modalMapMarker) modalMap.removeLayer(modalMapMarker);
+                    modalMapMarker = L.marker([e.latlng.lat, e.latlng.lng], { icon: makeIcon('purple', 28) }).addTo(modalMap);
+                });
+                
+                setTimeout(() => modalMap.invalidateSize(), 200);
+            }, 300);
+        }
+
+        // ════════════════════════════════════════
+        //  GPIO UI GENERATION
+        // ════════════════════════════════════════
+        function generateGPIOCards() {
+            Object.entries(CONFIG.gpioConfig).forEach(([esp, pins]) => {
+                const container = $(esp + 'GpioGrid');
+                if (!container) return;
+                
+                container.innerHTML = pins.map(({ pin, name, desc, hasPwm }) => {
+                    const badgeClass = esp === 'esp1' ? 'gpio-pin-badge--esp1' : 'gpio-pin-badge--esp2';
+                    const espLabel = esp === 'esp1' ? 'ESP1' : 'ESP2';
+                    
+                    return `
+                    <div class="gpio-card" id="gpio-${esp}-${pin}">
+                        <div class="gpio-card__header">
+                            <span class="gpio-pin-badge ${badgeClass}">${espLabel} · GPIO ${pin}</span>
+                            <div class="gpio-indicator gpio-indicator--off" id="gpio-ind-${esp}-${pin}"></div>
+                        </div>
+                        <div class="gpio-card__name">${sanitizeHTML(name)}</div>
+                        <div class="gpio-card__desc">${sanitizeHTML(desc)}</div>
+                        <div class="gpio-card__status">
+                            <span class="gpio-state gpio-state--off" id="gpio-state-${esp}-${pin}">OFF</span>
+                            <button class="toggle" id="gpio-toggle-${esp}-${pin}" 
+                                    onclick="SmartVillage.toggleGPIO('${esp}','gpio${pin}')"
+                                    role="switch" aria-checked="false"
+                                    aria-label="Toggle ${name}">
+                                <div class="toggle__knob"></div>
+                            </button>
+                        </div>
+                        ${hasPwm ? `
+                        <div class="pwm-slider-wrap">
+                            <label for="pwm-${esp}-${pin}">PWM: <span class="pwm-value" id="pwm-val-${esp}-${pin}">0</span></label>
+                            <input type="range" class="pwm-slider" min="0" max="255" value="0" 
+                                   id="pwm-${esp}-${pin}" 
+                                   oninput="SmartVillage.setGPIOPWM('${esp}','gpio${pin}',this.value)"
+                                   aria-label="PWM value for GPIO ${pin}">
+                        </div>` : ''}
+                    </div>`;
+                }).join('');
+            });
+        }
+
+        // ════════════════════════════════════════
+        //  FIREBASE LISTENERS
+        // ════════════════════════════════════════
+        function setupFirebaseListeners() {
+            // ESP1 Pothole
+            db.ref('/esp1/pothole').on('value', (s) => {
+                const d = s.val();
+                if (!d) return;
+                
+                setTextContent('potholeCount', d.totalCount || 0);
+                setTextContent('navPotholeBadge', d.totalCount || 0);
+                setTextContent('potholeTrend', (d.totalCount || 0) + ' found');
+                setTextContent('sensorDistance', (d.currentDistance || 0).toFixed(1));
+                setStyle('sensorDistance', 'color', d.detected ? 'var(--accent-red)' : 'var(--accent-green)');
+                setTextContent('sensorBaseline', (d.baseline || 0).toFixed(1));
+                
+                if (d.detected) {
+                    const depth = (d.depth || 0).toFixed(1);
+                    showToast('error', '🕳️ POTHOLE!', `Depth: ${depth}cm`);
+                    addAlert('red', '🕳️ Pothole!', `Depth: ${depth}cm`);
+                }
+            });
+
+            // ESP1 Street Lights
+            db.ref('/esp1/streetLights').on('value', (s) => {
+                const d = s.val();
+                if (!d) return;
+                
+                const isOn = d.isOn;
+                setTextContent('lightsOn', isOn ? 'ON' : 'OFF');
+                setStyle('lightsOn', 'color', isOn ? 'var(--accent-green)' : 'var(--text-tertiary)');
+                setTextContent('lightsTrend', isOn ? 'Active' : 'Off');
+                setClassName('lightsTrend', 'stat-card__trend stat-card__trend--' + (isOn ? 'down' : 'up'));
+                setTextContent('ldrDisplay', `LDR: ${d.ldrValue || '--'} | Brightness: ${d.brightness || 0}`);
+                setTextContent('sensorLDR', d.ldrValue || '--');
+                setTextContent('lightPageStatus', isOn ? '💡 ON' : '🌑 OFF');
+                setTextContent('lightPageLDR', `LDR: ${d.ldrValue || '--'} | PWM: ${d.brightness || 0}`);
+            });
+
+            // ESP1 GPS
+            db.ref('/esp1/gps').on('value', (s) => {
+                const d = s.val();
+                if (!d) return;
+                
+                const gpsBar = $('gpsBar');
+                if (gpsBar) gpsBar.classList.add('gps-bar--visible');
+                
+                if (d.fixed && d.lat !== 0) {
+                    state.currentGPS = { lat: d.lat, lng: d.lng, fixed: true };
+                    setTextContent('gpsStatusText', `GPS ✅ | Sats: ${d.satellites || 0}`);
+                    setTextContent('gpsCoordsDisplay', `${d.lat.toFixed(6)}, ${d.lng.toFixed(6)}`);
+                    
+                    if (espMarker) mainMap.removeLayer(espMarker);
+                    espMarker = L.marker([d.lat, d.lng], { icon: espIcon() })
+                        .addTo(mainMap)
+                        .bindPopup('<strong>ESP32-1</strong>');
+                } else {
+                    setTextContent('gpsStatusText', `Searching... Sats: ${d.satellites || 0}`);
+                    setTextContent('gpsCoordsDisplay', 'No fix');
+                }
+                setTextContent('sensorSats', d.satellites || 0);
+            });
+
+            // ESP1 Status
+            db.ref('/esp1/status').on('value', (s) => {
+                const d = s.val();
+                if (!d) return;
+                state.esp1Online = d.online || false;
+                setTextContent('esp1StatusDisplay', d.online ? '🟢 Online' : '🔴 Offline');
+                setTextContent('esp1Uptime', `Uptime: ${d.lastUpdate || 0}s`);
+                setTextContent('esp1GpioStatus', d.online ? '🟢 Connected' : '🔴 Offline');
+                updateSystemStatus();
+            });
+
+            // ESP2 Dustbin
+            db.ref('/esp2/dustbin').on('value', (s) => {
+                const d = s.val();
+                if (!d) return;
+                
+                const f = Math.round(d.fillPercent || 0);
+                setTextContent('wasteBins', f + '%');
+                setStyle('wasteBins', 'color', f > 80 ? 'var(--accent-red)' : f > 60 ? 'var(--accent-orange)' : '');
+                setTextContent('wasteTrend', d.status || '--');
+                setTextContent('sensorDustbin', f + '%');
+                setTextContent('wastePageFill', f + '%');
+                setTextContent('wastePageLid', d.lidOpen ? '🔓 OPEN' : '🔒 Closed');
+                setStyle('wasteProgressBar', 'width', f + '%');
+                setTextContent('wastePercentText', f + '%');
+                setClassName('wasteProgressBar', 'progress-bar__fill progress-bar__fill--' + (f > 80 ? 'red' : f > 50 ? 'orange' : 'green'));
+                setTextContent('relayStatus', d.lidOpen ? '🔓 Open' : '🔒 Closed');
+                
+                if (d.status === 'FULL') {
+                    addAlert('red', '🗑️ FULL!', f + '%');
+                }
+            });
+
+            // ESP2 Gas
+            db.ref('/esp2/gas').on('value', (s) => {
+                const d = s.val();
+                if (!d) return;
+                
+                setTextContent('gasDisplay', `Gas: ${d.value || 0} (${d.status || '--'})`);
+                setTextContent('sensorGas', d.value || '--');
+                setStyle('sensorGas', 'color',
+                    d.level === 2 ? 'var(--accent-red)' :
+                    d.level === 1 ? 'var(--accent-orange)' : 'var(--accent-green)');
+                setTextContent('wastePageGas', d.value || '--');
+                
+                if (d.level === 2) {
+                    showToast('error', '⚠️ GAS!', `Val: ${d.value}`);
+                    addAlert('red', '💨 GAS!', String(d.value));
+                }
+            });
+
+            // ESP2 Water
+            db.ref('/esp2/water').on('value', (s) => {
+                const d = s.val();
+                if (!d) return;
+                
+                const h = d.floatHigh;
+                setTextContent('waterLevel', h ? '⚠️ HIGH' : 'Normal');
+                setStyle('waterLevel', 'color', h ? 'var(--accent-red)' : 'var(--accent-green)');
+                setTextContent('gaugeVal', h ? '!' : 'OK');
+                setTextContent('gaugeUnit', h ? 'OVERFLOW' : 'Normal');
+                
+                const gf = $('waterGaugeFill');
+                if (gf) {
+                    gf.setAttribute('stroke-dashoffset', 314 - (314 * (h ? 95 : 45) / 100));
+                    gf.setAttribute('stroke', h ? '#ff3b30' : 'url(#wg)');
+                }
+                
+                setTextContent('waterTrend', h ? '⚠️' : '✅');
+                setClassName('waterTrend', 'stat-card__trend stat-card__trend--' + (h ? 'up' : 'down'));
+                setTextContent('waterAlertDisplay', `Alerts: ${d.alertCount || 0}`);
+                setTextContent('waterPageStatus', h ? '🌊 HIGH' : '✅ Normal');
+                setTextContent('waterPageAlerts', `Alerts: ${d.alertCount || 0}`);
+                
+                const waterVisual = $('waterVisual');
+                if (waterVisual) {
+                    waterVisual.style.height = h ? '95%' : '45%';
+                    waterVisual.style.background = h
+                        ? 'linear-gradient(180deg,#ef5350,#c62828)'
+                        : 'linear-gradient(180deg,#42a5f5,#1565c0)';
+                }
+                setTextContent('waterVisualText', h ? '⚠️ OVERFLOW' : 'Normal');
+                
+                if (h) addAlert('red', '🌊 Overflow!', `#${d.alertCount || 0}`);
+            });
+
+            // ESP2 Status
+            db.ref('/esp2/status').on('value', (s) => {
+                const d = s.val();
+                if (!d) return;
+                state.esp2Online = d.online || false;
+                setTextContent('esp2StatusDisplay', d.online ? '🟢 Online' : '🔴 Offline');
+                setTextContent('sensorUpdateTime', `ESP2: ${d.lastUpdate || 0}s`);
+                setTextContent('esp2Uptime', `Uptime: ${d.lastUpdate || 0}s`);
+                setTextContent('esp2GpioStatus', d.online ? '🟢 Connected' : '🔴 Offline');
+                updateSystemStatus();
+            });
+
+            // Controls sync
+            db.ref('/controls').on('value', (s) => {
+                const c = s.val();
+                if (!c) return;
+                state.controlState = { led: !!c.led, relay: !!c.relay, buzzer: !!c.buzzer };
+                
+                syncToggle('ledToggle', state.controlState.led);
+                syncToggle('ledTogglePage', state.controlState.led);
+                syncToggle('relayToggle', state.controlState.relay);
+                syncToggle('buzzerToggle', state.controlState.buzzer);
+                
+                setTextContent('ledStatus', state.controlState.led ? '💡 Manual ON' : 'Auto (LDR)');
+                setTextContent('buzzerStatus', state.controlState.buzzer ? '🔔 ACTIVE' : 'Off');
+                
+                // Update ARIA
+                ['ledToggle', 'ledTogglePage'].forEach(id => {
+                    const el = $(id);
+                    if (el) el.setAttribute('aria-checked', String(state.controlState.led));
+                });
+                const relayEl = $('relayToggle');
+                if (relayEl) relayEl.setAttribute('aria-checked', String(state.controlState.relay));
+                const buzzerEl = $('buzzerToggle');
+                if (buzzerEl) buzzerEl.setAttribute('aria-checked', String(state.controlState.buzzer));
+            });
+
+            // GPIO sync
+            db.ref('/gpio/esp1').on('value', (s) => {
+                const d = s.val();
+                if (!d) return;
+                ['gpio25', 'gpio26', 'gpio27', 'gpio13'].forEach(pin => {
+                    if (d[pin] !== undefined) {
+                        const num = pin.replace('gpio', '');
+                        state.gpioState.esp1[pin] = !!d[pin];
+                        updateGPIOUI('esp1', num, !!d[pin]);
+                    }
+                });
+                ['pwm25', 'pwm26', 'pwm27'].forEach(pk => {
+                    if (d[pk] !== undefined) {
+                        const num = pk.replace('pwm', '');
+                        state.gpioState.esp1[pk] = d[pk];
+                        const slider = $('pwm-esp1-' + num);
+                        const valEl = $('pwm-val-esp1-' + num);
+                        if (slider) slider.value = d[pk];
+                        if (valEl) valEl.textContent = d[pk];
+                    }
+                });
+            });
+
+            db.ref('/gpio/esp2').on('value', (s) => {
+                const d = s.val();
+                if (!d) return;
+                ['gpio26', 'gpio25', 'gpio27'].forEach(pin => {
+                    if (d[pin] !== undefined) {
+                        const num = pin.replace('gpio', '');
+                        state.gpioState.esp2[pin] = !!d[pin];
+                        updateGPIOUI('esp2', num, !!d[pin]);
+                    }
+                });
+            });
+
+            // Potholes
+            db.ref('/potholes').orderByChild('timestamp').limitToLast(CONFIG.potholeLimit)
+                .on('child_added', handlePotholeAdded);
+        }
+
+        // ════════════════════════════════════════
+        //  POTHOLE HANDLER
+        // ════════════════════════════════════════
+        function handlePotholeAdded(s) {
+            const d = s.val();
+            if (!d) return;
+            const key = s.key;
+            state.pinCount++;
+            
+            setTextContent('mapPinCount', '📍 ' + state.pinCount);
+            
+            const lat = d.lat || (state.currentGPS.lat + (Math.random() - 0.5) * 0.01);
+            const lng = d.lng || (state.currentGPS.lng + (Math.random() - 0.5) * 0.01);
+            const sev = d.severity === 'critical' ? 'red' : d.severity === 'warning' ? 'orange' : 'yellow';
+            const loc = d.location || `${lat.toFixed(4)},${lng.toFixed(4)}`;
+            const depth = (d.depth || 0).toFixed(1);
+            
+            const popupContent = document.createElement('div');
+            popupContent.style.fontFamily = 'Inter, sans-serif';
+            popupContent.innerHTML = `<strong>${sanitizeHTML(loc)}</strong><br><span style="color:#86868b;font-size:12px">Depth: ${depth}cm | ${sanitizeHTML(d.severity || '?')}</span><br>`;
+            
+            const resolveBtn = document.createElement('button');
+            resolveBtn.textContent = '✅ Resolve';
+            resolveBtn.style.cssText = 'padding:3px 8px;border-radius:8px;border:none;background:#34c759;color:#fff;font-size:11px;cursor:pointer;margin-top:4px;margin-right:4px';
+            resolveBtn.onclick = () => markResolved(key);
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = '🗑️';
+            deleteBtn.style.cssText = 'padding:3px 8px;border-radius:8px;border:none;background:#ff3b30;color:#fff;font-size:11px;cursor:pointer';
+            deleteBtn.onclick = () => deletePothole(key);
+            
+            popupContent.appendChild(resolveBtn);
+            popupContent.appendChild(deleteBtn);
+            
+            if (mainMap) {
+                mapMarkers.push(
+                    L.marker([lat, lng], { icon: makeIcon(sev) })
+                        .addTo(mainMap)
+                        .bindPopup(popupContent)
+                );
+            }
+            if (potholePageMap) {
+                pMapMarkers.push(
+                    L.marker([lat, lng], { icon: makeIcon(sev) })
+                        .addTo(potholePageMap)
+                        .bindPopup(popupContent.cloneNode(true))
+                );
+            }
+            
+            // Update lists
+            const dashList = $('dashboardPotholeList');
+            const allList = $('allPotholeList');
+            
+            [dashList, allList].forEach(list => {
+                if (!list) return;
+                const placeholder = list.querySelector('div[style*="text-align"]');
+                if (placeholder) list.innerHTML = '';
+                
+                const item = document.createElement('div');
+                item.className = 'pothole-item';
+                item.innerHTML = `
+                    <div class="pothole-item__severity pothole-item__severity--${d.severity || 'minor'}"></div>
+                    <div class="pothole-item__info">
+                        <h4 class="pothole-item__title">${sanitizeHTML(loc)} ${depth !== '0.0' ? '— ' + depth + 'cm' : ''}</h4>
+                        <span class="pothole-item__meta">${d.source === 'sensor' ? '📡' : '📝'} ${new Date((d.timestamp || 0) * 1000 || Date.now()).toLocaleDateString()}</span>
+                    </div>
+                    <span class="pothole-item__status pothole-item__status--${d.status || 'pending'}">${d.status || 'Pending'}</span>`;
+                
+                item.addEventListener('click', () => {
+                    if (mainMap) mainMap.setView([lat, lng], 17);
+                    switchPage('dashboard', document.querySelector('[data-page=dashboard]'));
+                });
+                
+                list.insertBefore(item, list.firstChild);
+                
+                if (list === dashList && list.children.length > CONFIG.maxPotholeListItems) {
+                    list.removeChild(list.lastChild);
+                }
+            });
+        }
+
+        function markResolved(key) {
+            db.ref('/potholes/' + key + '/status').set('resolved')
+                .then(() => showToast('success', '✅', 'Resolved'));
+        }
+
+        function deletePothole(key) {
+            if (confirm('Delete this pothole report?')) {
+                db.ref('/potholes/' + key).remove()
+                    .then(() => showToast('info', '🗑️', 'Deleted'));
+            }
+        }
+
+        // ════════════════════════════════════════
+        //  GPIO CONTROL
+        // ════════════════════════════════════════
+        function toggleGPIO(esp, pin) {
+            const currentVal = state.gpioState[esp][pin] || false;
+            const newVal = !currentVal;
+            const num = pin.replace('gpio', '');
+
+            state.gpioState[esp][pin] = newVal;
+            updateGPIOUI(esp, num, newVal);
+
+            const path = `/gpio/${esp}/${pin}`;
+            db.ref(path).set(newVal)
+                .then(() => {
+                    showToast('success', `✅ ${esp.toUpperCase()} GPIO ${num}`, newVal ? 'HIGH (ON)' : 'LOW (OFF)');
+                    gpioLog(`${esp} GPIO ${num} → ${newVal ? 'HIGH' : 'LOW'}`, 'success');
+                })
+                .catch((e) => {
+                    showToast('error', '❌ Failed', e.message);
+                    gpioLog('FAIL: ' + e.message, 'error');
+                    state.gpioState[esp][pin] = currentVal;
+                    updateGPIOUI(esp, num, currentVal);
+                });
+        }
+
+        function setGPIOPWM(esp, pin, value) {
+            const num = pin.replace('gpio', '');
+            const pwmKey = 'pwm' + num;
+            value = parseInt(value, 10);
+
+            const valEl = $('pwm-val-' + esp + '-' + num);
+            if (valEl) valEl.textContent = value;
+            state.gpioState[esp][pwmKey] = value;
+
+            const isOn = value > 0;
+            state.gpioState[esp][pin] = isOn;
+            updateGPIOUI(esp, num, isOn);
+
+            const timerKey = `${esp}_${num}`;
+            clearTimeout(state.pwmTimers[timerKey]);
+            state.pwmTimers[timerKey] = setTimeout(() => {
+                db.ref(`/gpio/${esp}/${pwmKey}`).set(value);
+                db.ref(`/gpio/${esp}/${pin}`).set(isOn);
+                gpioLog(`${esp} GPIO ${num} PWM → ${value}`, 'success');
+            }, CONFIG.pwmDebounceMs);
+        }
+
+        function updateGPIOUI(esp, num, isOn) {
+            const toggle = $('gpio-toggle-' + esp + '-' + num);
+            const ind = $('gpio-ind-' + esp + '-' + num);
+            const stateEl = $('gpio-state-' + esp + '-' + num);
+            
+            if (toggle) {
+                toggle.classList.toggle('toggle--on', isOn);
+                toggle.setAttribute('aria-checked', String(isOn));
+            }
+            if (ind) {
+                ind.className = 'gpio-indicator ' + (isOn ? 'gpio-indicator--on gpio-indicator--pulse' : 'gpio-indicator--off');
+            }
+            if (stateEl) {
+                stateEl.textContent = isOn ? 'ON' : 'OFF';
+                stateEl.className = 'gpio-state ' + (isOn ? 'gpio-state--on' : 'gpio-state--off');
+            }
+        }
+
+        function bulkGPIO(esp, newState) {
+            const pins = CONFIG.gpioConfig[esp].map(p => 'gpio' + p.pin);
+            const updates = {};
+            
+            pins.forEach(pin => {
+                updates[pin] = newState;
+                state.gpioState[esp][pin] = newState;
+                updateGPIOUI(esp, pin.replace('gpio', ''), newState);
+            });
+
+            // Handle PWM for ESP1
+            if (esp === 'esp1') {
+                CONFIG.gpioConfig.esp1.filter(p => p.hasPwm).forEach(({ pin }) => {
+                    const val = newState ? 255 : 0;
+                    updates['pwm' + pin] = val;
+                    const slider = $('pwm-esp1-' + pin);
+                    const valEl = $('pwm-val-esp1-' + pin);
+                    if (slider) slider.value = val;
+                    if (valEl) valEl.textContent = val;
+                });
+            }
+
+            db.ref('/gpio/' + esp).update(updates)
+                .then(() => {
+                    showToast('success', `⚡ ${esp.toUpperCase()} ALL`, newState ? 'All GPIOs HIGH' : 'All GPIOs LOW');
+                    gpioLog(`${esp} ALL → ${newState ? 'HIGH' : 'LOW'}`, 'success');
+                });
+        }
+
+        function resetGPIO(esp) {
+            db.ref('/gpio/' + esp).remove()
+                .then(() => {
+                    CONFIG.gpioConfig[esp].forEach(({ pin, hasPwm }) => {
+                        updateGPIOUI(esp, String(pin), false);
+                        state.gpioState[esp]['gpio' + pin] = false;
+                        if (hasPwm) {
+                            const slider = $('pwm-' + esp + '-' + pin);
+                            const valEl = $('pwm-val-' + esp + '-' + pin);
+                            if (slider) slider.value = 0;
+                            if (valEl) valEl.textContent = 0;
+                            state.gpioState[esp]['pwm' + pin] = 0;
+                        }
+                    });
+                    showToast('success', '🔄 Reset', `${esp.toUpperCase()} GPIOs cleared — back to auto`);
+                    gpioLog(`${esp} GPIO paths removed — auto mode`, 'success');
+                });
+        }
+
+        function gpioLog(msg, type) {
+            const log = $('gpioLog');
+            if (!log) return;
+            const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const line = document.createElement('div');
+            line.className = 'cmd-line';
+            line.innerHTML = `<span class="cmd-time">[${time}]</span> <span class="cmd-${type}">${sanitizeHTML(msg)}</span>`;
+            log.appendChild(line);
+            log.scrollTop = log.scrollHeight;
+            while (log.children.length > CONFIG.maxLogLines) {
+                log.removeChild(log.firstChild);
+            }
+        }
+
+        function clearGpioLog() {
+            const log = $('gpioLog');
+            if (log) log.innerHTML = '<div class="cmd-line"><span class="cmd-info">Cleared</span></div>';
+        }
+
+        // ════════════════════════════════════════
+        //  MAIN CONTROLS
+        // ════════════════════════════════════════
+        function sendControl(key, value, msg, detail) {
+            logCmd('dashboard', `SET /controls/${key}=${value}`, 'info');
+            db.ref('/controls/' + key).set(value)
+                .then(() => {
+                    showToast('success', msg, detail);
+                    logCmd('firebase', 'OK', 'success');
+                })
+                .catch((e) => {
+                    showToast('error', '❌', e.message);
+                    logCmd('firebase', 'FAIL: ' + e.message, 'error');
+                });
+        }
+
+        function toggleControl(key) {
+            const newState = !state.controlState[key];
+            const msgs = {
+                led: [newState ? '💡 ON' : '🌑 Auto', newState ? 'Override LDR' : 'LDR resumes'],
+                relay: [newState ? '📤 Open' : '📥 Close', 'Relay ' + (newState ? 'HIGH' : 'LOW')],
+                buzzer: [newState ? '🔔 Alert!' : '🔕 Off', 'ESP32-2 LEDs']
+            };
+            sendControl(key, newState, msgs[key][0], msgs[key][1]);
+        }
+
+        function resetAllControls() {
+            db.ref('/controls').set({ led: false, relay: false, buzzer: false })
+                .then(() => {
+                    showToast('success', '🔄 Reset', 'All auto');
+                    logCmd('firebase', 'All controls reset', 'success');
+                });
+        }
+
+        function syncToggle(id, isOn) {
+            const el = $(id);
+            if (el) el.classList.toggle('toggle--on', isOn);
+        }
+
+        // ════════════════════════════════════════
+        //  ALERTS
+        // ════════════════════════════════════════
+        function addAlert(color, title, message) {
+            const now = Date.now();
+            if (state.alertTimestamps[title] && now - state.alertTimestamps[title] < CONFIG.alertThrottleMs) return;
+            state.alertTimestamps[title] = now;
+            
+            const list = $('alertsList');
+            if (!list) return;
+            
+            while (list.children.length > CONFIG.maxAlerts) {
+                list.removeChild(list.lastChild);
+            }
+            
+            const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            const item = document.createElement('div');
+            item.className = 'alert-item';
+            item.style.animation = 'fadeIn .4s';
+            item.innerHTML = `
+                <div class="alert-item__dot alert-item__dot--${color}"></div>
+                <div>
+                    <h4 class="alert-item__title">${sanitizeHTML(title)}</h4>
+                    <p class="alert-item__message">${sanitizeHTML(message)}</p>
+                </div>
+                <span class="alert-item__time">${time}</span>`;
+            
+            list.insertBefore(item, list.firstChild);
+            
+            const notifDot = $('notifDot');
+            if (notifDot) notifDot.classList.add('notification-dot--visible');
+        }
+
+        function clearAlerts() {
+            const list = $('alertsList');
+            if (list) {
+                list.innerHTML = `<div class="alert-item">
+                    <div class="alert-item__dot alert-item__dot--green"></div>
+                    <div><h4 class="alert-item__title">Cleared</h4><p class="alert-item__message">OK</p></div>
+                    <span class="alert-item__time">Now</span></div>`;
+            }
+            state.alertTimestamps = {};
+            const notifDot = $('notifDot');
+            if (notifDot) notifDot.classList.remove('notification-dot--visible');
+        }
+
+        // ════════════════════════════════════════
+        //  TOASTS
+        // ════════════════════════════════════════
+        function showToast(type, title, msg) {
+            const container = $('toastContainer');
+            if (!container) return;
+            
+            const id = 't' + (++state.toastCount);
+            const icons = {
+                success: '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>',
+                error: '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>',
+                info: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>',
+                warning: '<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>'
+            };
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.id = id;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="toast__icon toast__icon--${type}">
+                    <svg viewBox="0 0 24 24">${icons[type] || icons.info}</svg>
+                </div>
+                <div>
+                    <h4 class="toast__title">${sanitizeHTML(title)}</h4>
+                    <p class="toast__message">${sanitizeHTML(msg || '')}</p>
+                </div>
+                <button class="toast__close" onclick="SmartVillage.dismissToast('${id}')" aria-label="Dismiss notification">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>`;
+            
+            container.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.add('toast--visible'));
+            setTimeout(() => dismissToast(id), CONFIG.toastDuration);
+            
+            while (container.children.length > CONFIG.maxToasts) {
+                container.removeChild(container.firstChild);
+            }
+        }
+
+        function dismissToast(id) {
+            const toast = $(id);
+            if (toast) {
+                toast.classList.remove('toast--visible');
+                setTimeout(() => toast.remove(), 500);
+            }
+        }
+
+        // ════════════════════════════════════════
+        //  SYSTEM STATUS
+        // ════════════════════════════════════════
+        function updateSystemStatus() {
+            const bar = $('systemStatusBar');
+            const dot = $('systemStatusDot');
+            const text = $('systemStatusText');
+            const conn = $('connIndicator');
+            
+            if (!bar || !dot || !text || !conn) return;
+
+            if (state.esp1Online && state.esp2Online) {
+                bar.style.background = 'linear-gradient(135deg, #e8f5e9, #f1f8e9)';
+                dot.style.background = 'var(--accent-green)';
+                text.textContent = '✅ Both ESP32s online';
+                text.style.color = '#2d6a2e';
+                conn.className = 'connection-indicator connection-indicator--online';
+                conn.textContent = '🟢 Online';
+            } else if (state.esp1Online || state.esp2Online) {
+                bar.style.background = 'linear-gradient(135deg, #fff3e0, #fef9e7)';
+                dot.style.background = 'var(--accent-orange)';
+                text.textContent = '⚠️ ' + (state.esp1Online ? 'ESP1' : 'ESP2') + ' only';
+                text.style.color = '#e65100';
+                conn.className = 'connection-indicator connection-indicator--partial';
+                conn.textContent = '🟡 Partial';
+            } else {
+                bar.style.background = 'linear-gradient(135deg, #fce4ec, #fff3e0)';
+                dot.style.background = 'var(--accent-red)';
+                text.textContent = '❌ Both offline';
+                text.style.color = '#c62828';
+                conn.className = 'connection-indicator connection-indicator--offline';
+                conn.textContent = '🔴 Offline';
+            }
+        }
+
+        // ════════════════════════════════════════
+        //  REPORT MODAL
+        // ════════════════════════════════════════
+        function openReportModal() {
+            const modal = $('reportModal');
+            if (modal) modal.classList.add('modal-overlay--visible');
+            
+            if (state.currentGPS.fixed) {
+                const latEl = $('reportLat');
+                const lngEl = $('reportLng');
+                if (latEl) latEl.value = state.currentGPS.lat.toFixed(6);
+                if (lngEl) lngEl.value = state.currentGPS.lng.toFixed(6);
+            }
+            initModalMap();
+        }
+
+        function closeReportModal() {
+            const modal = $('reportModal');
+            if (modal) modal.classList.remove('modal-overlay--visible');
+        }
+
+        function submitReport() {
+            const loc = ($('reportLocation')?.value || '').trim();
+            const lat = parseFloat($('reportLat')?.value) || 0;
+            const lng = parseFloat($('reportLng')?.value) || 0;
+            
+            if (!loc && !lat) {
+                showToast('error', '❌', 'Enter location');
+                return;
+            }
+            
+            const btn = $('submitReportBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = '...';
+            }
+            
+            const severity = $('reportSeverity')?.value || 'warning';
+            const depthMap = { minor: 3, warning: 7, critical: 15 };
+            
+            const reportData = {
+                location: loc || `${lat.toFixed(4)},${lng.toFixed(4)}`,
+                severity: severity,
+                size: $('reportSize')?.value || 'Medium',
+                description: $('reportDesc')?.value || '',
+                lat,
+                lng,
+                depth: depthMap[severity] || 5,
+                timestamp: Math.floor(Date.now() / 1000),
+                status: 'pending',
+                source: 'manual'
+            };
+            
+            db.ref('/potholes/manual_' + Date.now()).set(reportData)
+                .then(() => {
+                    closeReportModal();
+                    showToast('success', '✅', 'Report saved');
+                    
+                    // Clear form
+                    const locEl = $('reportLocation');
+                    const descEl = $('reportDesc');
+                    if (locEl) locEl.value = '';
+                    if (descEl) descEl.value = '';
+                    if (btn) { btn.disabled = false; btn.textContent = 'Submit'; }
+                })
+                .catch((e) => {
+                    showToast('error', '❌', e.message);
+                    if (btn) { btn.disabled = false; btn.textContent = 'Submit'; }
+                });
+        }
+
+        function useCurrentLocation() {
+            if (state.currentGPS.fixed) {
+                const latEl = $('reportLat');
+                const lngEl = $('reportLng');
+                if (latEl) latEl.value = state.currentGPS.lat.toFixed(6);
+                if (lngEl) lngEl.value = state.currentGPS.lng.toFixed(6);
+                showToast('success', '📍', 'ESP32 GPS used');
+            } else if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (p) => {
+                        const latEl = $('reportLat');
+                        const lngEl = $('reportLng');
+                        if (latEl) latEl.value = p.coords.latitude.toFixed(6);
+                        if (lngEl) lngEl.value = p.coords.longitude.toFixed(6);
+                        showToast('success', '📍', 'Browser GPS');
+                    },
+                    () => showToast('error', '❌', 'No GPS')
+                );
+            } else {
+                showToast('error', '❌', 'No GPS');
+            }
+        }
+
+        // ════════════════════════════════════════
+        //  MAP CONTROLS
+        // ════════════════════════════════════════
+        function centerMapOnGPS() {
+            if (!state.currentGPS.fixed) {
+                showToast('warning', '⚠️', 'No GPS fix');
+                return;
+            }
+            mainMap.setView([state.currentGPS.lat, state.currentGPS.lng], 16, { animate: true });
+        }
+
+        function fitAllMarkers() {
+            if (!mapMarkers.length) {
+                showToast('warning', 'No markers', '');
+                return;
+            }
+            mainMap.fitBounds(L.featureGroup(mapMarkers).getBounds().pad(0.1));
+        }
+
+        function addPotholeAtCenter() {
+            const c = mainMap.getCenter();
+            const latEl = $('reportLat');
+            const lngEl = $('reportLng');
+            if (latEl) latEl.value = c.lat.toFixed(6);
+            if (lngEl) lngEl.value = c.lng.toFixed(6);
+            openReportModal();
+        }
+
+        // ════════════════════════════════════════
+        //  TERMINAL
+        // ════════════════════════════════════════
+        function logCmd(source, msg, type) {
+            const log = $('commandLog');
+            if (!log) return;
+            const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const line = document.createElement('div');
+            line.className = 'cmd-line';
+            line.innerHTML = `<span class="cmd-time">[${time}]</span> <span class="cmd-${type}">[${sanitizeHTML(source)}]</span> ${sanitizeHTML(msg)}`;
+            log.appendChild(line);
+            log.scrollTop = log.scrollHeight;
+            while (log.children.length > CONFIG.maxLogLines) {
+                log.removeChild(log.firstChild);
+            }
+        }
+
+        function executeCommand() {
+            const input = $('terminalInput');
+            if (!input) return;
+            const cmd = input.value.trim().toLowerCase();
+            if (!cmd) return;
+            input.value = '';
+            logCmd('you', cmd, 'info');
+
+            // GPIO commands
+            const gpioMatch = cmd.match(/^gpio\s+(esp[12])\s+(\d+)\s+(on|off|high|low)$/);
+            const pwmMatch = cmd.match(/^gpio\s+(esp[12])\s+(\d+)\s+pwm\s+(\d+)$/);
+            
+            if (gpioMatch) {
+                const [, esp, pin, cmdState] = gpioMatch;
+                const val = cmdState === 'on' || cmdState === 'high';
+                db.ref(`/gpio/${esp}/gpio${pin}`).set(val)
+                    .then(() => {
+                        logCmd('sys', `→ /gpio/${esp}/gpio${pin} = ${val}`, 'success');
+                        updateGPIOUI(esp, pin, val);
+                    });
+                return;
+            }
+            
+            if (pwmMatch) {
+                const [, esp, pin, rawVal] = pwmMatch;
+                const v = Math.min(255, Math.max(0, parseInt(rawVal, 10)));
+                db.ref(`/gpio/${esp}/pwm${pin}`).set(v)
+                    .then(() => logCmd('sys', `→ /gpio/${esp}/pwm${pin} = ${v}`, 'success'));
+                db.ref(`/gpio/${esp}/gpio${pin}`).set(v > 0);
+                return;
+            }
+
+            const commands = {
+                'led on': () => { sendControl('led', true, '💡 ON', ''); return '→ /controls/led=true'; },
+                'led off': () => { sendControl('led', false, '🌑 Auto', ''); return '→ /controls/led=false'; },
+                'relay on': () => { sendControl('relay', true, '📤', ''); return '→ /controls/relay=true'; },
+                'relay off': () => { sendControl('relay', false, '📥', ''); return '→ /controls/relay=false'; },
+                'buzzer on': () => { sendControl('buzzer', true, '🔔', ''); return '→ /controls/buzzer=true'; },
+                'buzzer off': () => { sendControl('buzzer', false, '🔕', ''); return '→ /controls/buzzer=false'; },
+                'status': () => `ESP1:${state.esp1Online ? '🟢' : '🔴'} ESP2:${state.esp2Online ? '🟢' : '🔴'} LED:${state.controlState.led} RELAY:${state.controlState.relay} BUZZER:${state.controlState.buzzer}`,
+                'reset': () => { resetAllControls(); return 'Reset all'; },
+                'help': () => 'led on/off, relay on/off, buzzer on/off, gpio esp1 25 on/off, gpio esp1 25 pwm 128, status, reset',
+                'clear': () => { clearCommandLog(); return 'Cleared'; }
+            };
+
+            const handler = commands[cmd];
+            if (handler) {
+                logCmd('sys', handler(), 'success');
+            } else {
+                logCmd('sys', `Unknown: "${cmd}". Type help`, 'error');
+            }
+        }
+
+        function runQuickCmd(cmd) {
+            const input = $('terminalInput');
+            if (input) input.value = cmd;
+            executeCommand();
+        }
+
+        function clearCommandLog() {
+            const log = $('commandLog');
+            if (log) log.innerHTML = '<div class="cmd-line"><span class="cmd-info">Cleared</span></div>';
+        }
+
+        // ════════════════════════════════════════
+        //  NAVIGATION
+        // ════════════════════════════════════════
+        function switchPage(page, navElement) {
+            $$('.nav-item').forEach(item => {
+                item.classList.remove('nav-item--active');
+                item.removeAttribute('aria-current');
+            });
+            if (navElement) {
+                navElement.classList.add('nav-item--active');
+                navElement.setAttribute('aria-current', 'page');
+            }
+
+            $$('.page').forEach(p => p.classList.remove('page--active'));
+            const pageEl = $('page-' + page);
+            if (pageEl) pageEl.classList.add('page--active');
+
+            const titles = CONFIG.pageTitles[page];
+            if (titles) {
+                setTextContent('pageTitle', titles[0]);
+                setTextContent('pageSubtitle', titles[1]);
+            }
+
+            // Close mobile sidebar
+            const sidebar = $('sidebar');
+            const overlay = $('sidebarOverlay');
+            if (sidebar) sidebar.classList.remove('sidebar--open');
+            if (overlay) overlay.classList.remove('sidebar-overlay--visible');
+
+            // Refresh maps
+            setTimeout(() => {
+                if (mainMap) mainMap.invalidateSize();
+                if (potholePageMap) potholePageMap.invalidateSize();
+            }, 300);
+        }
+
+        function toggleSidebar() {
+            const sidebar = $('sidebar');
+            const overlay = $('sidebarOverlay');
+            if (sidebar) sidebar.classList.toggle('sidebar--open');
+            if (overlay) overlay.classList.toggle('sidebar-overlay--visible');
+        }
+
+        // ════════════════════════════════════════
+        //  CLOCK
+        // ════════════════════════════════════════
+        function updateTime() {
+            setTextContent('liveTime', new Date().toLocaleTimeString('en-US', {
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            }));
+        }
+
+        // ════════════════════════════════════════
+        //  INITIALIZATION
+        // ════════════════════════════════════════
+        function init() {
+            generateGPIOCards();
+            initMaps();
+            setupFirebaseListeners();
+            updateTime();
+            setInterval(updateTime, 1000);
+
+            // Terminal keyboard shortcut
+            const termInput = $('terminalInput');
+            if (termInput) {
+                termInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') executeCommand();
+                });
+            }
+
+            // Modal close handlers
+            const modal = $('reportModal');
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeReportModal();
+                });
+            }
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeReportModal();
+            });
+
+            // Browser geolocation fallback
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (p) => {
+                        if (!state.currentGPS.fixed) {
+                            state.currentGPS.lat = p.coords.latitude;
+                            state.currentGPS.lng = p.coords.longitude;
+                            if (mainMap) mainMap.setView([state.currentGPS.lat, state.currentGPS.lng], CONFIG.mapZoom);
+                            if (potholePageMap) potholePageMap.setView([state.currentGPS.lat, state.currentGPS.lng], CONFIG.mapZoom);
+                        }
+                    },
+                    () => {},
+                    { enableHighAccuracy: false, timeout: 5000 }
+                );
+            }
+
+            logCmd('boot', 'SmartVillage v4.0 — Modular Architecture', 'success');
+            logCmd('boot', 'GPIO paths: /gpio/esp1/gpio25..27,13  /gpio/esp2/gpio25..27', 'info');
+        }
+
+        // Run init when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        // ════════════════════════════════════════
+        //  PUBLIC API
+        // ════════════════════════════════════════
+        return Object.freeze({
+            switchPage,
+            toggleSidebar,
+            toggleControl,
+            sendControl,
+            resetAllControls,
+            toggleGPIO,
+            setGPIOPWM,
+            bulkGPIO,
+            resetGPIO,
+            clearGpioLog,
+            openReportModal,
+            closeReportModal,
+            submitReport,
+            useCurrentLocation,
+            centerMapOnGPS,
+            fitAllMarkers,
+            addPotholeAtCenter,
+            clearAlerts,
+            executeCommand,
+            runQuickCmd,
+            clearCommandLog,
+            dismissToast,
+            showToast
+        });
+    })();
+    </script>
+</body>
+</html>
